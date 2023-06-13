@@ -1,0 +1,8 @@
+﻿{
+  "profiles": {
+    "FluentWorkflow.Generator": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "../../sample/FluentWorkflow.SimpleSample/FluentWorkflow.SimpleSample.csproj"
+    }
+  }
+}

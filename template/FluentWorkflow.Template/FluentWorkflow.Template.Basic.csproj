@@ -1,0 +1,31 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <BuildIntermediatePath>./obj/basic</BuildIntermediatePath>
+    <BaseIntermediateOutputPath>$(BuildIntermediatePath)</BaseIntermediateOutputPath>
+    <RestorePackagesPath>$(BuildIntermediatePath)</RestorePackagesPath>
+    <MSBuildProjectExtensionsPath>$(BuildIntermediatePath)</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <RootNamespace>TemplateNamespace</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Extension\**" />
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="Extension\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="Extension\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FluentWorkflow.Core\FluentWorkflow.Core.csproj" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+</Project>

@@ -1,0 +1,37 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <BuildIntermediatePath>./obj/redis</BuildIntermediatePath>
+    <BaseIntermediateOutputPath>$(BuildIntermediatePath)</BaseIntermediateOutputPath>
+    <RestorePackagesPath>$(BuildIntermediatePath)</RestorePackagesPath>
+    <MSBuildProjectExtensionsPath>$(BuildIntermediatePath)</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <RootNamespace>TemplateNamespace</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="**" />
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="**" />
+    <None Remove="obj\**" />
+
+    <Compile Include="Extension\Redis\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="2.6.111" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FluentWorkflow.Core\FluentWorkflow.Core.csproj" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+</Project>

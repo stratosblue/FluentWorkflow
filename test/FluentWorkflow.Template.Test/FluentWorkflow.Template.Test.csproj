@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FluentWorkflow</RootNamespace>
+
+    <IsTestProject>true</IsTestProject>
+
+    <UserSecretsId>FluentWorkflowTest_05b88fa0-f476-470f-a4f6-9c5a087b5eb7</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.*" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.*" />
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="7.1.2" />
+    <PackageReference Include="Savorboard.CAP.InMemoryMessageQueue" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\template\FluentWorkflow.Template\FluentWorkflow.Template.Extension.CAP.csproj" />
+    <ProjectReference Include="..\..\template\FluentWorkflow.Template\FluentWorkflow.Template.Extension.Redis.csproj" />
+    <ProjectReference Include="..\FluentWorkflow.Test.Base\FluentWorkflow.Test.Base.csproj" />
+  </ItemGroup>
+
+</Project>

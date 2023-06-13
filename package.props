@@ -1,0 +1,34 @@
+﻿<Project>
+  <PropertyGroup>
+    <Description>A message driven distributed asynchronous workflow framework. 消息驱动的分布式异步工作流程处理框架。</Description>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <Authors>stratos</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/stratosblue/FluentWorkflow</PackageProjectUrl>
+
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
+
+    <PackageTags>fluentworkflow fluent-workflow workflow wf distributed asynchronous message sourcegenerator source-generator</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>
