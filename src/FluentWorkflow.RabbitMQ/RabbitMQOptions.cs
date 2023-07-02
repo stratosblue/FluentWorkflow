@@ -40,6 +40,11 @@ public class RabbitMQOptions
     public string? ConsumeQueueName { get; set; }
 
     /// <summary>
+    /// 消费队列名称规范化委托
+    /// </summary>
+    public Func<string, string?>? ConsumeQueueNameNormalizer { get; set; }
+
+    /// <summary>
     /// 错误消息重入队列的延时
     /// </summary>
     public TimeSpan ErrorMessageRequeueDelay { get; set; } = RabbitMQOptions.MessageRequeueDelay;

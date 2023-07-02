@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using FluentWorkflow.Build;
 using FluentWorkflow.Interface;
@@ -90,7 +91,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         //声明交换机
         channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false, null);
 
-        var defaultConsumeQueueName = _options.ConsumeQueueName ?? Assembly.GetEntryAssembly()?.GetName().Name?.ToLowerInvariant();
+        var defaultConsumeQueueName = NormalizConsumeQueueName(_options.ConsumeQueueName ?? Assembly.GetEntryAssembly()?.GetName().Name?.ToLowerInvariant());
         //声明默认队列
         channel.QueueDeclare(defaultConsumeQueueName, true, false, false, null);
 
@@ -157,6 +158,25 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
     #endregion Public 方法
 
     #region Private 方法
+
+    private string NormalizConsumeQueueName(string? queueName)
+    {
+        ThrowIfQueueNameInvalid(queueName);
+
+        var finalQueueName = _options.ConsumeQueueNameNormalizer?.Invoke(queueName) ?? queueName;
+
+        ThrowIfQueueNameInvalid(finalQueueName);
+
+        return finalQueueName;
+
+        static void ThrowIfQueueNameInvalid([NotNull] string? finalQueueName)
+        {
+            if (string.IsNullOrWhiteSpace(finalQueueName))
+            {
+                throw new InvalidOperationException($"Invalid consume queue name \"{finalQueueName}\"");
+            }
+        }
+    }
 
     private void SetupStandAloneConsumer(IModel channel, string standaloneQueueName, ConsumeDescriptor consumeDescriptor, MessageHandleOptions messageHandleOptions)
     {
