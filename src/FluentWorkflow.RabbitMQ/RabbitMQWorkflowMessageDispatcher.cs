@@ -5,6 +5,7 @@ using FluentWorkflow.Interface;
 using FluentWorkflow.RabbitMQ;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace FluentWorkflow;
@@ -18,6 +19,8 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
     private readonly SemaphoreSlim _initSemaphore = new(1, 1);
 
+    private readonly IDisposable? _optionsMonitorDisposer;
+
     private readonly object _syncRoot = new();
 
     private IModel? _channel;
@@ -25,6 +28,8 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
     private IConnection? _connection;
 
     private bool _disposed;
+
+    private RabbitMQOptions _rabbitMQOptions;
 
     #endregion Private 字段
 
@@ -54,10 +59,26 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
     #region Public 构造函数
 
-    public RabbitMQWorkflowMessageDispatcher(IRabbitMQConnectionProvider connectionProvider, IWorkflowDiagnosticSource diagnosticSource, ILogger<RabbitMQWorkflowMessageDispatcher> logger) : base(diagnosticSource, logger)
+#pragma warning disable CS8618
+
+    public RabbitMQWorkflowMessageDispatcher(IRabbitMQConnectionProvider connectionProvider,
+                                             IWorkflowDiagnosticSource diagnosticSource,
+                                             IOptionsMonitor<RabbitMQOptions> rabbitMQOptionsMonitor,
+                                             ILogger<RabbitMQWorkflowMessageDispatcher> logger) : base(diagnosticSource, logger)
     {
         _connectionProvider = connectionProvider ?? throw new ArgumentNullException(nameof(connectionProvider));
+
+        RefreshRabbitMQOptions(rabbitMQOptionsMonitor.CurrentValue);
+
+        _optionsMonitorDisposer = rabbitMQOptionsMonitor.OnChange(RefreshRabbitMQOptions);
+
+        void RefreshRabbitMQOptions(RabbitMQOptions rabbitMQOptions)
+        {
+            _rabbitMQOptions = rabbitMQOptionsMonitor.CurrentValue;
+        }
     }
+
+#pragma warning restore CS8618
 
     #endregion Public 构造函数
 
@@ -70,6 +91,7 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
             _initSemaphore.Dispose();
             _channel?.Dispose();
             _connection?.Dispose();
+            _optionsMonitorDisposer?.Dispose();
             _disposed = true;
         }
     }
@@ -110,7 +132,7 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
         var data = JsonSerializer.SerializeToUtf8Bytes(message, SystemTextJsonObjectSerializer.JsonSerializerOptions);
 
-        Channel.BasicPublish(exchange: RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data);
+        Channel.BasicPublish(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data);
         return Task.CompletedTask;
     }
 

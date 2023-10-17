@@ -56,6 +56,7 @@ public class RabbitMQOptions
 
     /// <summary>
     /// 使用的交换机名称
+    /// TODO 单元测试
     /// </summary>
     public string? ExchangeName { get; set; } = DefaultExchangeName;
 
