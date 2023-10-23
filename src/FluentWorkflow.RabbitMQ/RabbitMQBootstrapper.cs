@@ -63,7 +63,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         {
             return ValueTask.CompletedTask;
         }
-        _logger.LogInformation("Disposing RabbitMQ message dispatcher.");
+        _logger.LogInformation("Disposing workflow RabbitMQ message dispatcher.");
         try
         {
             _runningCancellationTokenSource.Cancel();
@@ -80,7 +80,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
     public async Task InitAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Start initializing RabbitMQ message dispatcher.");
+        _logger.LogInformation("Start initializing workflow RabbitMQ message dispatcher.");
 
         var connection = await _connectionProvider.GetAsync(cancellationToken);
 
@@ -109,7 +109,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
             {
                 var standaloneQueueName = $"{defaultConsumeQueueName}:{eventName}";
 
-                _logger.LogInformation("Use standalone channel consume messages. EventName: {EventName}. QueueName: {QueueName}.", eventName, standaloneQueueName);
+                _logger.LogInformation("Use standalone channel consume workflow messages. EventName: {EventName}. QueueName: {QueueName}.", eventName, standaloneQueueName);
 
                 var standaloneChannel = connection.CreateModel();
                 var consumeDescriptor = new ConsumeDescriptor(EventName: eventName,
@@ -137,7 +137,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
         if (defaultConsumeDescriptors.Count > 0)
         {
-            _logger.LogInformation("Use default channel consume messages. Consumer count: {ConsumerCount}.", defaultConsumeDescriptors.Count);
+            _logger.LogInformation("Use default channel consume workflow messages. Consumer count: {ConsumerCount}.", defaultConsumeDescriptors.Count);
 
             var consumeDescriptors = defaultConsumeDescriptors.ToImmutableDictionary();
 
@@ -173,7 +173,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         {
             if (string.IsNullOrWhiteSpace(finalQueueName))
             {
-                throw new InvalidOperationException($"Invalid consume queue name \"{finalQueueName}\"");
+                throw new InvalidOperationException($"Invalid workflow consume queue name \"{finalQueueName}\"");
             }
         }
     }

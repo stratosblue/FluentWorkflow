@@ -41,7 +41,7 @@ public abstract class WorkflowMessageDispatcher : IWorkflowMessageDispatcher
         where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration
     {
         _diagnosticSource.MessagePublish(message);
-        Logger.LogTrace("Publish [{EventName}] message - {Message}.", TMessage.EventName, message);
+        Logger.LogTrace("Publish [{EventName}] message - {{{Id}}}[{Message}].", TMessage.EventName, message.Id, message);
         return Task.CompletedTask;
     }
 

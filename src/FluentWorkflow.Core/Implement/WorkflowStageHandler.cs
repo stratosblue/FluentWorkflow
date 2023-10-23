@@ -91,7 +91,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
         {
             ThrowIfStageNotMatch(stageMessage.Context);
 
-            Logger.LogTrace("Start handle stage message [{Message}]", stageMessage);
+            Logger.LogTrace("Start handle stage message {{{Id}}}[{Message}]", stageMessage.Id, stageMessage);
 
             var processContext = new ProcessContext(ServiceProvider);
 
@@ -142,6 +142,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
                 {
                     await StageHandleFailedAsync(stageMessage, ex, cancellationToken);
                     exception = ex;
+                    Logger.LogError(ex, "Handle stage message {{{Id}}}[{Message}] failed", stageMessage.Id, stageMessage);
                     return;
                 }
                 throw;

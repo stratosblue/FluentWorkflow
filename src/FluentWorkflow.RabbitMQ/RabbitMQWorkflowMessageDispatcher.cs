@@ -125,9 +125,10 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
         var basicProperties = Channel.CreateBasicProperties();
         basicProperties.DeliveryMode = 2;
-        basicProperties.Headers = new Dictionary<string, object>(1)
+        basicProperties.Headers = new Dictionary<string, object>(2)
         {
-            { RabbitMQOptions.EventNameHeaderKey, TMessage.EventName }
+            { RabbitMQOptions.EventNameHeaderKey, TMessage.EventName },
+            { RabbitMQOptions.WorkflowIdHeaderKey, message.Id }
         };
 
         var data = JsonSerializer.SerializeToUtf8Bytes(message, SystemTextJsonObjectSerializer.JsonSerializerOptions);
@@ -144,7 +145,7 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
         {
             if (_connection is null)
             {
-                Logger.LogInformation("Creating channel.");
+                Logger.LogInformation("Creating workflow RabbitMQ channel.");
 
                 var connection = await _connectionProvider.GetAsync(cancellationToken);
 
@@ -152,13 +153,13 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
                 {
                     autorecoveringConnection.RecoverySucceeded += (sender, e) =>
                     {
-                        Logger.LogWarning("Connection recovery succeeded.");
+                        Logger.LogWarning("Workflow RabbitMQ connection recovery succeeded.");
                     };
                 }
 
                 connection.ConnectionShutdown += (sender, e) =>
                 {
-                    Logger.LogWarning("Connection shutdown.");
+                    Logger.LogWarning("Workflow RabbitMQ connection shutdown.");
                 };
 
                 _connection = connection;
@@ -167,7 +168,7 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
         catch (Exception ex)
         {
             _initSemaphore.Release();
-            Logger.LogError(ex, "Init channel failed.");
+            Logger.LogError(ex, "Init workflow RabbitMQ channel failed.");
             throw;
         }
 

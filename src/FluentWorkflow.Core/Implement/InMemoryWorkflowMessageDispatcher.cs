@@ -55,7 +55,7 @@ internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
 
         if (!_eventSubscribeDescriptors.TryGetValue(TMessage.EventName, out var invokerDescriptors))
         {
-            throw new InvalidOperationException($"Not found event subscriber for \"{TMessage.EventName}\".");
+            throw new InvalidOperationException($"Not found event subscriber for {{{message.Id}}}\"{TMessage.EventName}\".");
         }
 
         var messageJson = JsonSerializer.Serialize(message, s_jsonSerializerOptions);
@@ -85,7 +85,7 @@ internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error at handle message - \"{EventName}\"", TMessage.EventName);
+                _logger.LogError(ex, "Error at handle message - {{{Id}}}\"{EventName}\"", message.Id, TMessage.EventName);
             }
         }, CancellationToken.None);
 
