@@ -30,10 +30,7 @@ internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
                                              WorkflowBuildStateCollection workflowBuildStates,
                                              ILogger<InMemoryWorkflowMessageDispatcher> logger)
     {
-        if (workflowBuildStates is null)
-        {
-            throw new ArgumentNullException(nameof(workflowBuildStates));
-        }
+        ArgumentNullException.ThrowIfNull(workflowBuildStates);
 
         _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
         _eventSubscribeDescriptors = workflowBuildStates.SelectMany(m => m)
@@ -48,10 +45,7 @@ internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
     /// <inheritdoc/>
     Task IWorkflowMessageDispatcher.PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
     {
-        if (message is null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentNullException.ThrowIfNull(message);
 
         if (!_eventSubscribeDescriptors.TryGetValue(TMessage.EventName, out var invokerDescriptors))
         {

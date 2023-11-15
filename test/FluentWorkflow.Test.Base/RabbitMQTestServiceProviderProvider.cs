@@ -36,7 +36,8 @@ public class RabbitMQTestServiceProviderProvider : TestServiceProviderProvider
         var options = ServiceProvider.GetRequiredService<IOptions<RabbitMQOptions>>();
         var connectionProvider = ServiceProvider.GetRequiredService<IRabbitMQConnectionProvider>();
         using var connection = await connectionProvider.GetAsync(default);
-        connection.CreateModel().QueueDeleteNoWait(options.Value.ConsumeQueueName, false, false);
+        using var model = connection.CreateModel();
+        model.QueueDeleteNoWait(options.Value.ConsumeQueueName, false, false);
         await base.CleanupProviderAsync();
     }
 
@@ -47,6 +48,7 @@ public class RabbitMQTestServiceProviderProvider : TestServiceProviderProvider
         services.AddFluentWorkflow()
                 .UseRabbitMQMessageDispatcher(options =>
                 {
+                    options.ExchangeName = $"fwf-test-exchange-{Environment.Version.Major}_{Environment.Version.Minor}";
                     options.ConsumeQueueName = $"RabbitMQTestQueue-{DateTime.Now:yyyy:MM:dd:HH.mm.ss.ffff}";
                     options.Uri = new Uri(context.Configuration.GetRequiredSection("RabbitMQ").Value!);
                 });

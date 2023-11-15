@@ -46,10 +46,7 @@ public readonly struct TracingContext
     /// <inheritdoc cref="TracingContext"/>
     public TracingContext(Activity activity)
     {
-        if (activity is null)
-        {
-            throw new ArgumentNullException(nameof(activity));
-        }
+        ArgumentNullException.ThrowIfNull(activity);
 
         var context = activity.Context;
         TraceId = context.TraceId.ToHexString();

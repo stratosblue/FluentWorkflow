@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
 
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -8,6 +8,6 @@
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
 
-    <Version>1.0.0-preview-005</Version>
+    <Version>1.0.0-preview-006</Version>
   </PropertyGroup>
 </Project>

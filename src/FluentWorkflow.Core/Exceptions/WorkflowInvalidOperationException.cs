@@ -25,6 +25,7 @@ public class WorkflowInvalidOperationException : Exception
     #region Protected 构造函数
 
     /// <inheritdoc cref="WorkflowInvalidOperationException"/>
+    [Obsolete("see https://github.com/dotnet/docs/issues/34893")]
     protected WorkflowInvalidOperationException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
