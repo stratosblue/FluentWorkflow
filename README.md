@@ -209,6 +209,10 @@ services.Configure<RabbitMQOptions>(options =>
 });
 ```
 
+#### *消息确认超时
+
+RabbitMQ消息的消费ack超时时间默认为30分钟，进行长时间处理时可能会出现意外情况，可参照 [acknowledgement-timeout](https://www.rabbitmq.com/docs/consumers#acknowledgement-timeout) 进行调整
+
 -------
 
 ### 5.3 子工作流程等待

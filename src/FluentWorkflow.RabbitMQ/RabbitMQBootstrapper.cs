@@ -92,8 +92,11 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         channel.ExchangeDeclare(exchangeName, ExchangeType.Topic, true, false, null);
 
         var defaultConsumeQueueName = NormalizConsumeQueueName(_options.ConsumeQueueName ?? Assembly.GetEntryAssembly()?.GetName().Name?.ToLowerInvariant());
+
+        var queueArguments = GetQueueArguments(defaultConsumeQueueName);
+
         //声明默认队列
-        channel.QueueDeclare(defaultConsumeQueueName, true, false, false, null);
+        channel.QueueDeclare(defaultConsumeQueueName, true, false, false, queueArguments);
 
         if (_options.GlobalQos > 0)
         {
@@ -159,6 +162,19 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
     #region Private 方法
 
+    private Dictionary<string, object> GetQueueArguments(string standaloneQueueName)
+    {
+        var arguments = new Dictionary<string, object>()
+        {
+            //see https://www.rabbitmq.com/docs/consumers#acknowledgement-timeout
+            { "x-consumer-timeout", (uint)TimeSpan.FromHours(1).TotalMilliseconds },
+        };
+
+        _options.QueueArgumentsSetup?.Invoke(standaloneQueueName, arguments);
+
+        return arguments;
+    }
+
     private string NormalizConsumeQueueName(string? queueName)
     {
         ThrowIfQueueNameInvalid(queueName);
@@ -180,7 +196,9 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
     private void SetupStandAloneConsumer(IModel channel, string standaloneQueueName, ConsumeDescriptor consumeDescriptor, MessageHandleOptions messageHandleOptions)
     {
-        channel.QueueDeclare(standaloneQueueName, true, false, false, null);
+        var queueArguments = GetQueueArguments(standaloneQueueName);
+
+        channel.QueueDeclare(standaloneQueueName, true, false, false, queueArguments);
         channel.BasicQos(0, messageHandleOptions.Qos, false);
 
         var consumer = new StandAloneEventMessageConsumer(consumeDescriptor,

@@ -71,6 +71,11 @@ public class RabbitMQOptions
     public ushort GlobalQos { get; set; } = 0;
 
     /// <summary>
+    /// 队列 Arguments 设置委托
+    /// </summary>
+    public Action<string, IDictionary<string, object>>? QueueArgumentsSetup { get; set; }
+
+    /// <summary>
     /// Uri
     /// </summary>
     public Uri? Uri { get; set; }
