@@ -8,6 +8,5 @@
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
 
-    <Version>1.0.0-preview-007</Version>
   </PropertyGroup>
 </Project>

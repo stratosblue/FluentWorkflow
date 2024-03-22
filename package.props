@@ -1,5 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
+    <Version>1.0.0</Version>
+
     <Description>A message driven distributed asynchronous workflow framework. 消息驱动的分布式异步工作流程处理框架。</Description>
 
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -11,7 +13,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
 
-    <PackageTags>fluentworkflow fluent-workflow workflow wf distributed asynchronous message sourcegenerator source-generator</PackageTags>
+    <PackageTags>fluentworkflow fluent-workflow workflow wf distributed asynchronous message mq messagequeue message-queue sourcegenerator source-generator</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -25,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.*" PrivateAssets="All" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">

@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetCore.CAP" Version="7.1.2" />
+    <PackageReference Include="DotNetCore.CAP" Version="8.1.0" />
   </ItemGroup>
 
   <ItemGroup>

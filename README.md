@@ -127,8 +127,8 @@ services.AddFluentWorkflow()
 
 `FluentWorkflow`正常工作的必要条件: 
  - 流程中的所有`服务`使用`同一套`消息分发器;
- - 有且仅配置了一个工作流程调度器 - `WorkflowScheduler`;
- - 所有阶段的阶段处理器 - `StageHandler`，各个阶段的阶段处理器有且仅有一个;
+ - 有且仅配置了一个（单个服务，可多实例）工作流程调度器 - `WorkflowScheduler`;
+ - 所有阶段的阶段处理器 - `StageHandler`，各个阶段的阶段处理器有且仅有一个（单个服务，可多实例）;
  - *需要等待`子工作流程`时必须配置子工作流程结果观察器 - `ResultObserver`;
  - *需要单次等待多个`子工作流程`时，必须使用支持等待多个`子工作流程`的 `IWorkflowAwaitProcessor`; (默认实现了基于`redis`的多流程等待处理器，配置时使用`UseRedisWorkflowAwaitProcessor`方法以启用)
 
