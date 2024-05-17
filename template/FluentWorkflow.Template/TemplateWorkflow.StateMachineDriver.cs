@@ -27,8 +27,10 @@ public abstract partial class TemplateWorkflowStateMachineDriverBase
     {
         var stateMachine = await RestoreStateMachineAsync(message, cancellationToken);
 
-        await stateMachine.SetStageCompletedAsync(message, cancellationToken);
-        await InternalDriveAsync(stateMachine, cancellationToken);
+        if (await stateMachine.SetStageCompletedAsync(message, cancellationToken))
+        {
+            await InternalDriveAsync(stateMachine, cancellationToken);
+        }
     }
 
     /// <inheritdoc/>
@@ -36,8 +38,10 @@ public abstract partial class TemplateWorkflowStateMachineDriverBase
     {
         var stateMachine = await RestoreStateMachineAsync(message, cancellationToken);
 
-        await stateMachine.SetFailedAsync(message, cancellationToken);
-        await InternalDriveAsync(stateMachine, cancellationToken);
+        if (await stateMachine.SetFailedAsync(message, cancellationToken))
+        {
+            await InternalDriveAsync(stateMachine, cancellationToken);
+        }
     }
 }
 

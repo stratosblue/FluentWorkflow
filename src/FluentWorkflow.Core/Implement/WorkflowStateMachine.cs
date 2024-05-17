@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using FluentWorkflow.Diagnostics;
+using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -68,6 +69,22 @@ public abstract class WorkflowStateMachine<TWorkflowBoundary>
     #region Protected 方法
 
     /// <summary>
+    /// 在工作流程失败时
+    /// </summary>
+    /// <param name="failureMessage"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected virtual Task OnFailedAsync<TFailureMessage>(TFailureMessage failureMessage, CancellationToken cancellationToken)
+        where TFailureMessage : IWorkflowFailureMessage, TWorkflowBoundary
+    {
+        Context.SetFailureMessage(failureMessage.Message);
+        Context.SetFailureStackTrace(failureMessage.RemoteStackTrace);
+        Context.SetValue(FluentWorkflowConstants.ContextKeys.FailureStage, failureMessage.Stage);
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
     /// 在阶段完成时
     /// </summary>
     /// <param name="stageCompletedMessage"></param>
@@ -95,4 +112,116 @@ public abstract class WorkflowStateMachine<TWorkflowBoundary>
     }
 
     #endregion Protected 方法
+
+    #region Private 类
+
+    /// <summary>
+    /// 范围限定的单次失败调用器
+    /// </summary>
+    /// <param name="stateMachine"></param>
+    protected sealed class ScopeOnFailedSingleCaller(WorkflowStateMachine<TWorkflowBoundary> stateMachine) : ScopeSingleCaller
+    {
+        #region Public 方法
+
+        /// <inheritdoc cref="WorkflowStateMachine{TWorkflowBoundary}.OnStageCompletedAsync{TStageCompletedMessage}(TStageCompletedMessage, CancellationToken)"/>
+        public Task OnFailedAsync<TFailureMessage>(TFailureMessage failureMessage, CancellationToken cancellationToken)
+            where TFailureMessage : IWorkflowFailureMessage, TWorkflowBoundary
+        {
+            InvokeCheck();
+            return stateMachine.OnFailedAsync(failureMessage, cancellationToken);
+        }
+
+        #endregion Public 方法
+    }
+
+    /// <summary>
+    /// 范围限定的单次阶段完成调用器
+    /// </summary>
+    /// <param name="stateMachine"></param>
+    protected sealed class ScopeOnStageCompletedSingleCaller(WorkflowStateMachine<TWorkflowBoundary> stateMachine) : ScopeSingleCaller
+    {
+        #region Public 方法
+
+        /// <inheritdoc cref="WorkflowStateMachine{TWorkflowBoundary}.OnStageCompletedAsync{TStageCompletedMessage}(TStageCompletedMessage, CancellationToken)"/>
+        public Task OnStageCompletedAsync<TStageCompletedMessage>(TStageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
+            where TStageCompletedMessage : IWorkflowStageCompletedMessage, TWorkflowBoundary
+        {
+            InvokeCheck();
+            return stateMachine.OnStageCompletedAsync(stageCompletedMessage, cancellationToken);
+        }
+
+        #endregion Public 方法
+    }
+
+    /// <summary>
+    /// 范围限定的单次发布阶段消息调用器
+    /// </summary>
+    /// <param name="messageDispatcher"></param>
+    protected sealed class ScopePublishStageMessageSingleCaller(IWorkflowMessageDispatcher messageDispatcher) : ScopeSingleCaller
+    {
+        #region Public 方法
+
+        /// <inheritdoc cref="WorkflowStateMachine{TWorkflowBoundary}.PublishStageMessageAsync{TStageMessage}(TStageMessage, CancellationToken)"/>
+        public Task PublishStageMessageAsync<TStageMessage>(TStageMessage message, CancellationToken cancellationToken)
+            where TStageMessage : class, IWorkflowStageMessage, IWorkflowContextCarrier<IWorkflowContext>, TWorkflowBoundary, IEventNameDeclaration
+        {
+            InvokeCheck();
+            return messageDispatcher.PublishAsync(message, cancellationToken);
+        }
+
+        #endregion Public 方法
+    }
+
+    /// <summary>
+    /// 范围限定的单次调用器
+    /// </summary>
+    protected abstract class ScopeSingleCaller : IDisposable
+    {
+        #region Private 字段
+
+        private volatile bool _hasInvoked = false;
+
+        private int _invocationFlag = 0;
+
+        #endregion Private 字段
+
+        #region Public 属性
+
+        /// <summary>
+        /// 是否已调用
+        /// </summary>
+        public bool HasInvoked => _hasInvoked;
+
+        #endregion Public 属性
+
+        #region Public 方法
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _invocationFlag = 1;
+        }
+
+        #endregion Public 方法
+
+        #region Protected 方法
+
+        /// <summary>
+        /// 进行执行检查
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        protected void InvokeCheck()
+        {
+            if (Interlocked.CompareExchange(ref _invocationFlag, 1, 0) != 0)
+            {
+                throw new InvalidOperationException("Invalid operation. Do not call the delegate multiple or call it after method finished.");
+            }
+
+            _hasInvoked = true;
+        }
+
+        #endregion Protected 方法
+    }
+
+    #endregion Private 类
 }

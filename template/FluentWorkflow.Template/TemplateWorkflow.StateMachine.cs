@@ -46,24 +46,26 @@ namespace TemplateNamespace
                     Context.SetCurrentStage(currentStage);
                 }
 
+                using var singleCaller = new ScopePublishStageMessageSingleCaller(MessageDispatcher);
+
                 switch (currentStage)
                 {
                     case TemplateWorkflowStages.Stage1CAUK:
                         {
                             var stageMessage = new TemplateWorkflowStage1CAUKStageMessage(TypedContext);
-                            await Workflow.OnStage1CAUKAsync(stageMessage, (message, cancellationToken) => PublishStageMessageAsync(message, cancellationToken), cancellationToken);
+                            await Workflow.OnStage1CAUKAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                         }
                         return;
                     case TemplateWorkflowStages.Stage2BPTG:
                         {
                             var stageMessage = new TemplateWorkflowStage2BPTGStageMessage(TypedContext);
-                            await Workflow.OnStage2BPTGAsync(stageMessage, (message, cancellationToken) => PublishStageMessageAsync(message, cancellationToken), cancellationToken);
+                            await Workflow.OnStage2BPTGAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                         }
                         return;
                     case TemplateWorkflowStages.Stage3AWBN:
                         {
                             var stageMessage = new TemplateWorkflowStage3AWBNStageMessage(TypedContext);
-                            await Workflow.OnStage3AWBNAsync(stageMessage, (message, cancellationToken) => PublishStageMessageAsync(message, cancellationToken), cancellationToken);
+                            await Workflow.OnStage3AWBNAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                         }
                         return;
                     case TemplateWorkflowStages.Failure:
@@ -103,17 +105,23 @@ namespace TemplateNamespace
             /// </summary>
             /// <param name="stageCompletedMessage"></param>
             /// <param name="cancellationToken"></param>
-            /// <returns></returns>
+            /// <returns>是否执行后续代码</returns>
             /// <exception cref="WorkflowInvalidOperationException"></exception>
-            internal virtual Task SetStageCompletedAsync(ITemplateWorkflowStageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
+            internal virtual async Task<bool> SetStageCompletedAsync(ITemplateWorkflowStageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
             {
-                return stageCompletedMessage switch
+                using var singleCaller = new ScopeOnStageCompletedSingleCaller(this);
+
+                var stageCompletedTask = stageCompletedMessage switch
                 {
-                    TemplateWorkflowStage1CAUKStageCompletedMessage stage1CA5CStageCompletedMessage => Workflow.OnStage1CAUKCompletedAsync(stage1CA5CStageCompletedMessage, (message, cancellationToken) => OnStageCompletedAsync(message, cancellationToken), cancellationToken),
-                    TemplateWorkflowStage2BPTGStageCompletedMessage stage2B74EStageCompletedMessage => Workflow.OnStage2BPTGCompletedAsync(stage2B74EStageCompletedMessage, (message, cancellationToken) => OnStageCompletedAsync(message, cancellationToken), cancellationToken),
-                    TemplateWorkflowStage3AWBNStageCompletedMessage stage3A2B4StageCompletedMessage => Workflow.OnStage3AWBNCompletedAsync(stage3A2B4StageCompletedMessage, (message, cancellationToken) => OnStageCompletedAsync(message, cancellationToken), cancellationToken),
+                    TemplateWorkflowStage1CAUKStageCompletedMessage stage1CA5CStageCompletedMessage => Workflow.OnStage1CAUKCompletedAsync(stage1CA5CStageCompletedMessage, singleCaller.OnStageCompletedAsync, cancellationToken),
+                    TemplateWorkflowStage2BPTGStageCompletedMessage stage2B74EStageCompletedMessage => Workflow.OnStage2BPTGCompletedAsync(stage2B74EStageCompletedMessage, singleCaller.OnStageCompletedAsync, cancellationToken),
+                    TemplateWorkflowStage3AWBNStageCompletedMessage stage3A2B4StageCompletedMessage => Workflow.OnStage3AWBNCompletedAsync(stage3A2B4StageCompletedMessage, singleCaller.OnStageCompletedAsync, cancellationToken),
                     _ => throw new WorkflowInvalidOperationException($"未知的阶段完成消息：{stageCompletedMessage}"),
                 };
+
+                await stageCompletedTask;
+
+                return singleCaller.HasInvoked;
             }
 
             /// <inheritdoc/>
@@ -147,32 +155,28 @@ namespace TemplateNamespace
             /// </summary>
             /// <param name="failureMessage"></param>
             /// <param name="cancellationToken"></param>
-            /// <returns></returns>
+            /// <returns>是否执行后续代码</returns>
             /// <exception cref="WorkflowInvalidOperationException"></exception>
-            internal virtual Task SetFailedAsync(ITemplateWorkflowFailureMessage failureMessage, CancellationToken cancellationToken)
+            internal virtual async Task<bool> SetFailedAsync(ITemplateWorkflowFailureMessage failureMessage, CancellationToken cancellationToken)
             {
                 if (failureMessage is not TemplateWorkflowFailureMessage typedFailureMessage)
                 {
                     throw new WorkflowInvalidOperationException($"未知的失败消息：{failureMessage}");
                 }
-                return Workflow.OnFailedAsync(typedFailureMessage, (message, cancellationToken) => OnFailedAsync(message, cancellationToken), cancellationToken);
+
+                using var singleCaller = new ScopeOnFailedSingleCaller(this);
+
+                await Workflow.OnFailedAsync(typedFailureMessage, singleCaller.OnFailedAsync, cancellationToken);
+
+                return singleCaller.HasInvoked;
             }
 
-            /// <summary>
-            /// 在工作流程失败时
-            /// </summary>
-            /// <param name="failureMessage"></param>
-            /// <param name="cancellationToken"></param>
-            /// <returns></returns>
-            protected virtual Task OnFailedAsync(ITemplateWorkflowFailureMessage failureMessage, CancellationToken cancellationToken)
+            /// <inheritdoc/>
+            protected override async Task OnFailedAsync<TFailureMessage>(TFailureMessage failureMessage, CancellationToken cancellationToken)
             {
-                Context.SetFailureMessage(failureMessage.Message);
-                Context.SetFailureStackTrace(failureMessage.RemoteStackTrace);
-                Context.SetValue(FluentWorkflowConstants.ContextKeys.FailureStage, failureMessage.Stage);
+                await base.OnFailedAsync(failureMessage, cancellationToken);
 
                 Context.SetCurrentStage(TemplateWorkflowStages.Failure);
-
-                return Task.CompletedTask;
             }
         }
     }
