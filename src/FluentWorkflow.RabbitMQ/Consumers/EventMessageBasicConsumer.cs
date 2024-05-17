@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.Json;
 using FluentWorkflow.Build;
 using FluentWorkflow.Interface;
 using FluentWorkflow.Tracing;
@@ -15,9 +14,9 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
 {
     #region Protected 字段
 
-    protected readonly JsonSerializerOptions JsonSerializerOptions = SystemTextJsonObjectSerializer.JsonSerializerOptions;
-
     protected readonly ILogger Logger;
+
+    protected readonly IObjectSerializer ObjectSerializer;
 
     protected readonly CancellationToken RunningCancellationToken;
 
@@ -27,9 +26,15 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
 
     #region Public 构造函数
 
-    public EventMessageBasicConsumer(IModel model, IServiceScopeFactory serviceScopeFactory, ILogger logger, CancellationToken runningCancellationToken) : base(model)
+    public EventMessageBasicConsumer(IModel model,
+                                     IServiceScopeFactory serviceScopeFactory,
+                                     IObjectSerializer objectSerializer,
+                                     ILogger logger,
+                                     CancellationToken runningCancellationToken)
+        : base(model)
     {
         ServiceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+        ObjectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         RunningCancellationToken = runningCancellationToken;
     }
@@ -110,13 +115,13 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
             var serviceProvider = serviceScope.ServiceProvider;
             if (invokerDescriptors.Length == 1)
             {
-                await InvokeHandlerAsync(body, serviceProvider, invokerDescriptors[0], JsonSerializerOptions, RunningCancellationToken);
+                await InvokeHandlerAsync(body, serviceProvider, invokerDescriptors[0], ObjectSerializer, RunningCancellationToken);
             }
             else
             {
                 var tasks = invokerDescriptors.Select([StackTraceHidden][DebuggerStepThrough] (invokerDescriptor) =>
                 {
-                    return InvokeHandlerAsync(body, serviceProvider, invokerDescriptor, JsonSerializerOptions, RunningCancellationToken);
+                    return InvokeHandlerAsync(body, serviceProvider, invokerDescriptor, ObjectSerializer, RunningCancellationToken);
                 }).ToArray();
 
                 await Task.WhenAll(tasks);
@@ -145,11 +150,11 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
     private static Task InvokeHandlerAsync(ReadOnlyMemory<byte> rawMessageData,
                                            IServiceProvider serviceProvider,
                                            WorkflowEventInvokerDescriptor invokerDescriptor,
-                                           JsonSerializerOptions jsonSerializerOptions,
+                                           IObjectSerializer objectSerializer,
                                            CancellationToken cancellationToken)
     {
         Activity? activity = null;
-        var message = JsonSerializer.Deserialize(rawMessageData.Span, invokerDescriptor.MessageType, jsonSerializerOptions)!;
+        var message = objectSerializer.Deserialize(rawMessageData.Span, invokerDescriptor.MessageType)!;
         if (message is IWorkflowContextCarrier<IWorkflowContext> contextCarrier)
         {
             var parentTraceContextData = contextCarrier.Context.GetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext);

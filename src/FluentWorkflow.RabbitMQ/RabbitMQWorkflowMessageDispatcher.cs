@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text.Json;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
 using FluentWorkflow.RabbitMQ;
@@ -18,6 +17,8 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
     private readonly IRabbitMQConnectionProvider _connectionProvider;
 
     private readonly SemaphoreSlim _initSemaphore = new(1, 1);
+
+    private readonly IObjectSerializer _objectSerializer;
 
     private readonly IDisposable? _optionsMonitorDisposer;
 
@@ -63,10 +64,12 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
     public RabbitMQWorkflowMessageDispatcher(IRabbitMQConnectionProvider connectionProvider,
                                              IWorkflowDiagnosticSource diagnosticSource,
+                                             IObjectSerializer objectSerializer,
                                              IOptionsMonitor<RabbitMQOptions> rabbitMQOptionsMonitor,
                                              ILogger<RabbitMQWorkflowMessageDispatcher> logger) : base(diagnosticSource, logger)
     {
         _connectionProvider = connectionProvider ?? throw new ArgumentNullException(nameof(connectionProvider));
+        _objectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
 
         RefreshRabbitMQOptions(rabbitMQOptionsMonitor.CurrentValue);
 
@@ -131,7 +134,7 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
             { RabbitMQOptions.WorkflowIdHeaderKey, message.Id }
         };
 
-        var data = JsonSerializer.SerializeToUtf8Bytes(message, SystemTextJsonObjectSerializer.JsonSerializerOptions);
+        var data = _objectSerializer.SerializeToBytes(message);
 
         Channel.BasicPublish(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data);
         return Task.CompletedTask;

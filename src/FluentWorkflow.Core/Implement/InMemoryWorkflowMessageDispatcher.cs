@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Text.Json;
 using FluentWorkflow.Build;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,14 +10,11 @@ internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
 {
     #region Private 字段
 
-    private static readonly JsonSerializerOptions s_jsonSerializerOptions = new()
-    {
-        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-    };
-
     private readonly ImmutableDictionary<string, WorkflowEventInvokerDescriptor[]> _eventSubscribeDescriptors;
 
     private readonly ILogger _logger;
+
+    private readonly IObjectSerializer _objectSerializer;
 
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
@@ -28,11 +24,13 @@ internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
 
     public InMemoryWorkflowMessageDispatcher(IServiceScopeFactory serviceScopeFactory,
                                              WorkflowBuildStateCollection workflowBuildStates,
+                                             IObjectSerializer objectSerializer,
                                              ILogger<InMemoryWorkflowMessageDispatcher> logger)
     {
         ArgumentNullException.ThrowIfNull(workflowBuildStates);
 
         _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+        _objectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
         _eventSubscribeDescriptors = workflowBuildStates.SelectMany(m => m)
                                                         .ToImmutableDictionary(m => m.EventName, m => m.ToArray());
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -52,8 +50,8 @@ internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
             throw new InvalidOperationException($"Not found event subscriber for {{{message.Id}}}\"{TMessage.EventName}\".");
         }
 
-        var messageJson = JsonSerializer.Serialize(message, s_jsonSerializerOptions);
-        var messageClone = JsonSerializer.Deserialize<TMessage>(messageJson, s_jsonSerializerOptions)!;
+        var messageJson = _objectSerializer.Serialize(message);
+        var messageClone = _objectSerializer.Deserialize<TMessage>(messageJson)!;
 
         _ = Task.Run(async () =>
         {

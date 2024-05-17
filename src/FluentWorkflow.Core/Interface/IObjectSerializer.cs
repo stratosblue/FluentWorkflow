@@ -27,12 +27,28 @@ public interface IObjectSerializer
     public T? Deserialize<T>(string? value);
 
     /// <summary>
+    /// 反序列化字符串为对象
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="returnType"></param>
+    /// <returns></returns>
+    public object? Deserialize(string? value, Type returnType);
+
+    /// <summary>
     /// 反序列化bytes为对象
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
     /// <returns></returns>
     public T? Deserialize<T>(ReadOnlySpan<byte> value);
+
+    /// <summary>
+    /// 反序列化bytes为对象
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="returnType"></param>
+    /// <returns></returns>
+    public object? Deserialize(ReadOnlySpan<byte> value, Type returnType);
 
     /// <summary>
     /// 序列化对象为字符串

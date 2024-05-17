@@ -22,6 +22,8 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
     private readonly ILogger _logger;
 
+    private readonly IObjectSerializer _objectSerializer;
+
     private readonly RabbitMQOptions _options;
 
     private readonly CancellationToken _runningCancellationToken;
@@ -39,11 +41,13 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
     public RabbitMQBootstrapper(IRabbitMQConnectionProvider connectionProvider,
                                 WorkflowBuildStateCollection workflowBuildStates,
                                 IServiceScopeFactory serviceScopeFactory,
+                                IObjectSerializer objectSerializer,
                                 ILoggerFactory loggerFactory,
                                 IOptions<RabbitMQOptions> optionsAccessor)
     {
         _connectionProvider = connectionProvider ?? throw new ArgumentNullException(nameof(connectionProvider));
         _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+        _objectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
         _options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));
         _eventSubscribeDescriptors = workflowBuildStates.SelectMany(m => m)
                                                         .ToImmutableDictionary(m => m.EventName, m => m.ToArray());
@@ -149,6 +153,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                                                             standaloneEventNames,
                                                             channel,
                                                             _serviceScopeFactory,
+                                                            _objectSerializer,
                                                             _consumeLogger,
                                                             _runningCancellationToken);
 
@@ -204,6 +209,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         var consumer = new StandAloneEventMessageConsumer(consumeDescriptor,
                                                           channel,
                                                           _serviceScopeFactory,
+                                                          _objectSerializer,
                                                           _consumeLogger,
                                                           _runningCancellationToken);
 

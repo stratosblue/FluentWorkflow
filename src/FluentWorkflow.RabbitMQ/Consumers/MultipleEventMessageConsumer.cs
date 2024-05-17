@@ -29,8 +29,15 @@ internal sealed class MultipleEventMessageConsumer : EventMessageBasicConsumer
     #region Public 构造函数
 
     /// <inheritdoc cref="MultipleEventMessageConsumer"/>
-    public MultipleEventMessageConsumer(ImmutableDictionary<string, ConsumeDescriptor> consumeDescriptors, RabbitMQOptions options, HashSet<string> standaloneEventNames, IModel model, IServiceScopeFactory serviceScopeFactory, ILogger logger, CancellationToken runningToken)
-        : base(model, serviceScopeFactory, logger, runningToken)
+    public MultipleEventMessageConsumer(ImmutableDictionary<string, ConsumeDescriptor> consumeDescriptors,
+                                        RabbitMQOptions options,
+                                        HashSet<string> standaloneEventNames,
+                                        IModel model,
+                                        IServiceScopeFactory serviceScopeFactory,
+                                        IObjectSerializer objectSerializer,
+                                        ILogger logger,
+                                        CancellationToken runningToken)
+        : base(model, serviceScopeFactory, objectSerializer, logger, runningToken)
     {
         if (options is null)
         {

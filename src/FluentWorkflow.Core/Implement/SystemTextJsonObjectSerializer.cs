@@ -41,6 +41,12 @@ public class SystemTextJsonObjectSerializer : IObjectSerializer
     public T? Deserialize<T>(ReadOnlySpan<byte> value) => value.IsEmpty ? default : JsonSerializer.Deserialize<T>(value, JsonSerializerOptions);
 
     /// <inheritdoc/>
+    public object? Deserialize(string? value, Type returnType) => string.IsNullOrWhiteSpace(value) ? default : JsonSerializer.Deserialize(value, returnType, JsonSerializerOptions);
+
+    /// <inheritdoc/>
+    public object? Deserialize(ReadOnlySpan<byte> value, Type returnType) => value.IsEmpty ? default : JsonSerializer.Deserialize(value, returnType, JsonSerializerOptions);
+
+    /// <inheritdoc/>
     [return: NotNullIfNotNull(nameof(value))]
     public string? Serialize<T>(T? value) => value is null ? null : JsonSerializer.Serialize(value, JsonSerializerOptions);
 

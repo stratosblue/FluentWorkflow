@@ -18,8 +18,13 @@ internal sealed class StandAloneEventMessageConsumer : EventMessageBasicConsumer
     #region Public 构造函数
 
     /// <inheritdoc cref="StandAloneEventMessageConsumer"/>
-    public StandAloneEventMessageConsumer(ConsumeDescriptor consumeDescriptor, IModel model, IServiceScopeFactory serviceScopeFactory, ILogger logger, CancellationToken runningToken)
-        : base(model, serviceScopeFactory, logger, runningToken)
+    public StandAloneEventMessageConsumer(ConsumeDescriptor consumeDescriptor,
+                                          IModel model,
+                                          IServiceScopeFactory serviceScopeFactory,
+                                          IObjectSerializer objectSerializer,
+                                          ILogger logger,
+                                          CancellationToken runningToken)
+        : base(model, serviceScopeFactory, objectSerializer, logger, runningToken)
     {
         ConsumeDescriptor = consumeDescriptor ?? throw new ArgumentNullException(nameof(consumeDescriptor));
     }
