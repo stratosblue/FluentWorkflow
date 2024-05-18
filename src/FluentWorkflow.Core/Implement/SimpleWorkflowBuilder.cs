@@ -1,4 +1,5 @@
-﻿using FluentWorkflow.Interface;
+﻿using System.Diagnostics.CodeAnalysis;
+using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
@@ -9,7 +10,7 @@ namespace FluentWorkflow;
 /// <typeparam name="TWorkflow"></typeparam>
 /// <typeparam name="TWorkflowContext"></typeparam>
 /// <typeparam name="TWorkflowBoundary">工作流程边界（限定工作流程）</typeparam>
-public abstract class SimpleWorkflowBuilder<TWorkflow, TWorkflowContext, TWorkflowBoundary>
+public abstract class SimpleWorkflowBuilder<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TWorkflow, TWorkflowContext, TWorkflowBoundary>
     : IWorkflowBuilder<TWorkflow>
     where TWorkflow : IWorkflow, TWorkflowBoundary
     where TWorkflowContext : IWorkflowContext, TWorkflowBoundary

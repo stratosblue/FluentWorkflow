@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Interface;
 using FluentWorkflow.Util;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,7 @@ public static class ServiceCollectionUniqueAddHelper
     /// <param name="services"></param>
     /// <param name="serviceLifetime"></param>
     /// <returns></returns>
-    public static bool RegisterContinuator<TWorkflowContinuator>(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+    public static bool RegisterContinuator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TWorkflowContinuator>(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where TWorkflowContinuator : IWorkflowContinuator, IWorkflowNameDeclaration, IWorkflowStageNameDeclaration
     {
         services.TryAdd(ServiceDescriptor.Describe(typeof(TWorkflowContinuator), typeof(TWorkflowContinuator), serviceLifetime));
@@ -36,7 +37,7 @@ public static class ServiceCollectionUniqueAddHelper
     /// <param name="services"></param>
     /// <param name="serviceLifetime"></param>
     /// <returns></returns>
-    public static bool UniqueAdd<TService, TImplementation>(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+    public static bool UniqueAdd<TService, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
     {
         int count = services.Count;
         for (int i = 0; i < count; i++)

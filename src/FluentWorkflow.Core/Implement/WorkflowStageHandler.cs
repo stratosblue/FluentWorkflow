@@ -46,6 +46,9 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
     /// <inheritdoc cref="IWorkflowMessageDispatcher"/>
     protected IWorkflowMessageDispatcher MessageDispatcher { get; }
 
+    /// <inheritdoc cref="IObjectSerializer"/>
+    protected IObjectSerializer ObjectSerializer { get; }
+
     /// <inheritdoc cref="IServiceProvider"/>
     protected IServiceProvider ServiceProvider { get; }
 
@@ -63,6 +66,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
         MessageDispatcher = serviceProvider.GetRequiredService<IWorkflowMessageDispatcher>();
         Logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
         WorkflowAwaitProcessor = serviceProvider.GetRequiredService<IWorkflowAwaitProcessor>();
+        ObjectSerializer = serviceProvider.GetRequiredService<IObjectSerializer>();
 
         _diagnosticSource = serviceProvider.GetRequiredService<IWorkflowDiagnosticSource>();
     }
@@ -80,7 +84,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
     public virtual async Task HandleAsync(TStageMessage stageMessage, CancellationToken cancellationToken)
     {
         using var activity = ActivitySource.StartActivity($"{DiagnosticConstants.ActivityNames.StageProcessing} - {stageMessage.Stage}", System.Diagnostics.ActivityKind.Consumer);
-        activity?.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(stageMessage));
+        activity?.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(stageMessage, ObjectSerializer));
 
         _diagnosticSource.StageMessageHandleStart(stageMessage);
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,7 @@ namespace FluentWorkflow;
 /// <typeparam name="TFailureMessage"></typeparam>
 /// <typeparam name="TWorkflowBoundary">工作流程边界（限定工作流程）</typeparam>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, TWorkflowStateMachine, TStageCompletedMessage, TFailureMessage, TWorkflowBoundary>
+public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TWorkflowStateMachine, TStageCompletedMessage, TFailureMessage, TWorkflowBoundary>
     : IWorkflowStateMachineDriver<TWorkflow, TStageCompletedMessage, TFailureMessage>
     where TWorkflow : IWorkflow, TWorkflowBoundary
     where TWorkflowContext : IWorkflowContext, TWorkflowBoundary
@@ -34,6 +35,9 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, TW
     /// <inheritdoc cref="IWorkflowBuilder{TWorkflow}"/>
     protected readonly IWorkflowBuilder<TWorkflow> WorkflowBuilder;
 
+    /// <inheritdoc cref="IObjectSerializer"/>
+    protected readonly IObjectSerializer ObjectSerializer;
+
     #endregion Protected 字段
 
     #region Public 构造函数
@@ -44,6 +48,8 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, TW
         WorkflowBuilder = workflowBuilder ?? throw new ArgumentNullException(nameof(workflowBuilder));
         MessageDispatcher = messageDispatcher ?? throw new ArgumentNullException(nameof(messageDispatcher));
         ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+
+        ObjectSerializer = serviceProvider.GetRequiredService<IObjectSerializer>();
     }
 
     #endregion Public 构造函数
@@ -57,7 +63,7 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, TW
         var task = DoInputAsync(message, cancellationToken);
         if (activity != null)
         {
-            activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message));
+            activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "completed");
             task.ContinueWith(static (_, state) => ((IDisposable)state!).Dispose(), activity, CancellationToken.None);
         }
@@ -71,7 +77,7 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, TW
         var task = DoInputAsync(message, cancellationToken);
         if (activity != null)
         {
-            activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message));
+            activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "failure");
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.FailureMessage, message.Message);
             task.ContinueWith(static (_, state) => ((IDisposable)state!).Dispose(), activity, CancellationToken.None);

@@ -12,7 +12,7 @@ public interface IObjectSerializer
     /// <summary>
     /// 默认实例
     /// </summary>
-    public static IObjectSerializer Default { get; } = SystemTextJsonObjectSerializer.Instance;
+    public static IObjectSerializer Default { get; } = SystemTextJsonObjectSerializer.Shared;
 
     #endregion Public 属性
 
@@ -51,13 +51,20 @@ public interface IObjectSerializer
     public object? Deserialize(ReadOnlySpan<byte> value, Type returnType);
 
     /// <summary>
+    /// 序列化对象为利于阅读的字符串
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public string PrettySerialize<T>(T? value);
+
+    /// <summary>
     /// 序列化对象为字符串
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
     /// <returns></returns>
-    [return: NotNullIfNotNull(nameof(value))]
-    public string? Serialize<T>(T? value);
+    public string Serialize<T>(T? value);
 
     /// <summary>
     /// 序列化对象为bytes

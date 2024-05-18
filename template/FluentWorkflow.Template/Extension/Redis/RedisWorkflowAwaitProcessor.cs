@@ -69,6 +69,8 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
 
     private readonly ILogger _logger;
 
+    private readonly IObjectSerializer _objectSerializer;
+
     #endregion Private 字段
 
     #region Public 构造函数
@@ -76,15 +78,19 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
     /// <inheritdoc cref="RedisWorkflowAwaitProcessor"/>
     public RedisWorkflowAwaitProcessor(IOptions<RedisWorkflowAwaitProcessorOptions> optionsAccessor,
                                        IFluentWorkflowRedisConnectionProvider redisConnectionProvider,
+                                       IObjectSerializer objectSerializer,
                                        ILogger<RedisWorkflowAwaitProcessor> logger)
     {
         ArgumentNullException.ThrowIfNull(optionsAccessor);
         ArgumentNullException.ThrowIfNull(redisConnectionProvider);
+        ArgumentNullException.ThrowIfNull(objectSerializer);
 
         _keyPrefix = optionsAccessor.Value.KeyPrefix ?? string.Empty;
         _expireDelay = optionsAccessor.Value.FinishedItemExpireDelay;
 
         _database = redisConnectionProvider.Get().GetDatabase();
+        _objectSerializer = objectSerializer;
+
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -213,11 +219,11 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
 
     #region Private 方法
 
-    private static string PureCurrentContext(IWorkflowContext context)
+    private string PureCurrentContext(IWorkflowContext context)
     {
         var pureCurrentContext = new Dictionary<string, string>(context.GetSnapshot());
         pureCurrentContext.Remove(FluentWorkflowConstants.ContextKeys.ParentWorkflow);
-        return IObjectSerializer.Default.Serialize(pureCurrentContext);
+        return _objectSerializer.Serialize(pureCurrentContext);
     }
 
     private async Task<Dictionary<string, IWorkflowContext?>> GetAllChildContexts(RedisKey primaryKey)
@@ -240,7 +246,7 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
                 }
                 var childContext = string.IsNullOrEmpty(value)
                                    ? null
-                                   : IObjectSerializer.Default.Deserialize<Dictionary<string, string>>(value) is { } contextRawData
+                                   : _objectSerializer.Deserialize<Dictionary<string, string>>(value) is { } contextRawData
                                      ? new WorkflowContextMetadata(contextRawData!)
                                      : null;
 

@@ -1,4 +1,5 @@
-﻿using FluentWorkflow.Build;
+﻿using System.Diagnostics.CodeAnalysis;
+using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,7 +64,7 @@ public static class FluentWorkflowServiceCollectionExtensions
     /// <param name="builder"></param>
     /// <param name="serviceLifetime"></param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder UseWorkflowAwaitProcessor<TWorkflowAwaitProcessor>(this IFluentWorkflowBuilder builder, ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
+    public static IFluentWorkflowBuilder UseWorkflowAwaitProcessor<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TWorkflowAwaitProcessor>(this IFluentWorkflowBuilder builder, ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
         where TWorkflowAwaitProcessor : class, IWorkflowAwaitProcessor
     {
         builder.Services.RemoveAll<IWorkflowAwaitProcessor>();

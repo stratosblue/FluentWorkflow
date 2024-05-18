@@ -21,7 +21,7 @@ public sealed class KeyValuesConvertableJsonConverter<T>
     /// <inheritdoc/>
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var dictionary = JsonSerializer.Deserialize<IDictionary<string, string>>(ref reader, options);
+        var dictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(ref reader, options);
         return dictionary is null ? default : T.ConstructFromKeyValues(dictionary);
     }
 

@@ -14,8 +14,9 @@ internal static class PrettyJSONObject
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
+    /// <param name="objectSerializer"></param>
     /// <returns></returns>
-    public static PrettyJSONObject<T>? Create<T>(T? value) => value is null ? null : new(value);
+    public static PrettyJSONObject<T>? Create<T>(T? value, IObjectSerializer objectSerializer) => value is null ? null : new(value, objectSerializer);
 
     #endregion Public 方法
 }
@@ -28,11 +29,7 @@ internal class PrettyJSONObject<T>
 {
     #region Private 字段
 
-    private static readonly JsonSerializerOptions s_serializerOptions = new()
-    {
-        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        WriteIndented = true,
-    };
+    private readonly IObjectSerializer _objectSerializer;
 
     #endregion Private 字段
 
@@ -48,9 +45,10 @@ internal class PrettyJSONObject<T>
     #region Public 构造函数
 
     /// <inheritdoc cref="PrettyJSONObject{T}"/>
-    public PrettyJSONObject(T? value)
+    public PrettyJSONObject(T? value, IObjectSerializer objectSerializer)
     {
         Value = value;
+        _objectSerializer = objectSerializer;
     }
 
     #endregion Public 构造函数
@@ -58,7 +56,7 @@ internal class PrettyJSONObject<T>
     #region Public 方法
 
     /// <inheritdoc/>
-    public override string ToString() => JsonSerializer.Serialize(Value, s_serializerOptions);
+    public override string ToString() => _objectSerializer.PrettySerialize(Value);
 
     #endregion Public 方法
 }

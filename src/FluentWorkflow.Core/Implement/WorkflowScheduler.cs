@@ -28,6 +28,9 @@ public abstract class WorkflowScheduler<TWorkflow, TWorkflowStateMachine, TWorkf
     /// <inheritdoc cref="IWorkflowMessageDispatcher"/>
     protected readonly IWorkflowMessageDispatcher MessageDispatcher;
 
+    /// <inheritdoc cref="IObjectSerializer"/>
+    protected readonly IObjectSerializer ObjectSerializer;
+
     /// <inheritdoc cref="IServiceProvider"/>
     protected readonly IServiceProvider ServiceProvider;
 
@@ -41,6 +44,7 @@ public abstract class WorkflowScheduler<TWorkflow, TWorkflowStateMachine, TWorkf
         MessageDispatcher = messageDispatcher ?? throw new ArgumentNullException(nameof(messageDispatcher));
         ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
+        ObjectSerializer = serviceProvider.GetRequiredService<IObjectSerializer>();
         _diagnosticSource = serviceProvider.GetRequiredService<IWorkflowDiagnosticSource>();
     }
 
@@ -60,7 +64,7 @@ public abstract class WorkflowScheduler<TWorkflow, TWorkflowStateMachine, TWorkf
 
         if (activity != null)
         {
-            activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Context, PrettyJSONObject.Create(workflow.Context));
+            activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Context, PrettyJSONObject.Create(workflow.Context, ObjectSerializer));
             task.ContinueWith(static (_, state) => ((IDisposable)state!).Dispose(), activity, CancellationToken.None);
         }
 
