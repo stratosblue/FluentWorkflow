@@ -69,6 +69,9 @@ public static class {WorkflowName}SchedulerDIExtensions
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof({WorkflowName}StateMachineDriver), typeof({WorkflowName}StateMachineDriver), ServiceLifetime.Scoped));
 
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowResumer<{WorkflowName}>), static serviceProvider => serviceProvider.GetRequiredService<{WorkflowName}StateMachineDriver>(), ServiceLifetime.Scoped));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowResumer<TWorkflow>), static serviceProvider => serviceProvider.GetRequiredService<{WorkflowName}StateMachineDriver>(), ServiceLifetime.Scoped));
+
         #endregion StateMachineDriver
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowScheduler<{WorkflowName}>), typeof({WorkflowName}Scheduler), ServiceLifetime.Scoped));

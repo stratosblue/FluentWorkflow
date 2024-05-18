@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace FluentWorkflow;
@@ -25,6 +26,11 @@ public class InMemoryWorkflowFinishWaiter
 
     public Task WaitAsync(TimeSpan? timeout = null)
     {
+        if (Debugger.IsAttached)    //附加调试器时无限等待
+        {
+            return CompletionSource.Task.WaitAsync(Timeout.InfiniteTimeSpan);
+        }
+
         return CompletionSource.Task.WaitAsync(timeout ?? TimeSpan.FromSeconds(5));
     }
 

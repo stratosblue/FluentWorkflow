@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using FluentWorkflow.Interface;
+using Microsoft.Extensions.DependencyInjection;
 using TemplateNamespace;
 
 namespace FluentWorkflow;
@@ -8,6 +9,25 @@ namespace FluentWorkflow;
 public class WorkflowContextTest
 {
     #region Public 方法
+
+    [TestMethod]
+    public void Should_Build_Workflow_With_Same_Instance()
+    {
+        var context = new TemplateWorkflowContext(Guid.NewGuid().ToString());
+
+        var services = new ServiceCollection();
+        services.AddFluentWorkflow()
+                .AddTemplateWorkflow<TemplateWorkflowImpl>();
+
+        using var serviceProvider = services.BuildServiceProvider();
+        var builder = serviceProvider.GetRequiredService<IWorkflowBuilder<TemplateWorkflow>>();
+
+        var workflow = builder.Build(context);
+        Assert.IsTrue(ReferenceEquals(context, workflow.Context));
+
+        workflow = builder.Build((context as IWorkflowContext).GetSnapshot().ToDictionary(m => m.Key, m => m.Value));
+        Assert.IsFalse(ReferenceEquals(context, workflow.Context));
+    }
 
     [TestMethod]
     public void Should_Set_Value_Success()

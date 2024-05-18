@@ -79,9 +79,11 @@ namespace {NameSpace}
             builder.AppendLine($@"case {Names.WorkflowNameStagesClass}.{stage.Name}:
                     {{
                         var stageMessage = new {Names.MessageName(stage)}(TypedContext);
+                        stageMessage.Context.SetCurrentStageState(WorkflowStageState.Created);
                         await Workflow.On{stage.Name}Async(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                         return;
-                    }}");
+                    }}
+");
         }
 
         builder.AppendLine($@"
@@ -89,17 +91,20 @@ namespace {NameSpace}
                         {{
                             Context.TryGetFailureMessage(out var failureMessage);
                             var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, false, failureMessage);
+                            finishedMessage.Context.SetCurrentStageState(WorkflowStageState.Scheduled);
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }}
                     case {WorkflowName}Stages.Completion:
                         {{
+                            TypedContext.SetCurrentStageState(WorkflowStageState.Created);
                             await Workflow.OnCompletionAsync(TypedContext, cancellationToken);
 
                             if (Context.Flag.HasFlag(WorkflowFlag.IsBeenAwaited)
                                 || !Context.Flag.HasFlag(WorkflowFlag.NotNotifyOnFinish))
                             {{
                                 var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, true, ""SUCCESS"");
+                                finishedMessage.Context.SetCurrentStageState(WorkflowStageState.Scheduled);
                                 await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             }}
                             return;
@@ -126,6 +131,10 @@ namespace {NameSpace}
             /// <exception cref=""WorkflowInvalidOperationException""></exception>
             internal virtual async Task<bool> SetStageCompletedAsync(I{WorkflowName}StageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
             {{
+                //设置上下文阶段状态，以使 OnStageCompletedAsync 中获取到的上下文当前阶段状态为已结束
+                //如果在 OnStageCompletedAsync 中挂起上下文，在恢复流程时使用此值确定应当再次调用 SetStageCompletedAsync 而不是 MoveNextAsync
+                stageCompletedMessage.Context.SetCurrentStageState(WorkflowStageState.Finished);
+
                 using var singleCaller = new ScopeOnStageCompletedSingleCaller(this);
 
                 var stageCompletedTask = stageCompletedMessage switch
@@ -145,14 +154,17 @@ namespace {NameSpace}
 
                 await stageCompletedTask;
 
-                return singleCaller.HasInvoked;
-            }}
-
-            /// <inheritdoc/>
-            protected override Task OnStageCompletedAsync<I{WorkflowName}StageCompletedMessage>(I{WorkflowName}StageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
-            {{
-                switch (stageCompletedMessage.Stage)
+                if (singleCaller.HasInvoked)
                 {{
+                    SetCurrentStageToNext();
+                    return true;
+                }}
+                return false;
+
+                void SetCurrentStageToNext()
+                {{
+                    var nextStage = stageCompletedMessage.Stage switch
+                    {{
 ");
         for (int i = 0; i < Context.Stages.Length - 1; i++)
         {
@@ -160,25 +172,19 @@ namespace {NameSpace}
             var nextStage = Context.Stages[i + 1];
 
             builder.AppendLine($@"
-            case {Names.WorkflowNameStagesClass}.{stage.Name}:
-                {{
-                    Context.SetCurrentStage({Names.WorkflowNameStagesClass}.{nextStage.Name});
-                    break;
-                }}");
+                        {Names.WorkflowNameStagesClass}.{stage.Name} => {Names.WorkflowNameStagesClass}.{nextStage.Name},
+");
         }
 
         var lastStage = Context.Stages.Last();
 
         builder.AppendLine($@"
-                    case {Names.WorkflowNameStagesClass}.{lastStage.Name}:
-                        {{
-                            Context.SetCurrentStage({Names.WorkflowNameStagesClass}.{Names.WorkflowCompletionStageConstantName});
-                            break;
-                        }}
-                    default:
-                        throw new WorkflowInvalidOperationException($""未知的阶段完成消息：{{stageCompletedMessage}}"");
+                        {Names.WorkflowNameStagesClass}.{lastStage.Name} => {Names.WorkflowNameStagesClass}.{Names.WorkflowCompletionStageConstantName},
+                        _ => throw new WorkflowInvalidOperationException($""未知的阶段完成消息：{{stageCompletedMessage}}""),
+                    }};
+
+                    Context.SetCurrentStage(nextStage);
                 }}
-                return base.OnStageCompletedAsync(stageCompletedMessage, cancellationToken);
             }}
 
             /// <summary>

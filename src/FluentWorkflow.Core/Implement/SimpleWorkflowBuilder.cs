@@ -40,12 +40,27 @@ public abstract class SimpleWorkflowBuilder<[DynamicallyAccessedMembers(Dynamica
     public virtual TWorkflow Build(IEnumerable<KeyValuePair<string, string>> context)
     {
         var typedContext = BuildContext(context) ?? throw new WorkflowInvalidOperationException("上下文不可为空");
-        var workflow = ActivatorUtilities.CreateInstance<TWorkflow>(ServiceProvider, typedContext);
-        return workflow;
+        return Build(typedContext);
     }
 
     /// <inheritdoc/>
-    public TWorkflow Build(IWorkflowContext context) => Build(context.GetSnapshot());
+    public virtual TWorkflow Build(IWorkflowContext context)
+    {
+        return context is TWorkflowContext typedContext //如果上下文是对应类型，则不进行复制
+               ? Build(typedContext)
+               : Build(context.GetSnapshot());
+    }
+
+    /// <summary>
+    /// 使用已有的上下文实例 <paramref name="context"/> 构建 <typeparamref name="TWorkflow"/>
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public virtual TWorkflow Build(TWorkflowContext context)
+    {
+        var workflow = ActivatorUtilities.CreateInstance<TWorkflow>(ServiceProvider, context);
+        return workflow;
+    }
 
     #endregion Public 方法
 

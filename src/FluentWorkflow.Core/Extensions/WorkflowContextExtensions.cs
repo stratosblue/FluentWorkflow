@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Interface;
 
 namespace FluentWorkflow.Extensions;
@@ -101,6 +102,40 @@ public static class WorkflowContextExtensions
     }
 
     #endregion FailureMessage
+
+    #region StageState
+
+    /// <summary>
+    /// 设置上下文当前阶段状态
+    /// </summary>
+    /// <param name="workflowContext"></param>
+    /// <param name="state"></param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static void SetCurrentStageState(this IWorkflowContext workflowContext, WorkflowStageState state)
+    {
+        workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.StageState, ((int)state).ToString());
+    }
+
+    /// <summary>
+    /// 获取上下文当前阶段状态
+    /// </summary>
+    /// <param name="workflowContext"></param>
+    /// <param name="state"></param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static bool TryGetCurrentStageState(this IWorkflowContext workflowContext, out WorkflowStageState state)
+    {
+        var value = workflowContext.GetValue(FluentWorkflowConstants.ContextKeys.StageState);
+        if (value is null)
+        {
+            state = WorkflowStageState.Unknown;
+            return false;
+        }
+        //不做检查，认为一定是通过 SetCurrentStageState 设置的
+        state = (WorkflowStageState)int.Parse(value);
+        return true;
+    }
+
+    #endregion StageState
 
     #endregion Public 方法
 }

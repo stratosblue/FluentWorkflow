@@ -242,7 +242,7 @@ public sealed partial class {WorkflowName}FailureMessage : I{WorkflowName}Failur
     /// <inheritdoc cref=""{WorkflowName}FailureMessage""/>
     public {WorkflowName}FailureMessage({WorkflowName}Context context, string message, string? remoteStackTrace)
     {{
-        WorkflowException.ThrowIfNullOrWhiteSpace(nameof(message));
+        WorkflowException.ThrowIfNullOrWhiteSpace(message);
 
         Context = context ?? throw new ArgumentNullException(nameof(context));
         Message = message;

@@ -24,7 +24,7 @@ public class WorkflowStageAttribute : Attribute
     /// <exception cref="ArgumentException"></exception>
     public WorkflowStageAttribute(string stage)
     {
-        WorkflowException.ThrowIfNullOrWhiteSpace(nameof(stage));
+        WorkflowException.ThrowIfNullOrWhiteSpace(stage);
 
         Stage = stage;
     }

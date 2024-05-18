@@ -1,14 +1,15 @@
 ﻿namespace FluentWorkflow.Interface;
 
 /// <summary>
-/// 工作流程阶段完成器
+/// 工作流程阶段完成器<br/>
+/// 进行工作流程某个阶段完成时的处理
 /// </summary>
 public interface IWorkflowStageFinalizer
 {
     #region Public 方法
 
     /// <summary>
-    /// 子工作流程等待结束
+    /// <paramref name="context"/> 对应的工作流所有子工作流程已等待结束
     /// </summary>
     /// <param name="context"></param>
     /// <param name="childWorkflowContexts"></param>
@@ -17,7 +18,7 @@ public interface IWorkflowStageFinalizer
     Task AwaitFinishedAsync(IWorkflowContext context, IReadOnlyDictionary<string, IWorkflowContext?> childWorkflowContexts, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 完成阶段
+    /// 完成 <paramref name="context"/> 对应的工作流的当前阶段
     /// </summary>
     /// <param name="context">要完成的阶段上下文</param>
     /// <param name="cancellationToken"></param>
@@ -25,7 +26,7 @@ public interface IWorkflowStageFinalizer
     Task CompleteAsync(IWorkflowContext context, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 阶段失败
+    /// 进行 <paramref name="context"/> 对应的工作流的当前阶段失败处理
     /// </summary>
     /// <param name="context">要失败的阶段上下文</param>
     /// <param name="cancellationToken"></param>

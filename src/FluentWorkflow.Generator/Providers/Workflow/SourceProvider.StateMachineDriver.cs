@@ -32,6 +32,7 @@ public abstract partial class {WorkflowName}StateMachineDriverBase
     : WorkflowStateMachineDriver<{WorkflowName}, {WorkflowName}Context, {WorkflowName}StateMachine, {WorkflowName}StageCompletedMessageBase, {WorkflowName}FailureMessage, I{WorkflowName}>
     , IWorkflowMessageHandler<{WorkflowName}StageCompletedMessageBase>
     , IWorkflowMessageHandler<{WorkflowName}FailureMessage>
+    , IWorkflowResumer<{WorkflowName}>
     , I{WorkflowName}
 {{
     /// <inheritdoc cref=""{WorkflowName}StateMachineDriverBase""/>
@@ -41,9 +42,82 @@ public abstract partial class {WorkflowName}StateMachineDriverBase
     }}
 
     /// <inheritdoc/>
+    public virtual async Task ResumeAsync(IWorkflowContext context, CancellationToken cancellationToken = default)
+    {{
+        if (context is not {WorkflowName}Context {{ }} typedContext)
+        {{
+            throw new WorkflowInvalidOperationException($""The context must be a instance of \""{{typeof({WorkflowName}Context)}}\""."");
+        }}
+
+        ThrowIfContextInvalid(context);
+
+        if (!context.TryGetCurrentStageState(out var state)
+            || state == WorkflowStageState.Unknown)
+        {{
+            throw new WorkflowInvalidOperationException(""The stage state is invalid. Can not resume."");
+        }}
+
+        switch (state)
+        {{
+            case WorkflowStageState.Created:
+                {{
+                    var stateMachine = await RestoreStateMachineAsync(context, cancellationToken);
+                    await stateMachine.MoveNextAsync(cancellationToken);
+                    break;
+                }}
+
+            case WorkflowStageState.Scheduled:
+                {{
+                    var currentStage = context.Stage;
+                    switch (currentStage)
+                    {{
+");
+        foreach (var stage in Context.Stages)
+        {
+            builder.AppendLine($@"
+                        case {Names.WorkflowNameStagesClass}.{stage.Name}:
+                            {{
+                                var stageMessage = new {Names.MessageName(stage)}(typedContext);
+                                await MessageDispatcher.PublishAsync(stageMessage, cancellationToken);
+                                break;
+                            }}
+");
+        }
+        builder.AppendLine($@"
+                        default:
+                            throw new WorkflowInvalidOperationException($""Unsupported scheduled stage：{{currentStage}}"");
+                    }}
+                    break;
+                }}
+
+            case WorkflowStageState.Finished:
+                {{
+                    var currentStage = context.Stage;
+                    {WorkflowName}StageCompletedMessageBase stageCompletedMessage = currentStage switch
+                    {{
+");
+        foreach (var stage in Context.Stages)
+        {
+            builder.AppendLine($@"
+                        {Names.WorkflowNameStagesClass}.{stage.Name} => new {Names.CompletedMessageName(stage)}(typedContext),");
+        }
+        builder.AppendLine($@"
+                        _ => throw new WorkflowInvalidOperationException($""Unsupported finished stage：{{currentStage}}""),
+                    }};
+
+                    await DoInputAsync(stageCompletedMessage, cancellationToken);
+                    break;
+                }}
+
+            default:
+                throw new WorkflowInvalidOperationException($""Unsupported stage state \""{{state}}\""."");
+        }}
+    }}
+
+    /// <inheritdoc/>
     protected override async Task DoInputAsync({WorkflowName}StageCompletedMessageBase message, CancellationToken cancellationToken)
     {{
-        var stateMachine = await RestoreStateMachineAsync(message, cancellationToken);
+        var stateMachine = await RestoreStateMachineAsync(message.Context, cancellationToken);
 
         if (await stateMachine.SetStageCompletedAsync(message, cancellationToken))
         {{
@@ -54,13 +128,16 @@ public abstract partial class {WorkflowName}StateMachineDriverBase
     /// <inheritdoc/>
     protected override async Task DoInputAsync({WorkflowName}FailureMessage message, CancellationToken cancellationToken)
     {{
-        var stateMachine = await RestoreStateMachineAsync(message, cancellationToken);
+        var stateMachine = await RestoreStateMachineAsync(message.Context, cancellationToken);
 
         if (await stateMachine.SetFailedAsync(message, cancellationToken))
         {{
             await InternalDriveAsync(stateMachine, cancellationToken);
         }}
     }}
+
+    /// <inheritdoc/>
+    protected override bool ValidationContext(IWorkflowContext context) => {WorkflowName}Stages.StageIds.Contains(context.Stage);
 }}
 
 /// <summary>

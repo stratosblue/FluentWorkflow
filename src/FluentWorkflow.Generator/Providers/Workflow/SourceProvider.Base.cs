@@ -77,7 +77,7 @@ public abstract partial class {WorkflowName}Base
     /// 在阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 发起前
     /// </summary>
     /// <param name=""message""></param>
-    /// <param name=""fireMessage"">执行消息后续处理的委托</param>
+    /// <param name=""fireMessage"">执行消息后续处理的委托 (分发消息)</param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
     protected virtual Task On{stage.Name}Async({Names.MessageName(stage)} message, MessageFireDelegate<{Names.MessageName(stage)}> fireMessage, CancellationToken cancellationToken)
@@ -89,7 +89,7 @@ public abstract partial class {WorkflowName}Base
     /// 在阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 完成时
     /// </summary>
     /// <param name=""message""></param>
-    /// <param name=""fireMessage"">执行消息后续处理的委托</param>
+    /// <param name=""fireMessage"">执行消息后续处理的委托 (更新上下文状态，并分发下阶段消息)</param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
     protected virtual Task On{stage.Name}CompletedAsync({Names.CompletedMessageName(stage)} message, MessageFireDelegate<{Names.CompletedMessageName(stage)}> fireMessage, CancellationToken cancellationToken)
@@ -103,7 +103,7 @@ public abstract partial class {WorkflowName}Base
     /// 在 <see cref=""{WorkflowName}""/> 失败时
     /// </summary>
     /// <param name=""message""></param>
-    /// <param name=""fireMessage""></param>
+    /// <param name=""fireMessage"">执行消息后续处理的委托 (更新上下文状态，并分发消息)</param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
     protected virtual Task OnFailedAsync({Names.FailureMessage} message, MessageFireDelegate<{Names.FailureMessage}> fireMessage, CancellationToken cancellationToken)
@@ -153,6 +153,19 @@ partial class {WorkflowName}
     }}
 
     #endregion WorkflowStarter
+
+    #region Serialize & Resume
+
+    /// <inheritdoc cref=""WorkflowSerializeResumeUtil.SerializeContext{{TWorkflowContext}}(TWorkflowContext, IServiceProvider)""/>
+    protected byte[] SerializeContext({WorkflowContextName} context) => WorkflowSerializeResumeUtil.SerializeContext(context, ServiceProvider);
+
+    /// <inheritdoc cref=""WorkflowSerializeResumeUtil.ResumeAsync{{TWorkflow, TWorkflowContext}}(byte[], IServiceProvider, CancellationToken)""/>
+    public static Task ResumeAsync(byte[] serializedContext, IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    {{
+        return WorkflowSerializeResumeUtil.ResumeAsync<{WorkflowName}, {WorkflowContextName}>(serializedContext, serviceProvider, cancellationToken);
+    }}
+
+    #endregion Serialize & Resume
 }}
 ");
         yield return new($"{WorkflowName}.Base.g.cs", builder.ToString());

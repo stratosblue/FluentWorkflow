@@ -51,6 +51,9 @@ public static class TemplateWorkflowSchedulerDIExtensions
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TemplateWorkflowStateMachineDriver), typeof(TemplateWorkflowStateMachineDriver), ServiceLifetime.Scoped));
 
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowResumer<TemplateWorkflow>), static serviceProvider => serviceProvider.GetRequiredService<TemplateWorkflowStateMachineDriver>(), ServiceLifetime.Scoped));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowResumer<TWorkflow>), static serviceProvider => serviceProvider.GetRequiredService<TemplateWorkflowStateMachineDriver>(), ServiceLifetime.Scoped));
+
         #endregion StateMachineDriver
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowScheduler<TemplateWorkflow>), typeof(TemplateWorkflowScheduler), ServiceLifetime.Scoped));

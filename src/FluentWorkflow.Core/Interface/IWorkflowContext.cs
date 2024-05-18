@@ -1,4 +1,6 @@
-﻿namespace FluentWorkflow.Interface;
+﻿using System.ComponentModel;
+
+namespace FluentWorkflow.Interface;
 
 /// <summary>
 /// 工作流程上下文
@@ -40,12 +42,14 @@ public interface IWorkflowContext
     /// 设置上下文当前阶段
     /// </summary>
     /// <param name="stage"></param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void SetCurrentStage(string stage);
 
     /// <summary>
     /// 设置父工作流程上下文
     /// </summary>
     /// <param name="parent"></param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void SetParent(WorkflowContextMetadata parent);
 
     /// <summary>

@@ -42,14 +42,14 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
             throw new WorkflowInvalidOperationException($"Context - \"{context.Id}\" has no parent.");
         }
 
-        var finalizer = await GetStageFinalizerAsync(childWorkflowFinishedMessage, parentContextMetadata, cancellationToken);
-
         var workflowAwaitState = await WorkflowAwaitProcessor.FinishedOneAsync(childWorkflowFinishedMessage, cancellationToken);
 
-        if (!workflowAwaitState.IsFinished)
+        if (!workflowAwaitState.IsFinished) //未完成等待，直接返回，等待下一个子流程完成后再次进行检查
         {
             return;
         }
+
+        var finalizer = await GetStageFinalizerAsync(childWorkflowFinishedMessage, parentContextMetadata, cancellationToken);
 
         var parentWorkflowContext = workflowAwaitState.ParentWorkflowContext as IWorkflowContext;
 
@@ -57,16 +57,16 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
 
         if (workflowAwaitState.GetFailed(true).FirstOrDefault() is { } failedWorkflowItem
             && failedWorkflowItem.Key is string alias
-            && failedWorkflowItem.Value is { } failedWorkflowContext)
+            && failedWorkflowItem.Value is { } failedWorkflowContext)   //获取第一个失败子流程
         {
             if (!parentWorkflowContext.TryGetFailureMessage(out _)
-                && failedWorkflowContext.TryGetFailureMessage(out var failureMessage))
+                && failedWorkflowContext.TryGetFailureMessage(out var failureMessage))  //如果父流程上下文当前没有失败消息，则设置为第一个失败子流程消息
             {
                 parentWorkflowContext.SetFailureMessage(failureMessage);
             }
 
             if (!parentWorkflowContext.TryGetFailureStackTrace(out _)
-                && failedWorkflowContext.TryGetFailureStackTrace(out var failureStackTrace))
+                && failedWorkflowContext.TryGetFailureStackTrace(out var failureStackTrace))    //如果父流程上下文当前没有失败堆栈，则设置为第一个失败子流程堆栈
             {
                 var failedWorkflowName = failedWorkflowContext.GetValue(FluentWorkflowConstants.ContextKeys.WorkflowName);
                 var failedWorkflowStage = failedWorkflowContext.GetValue(FluentWorkflowConstants.ContextKeys.FailureStage);
@@ -75,7 +75,7 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
 
             await finalizer.FailAsync(parentWorkflowContext, cancellationToken);
         }
-        else
+        else    //没有失败子流程，完成阶段
         {
             await finalizer.CompleteAsync(parentWorkflowContext, cancellationToken);
         }

@@ -59,7 +59,7 @@ public abstract class WorkflowContext
     /// <exception cref="ArgumentException"></exception>
     public WorkflowContext(string id) : base(StringComparer.Ordinal)
     {
-        WorkflowException.ThrowIfNullOrWhiteSpace(nameof(id));
+        WorkflowException.ThrowIfNullOrWhiteSpace(id);
 
         this[FluentWorkflowConstants.ContextKeys.Id] = id;
         this[FluentWorkflowConstants.ContextKeys.WorkflowName] = ValidWorkflowName();
@@ -92,7 +92,7 @@ public abstract class WorkflowContext
     /// <exception cref="ArgumentException"></exception>
     public WorkflowContext(string id, IEnumerable<KeyValuePair<string, string>> values) : this(values)
     {
-        WorkflowException.ThrowIfNullOrWhiteSpace(nameof(id));
+        WorkflowException.ThrowIfNullOrWhiteSpace(id);
 
         this[FluentWorkflowConstants.ContextKeys.Id] = id;
     }
@@ -152,7 +152,7 @@ public abstract class WorkflowContext
     {
         var name = WorkflowName;
 
-        WorkflowException.ThrowIfNullOrWhiteSpace(nameof(name));
+        WorkflowException.ThrowIfNullOrWhiteSpace(name);
 
         return name;
     }

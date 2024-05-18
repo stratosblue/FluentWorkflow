@@ -64,6 +64,11 @@ public static class FluentWorkflowConstants
         public const string Stage = "-x-context-stage";
 
         /// <summary>
+        /// 当前阶段状态
+        /// </summary>
+        public const string StageState = "-x-context-stage-state";
+
+        /// <summary>
         /// 工作流程别名
         /// </summary>
         public const string WorkflowAlias = "-x-workflow-alias";

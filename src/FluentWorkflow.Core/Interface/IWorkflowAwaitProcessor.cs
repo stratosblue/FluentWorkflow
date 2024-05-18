@@ -8,11 +8,11 @@ public interface IWorkflowAwaitProcessor
     #region Public 方法
 
     /// <summary>
-    /// 单个子工作流程结束
+    /// 登记 <paramref name="finishedMessage"/> 对应的子工作流程已结束
     /// </summary>
     /// <param name="finishedMessage"></param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <returns>父流程的等待状态</returns>
     Task<WorkflowAwaitState> FinishedOneAsync(IWorkflowFinishedMessage finishedMessage, CancellationToken cancellationToken = default);
 
     /// <summary>

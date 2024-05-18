@@ -22,5 +22,10 @@ public partial class SampleWorkflowContext
 
     public int StepBase { get => InnerGetValue<int>(); set => InnerSetValue(value); }
 
+    /// <summary>
+    /// 通过 resume 工作，在每个阶段先挂起再恢复
+    /// </summary>
+    public bool WorkWithResume { get => InnerGetBoolean() ?? false; set => InnerSetBoolean(value); }
+
     #endregion Public 属性
 }

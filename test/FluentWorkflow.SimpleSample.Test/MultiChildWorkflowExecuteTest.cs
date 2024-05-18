@@ -7,6 +7,13 @@ namespace FluentWorkflow;
 [TestClass]
 public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 {
+    #region Protected 属性
+
+    /// <inheritdoc cref="SampleWorkflowContext.WorkWithResume"/>
+    protected virtual bool WorkWithResume { get; } = false;
+
+    #endregion Protected 属性
+
     #region Public 方法
 
     [DataRow(3, 2, 5, 3)]
@@ -59,6 +66,7 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
             MaxSubWorkflow = subflowCount,
             ExceptionStep = exceptionStep,
             ExceptionDepth = depth,
+            WorkWithResume = WorkWithResume,
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -121,6 +129,7 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
             ExceptionStep = exceptionStep,
             ExceptionDepth = depth,
             MaxStageDelay = 50,
+            WorkWithResume = WorkWithResume,
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -158,6 +167,7 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
             Depth = depth,
             MaxStageDelay = 50,
             MaxSubWorkflow = subflowCount,
+            WorkWithResume = WorkWithResume,
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -195,6 +205,7 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
             Step = 0,
             Depth = depth,
             MaxStageDelay = 50,
+            WorkWithResume = WorkWithResume,
         };
         var workflow = workflowBuilder.Build(context);
 

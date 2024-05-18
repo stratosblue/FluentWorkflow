@@ -44,8 +44,8 @@ public class WorkflowContinuatorHub : IWorkflowContinuatorHub
     /// <inheritdoc/>
     public bool HasContinuator(string workflowName, string stageName)
     {
-        WorkflowException.ThrowIfNullOrWhiteSpace(nameof(workflowName));
-        WorkflowException.ThrowIfNullOrWhiteSpace(nameof(stageName));
+        WorkflowException.ThrowIfNullOrWhiteSpace(workflowName);
+        WorkflowException.ThrowIfNullOrWhiteSpace(stageName);
 
         return _continuatorTypes.TryGetValue(workflowName, out var continuatorTypes)
                && continuatorTypes.TryGetValue(stageName, out var continuatorType)
@@ -55,7 +55,7 @@ public class WorkflowContinuatorHub : IWorkflowContinuatorHub
     /// <inheritdoc/>
     public bool TryGet(string workflowName, string stageName, [NotNullWhen(true)] out IWorkflowContinuator? workflowContinuator)
     {
-        WorkflowException.ThrowIfNullOrWhiteSpace(nameof(workflowName));
+        WorkflowException.ThrowIfNullOrWhiteSpace(workflowName);
 
         if (_continuatorTypes.TryGetValue(workflowName, out var continuatorTypes)
             && continuatorTypes.TryGetValue(stageName, out var continuatorType)

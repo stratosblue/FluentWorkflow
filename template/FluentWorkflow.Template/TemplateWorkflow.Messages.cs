@@ -223,7 +223,7 @@ public sealed partial class TemplateWorkflowFailureMessage : ITemplateWorkflowFa
     /// <inheritdoc cref="TemplateWorkflowFailureMessage"/>
     public TemplateWorkflowFailureMessage(TemplateWorkflowContext context, string message, string? remoteStackTrace)
     {
-        WorkflowException.ThrowIfNullOrWhiteSpace(nameof(message));
+        WorkflowException.ThrowIfNullOrWhiteSpace(message);
 
         Context = context ?? throw new ArgumentNullException(nameof(context));
         Message = message;

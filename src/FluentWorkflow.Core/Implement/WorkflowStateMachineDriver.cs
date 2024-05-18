@@ -29,14 +29,14 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
     /// <inheritdoc cref="IWorkflowMessageDispatcher"/>
     protected readonly IWorkflowMessageDispatcher MessageDispatcher;
 
+    /// <inheritdoc cref="IObjectSerializer"/>
+    protected readonly IObjectSerializer ObjectSerializer;
+
     /// <inheritdoc cref="IServiceProvider"/>
     protected readonly IServiceProvider ServiceProvider;
 
     /// <inheritdoc cref="IWorkflowBuilder{TWorkflow}"/>
     protected readonly IWorkflowBuilder<TWorkflow> WorkflowBuilder;
-
-    /// <inheritdoc cref="IObjectSerializer"/>
-    protected readonly IObjectSerializer ObjectSerializer;
 
     #endregion Protected 字段
 
@@ -109,15 +109,36 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
     /// <summary>
     /// 恢复状态机
     /// </summary>
-    /// <param name="workflowContextCarrier"></param>
+    /// <param name="context"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected virtual Task<TWorkflowStateMachine> RestoreStateMachineAsync(IWorkflowContextCarrier<TWorkflowContext> workflowContextCarrier, CancellationToken cancellationToken)
+    protected virtual Task<TWorkflowStateMachine> RestoreStateMachineAsync(IWorkflowContext context, CancellationToken cancellationToken)
     {
-        var workflow = WorkflowBuilder.Build(workflowContextCarrier.Context);
+        ThrowIfContextInvalid(context);
+
+        var workflow = WorkflowBuilder.Build(context);
         var stateMachine = ActivatorUtilities.CreateInstance<TWorkflowStateMachine>(ServiceProvider, workflow, MessageDispatcher);
         return Task.FromResult(stateMachine);
     }
+
+    /// <summary>
+    /// 如果上下文不正确则抛出异常
+    /// </summary>
+    /// <param name="context"></param>
+    /// <exception cref="WorkflowInvalidOperationException"></exception>
+    protected void ThrowIfContextInvalid(IWorkflowContext context)
+    {
+        if (!ValidationContext(context))
+        {
+            throw new WorkflowInvalidOperationException($"The context stage \"{context.Stage}\" not belong to \"{typeof(TWorkflow)}\".");
+        }
+    }
+
+    /// <summary>
+    /// 检查上下文是否属于当前工作流程 <typeparamref name="TWorkflow"/>
+    /// </summary>
+    /// <param name="context"></param>
+    protected abstract bool ValidationContext(IWorkflowContext context);
 
     #endregion Protected 方法
 }

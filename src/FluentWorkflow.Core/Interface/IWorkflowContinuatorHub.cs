@@ -3,7 +3,8 @@
 namespace FluentWorkflow.Interface;
 
 /// <summary>
-/// 工作流延续器中心
+/// 工作流延续器中心<br/>
+/// 用于检查工作流某阶段是否存在延续器 <see cref="IWorkflowContinuator"/>，并获取其实例
 /// </summary>
 public interface IWorkflowContinuatorHub
 {

@@ -7,6 +7,13 @@ namespace FluentWorkflow;
 [TestClass]
 public abstract class SingleStageWorkflowExecuteTest : FluentWorkflowTestBase
 {
+    #region Protected 属性
+
+    /// <inheritdoc cref="SingleStageWorkflowContext.WorkWithResume"/>
+    protected virtual bool WorkWithResume { get; } = false;
+
+    #endregion Protected 属性
+
     #region Public 方法
 
     [DataRow(1)]
@@ -22,6 +29,7 @@ public abstract class SingleStageWorkflowExecuteTest : FluentWorkflowTestBase
         var context = new SingleStageWorkflowContext(id)
         {
             ExceptionStep = exceptionStep,
+            WorkWithResume = WorkWithResume,
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -41,7 +49,10 @@ public abstract class SingleStageWorkflowExecuteTest : FluentWorkflowTestBase
 
         var id = Guid.NewGuid().ToString();
 
-        var context = new SingleStageWorkflowContext(id);
+        var context = new SingleStageWorkflowContext(id)
+        {
+            WorkWithResume = WorkWithResume,
+        };
         var workflow = workflowBuilder.Build(context);
 
         await workflow.StartAsync(default);

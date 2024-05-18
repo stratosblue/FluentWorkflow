@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
@@ -124,6 +125,7 @@ public abstract class WorkflowStateMachine<TWorkflowBoundary>
         #region Public 方法
 
         /// <inheritdoc cref="WorkflowStateMachine{TWorkflowBoundary}.OnStageCompletedAsync{TStageCompletedMessage}(TStageCompletedMessage, CancellationToken)"/>
+        [DebuggerStepThrough]
         public Task OnFailedAsync<TFailureMessage>(TFailureMessage failureMessage, CancellationToken cancellationToken)
             where TFailureMessage : IWorkflowFailureMessage, TWorkflowBoundary
         {
@@ -143,6 +145,7 @@ public abstract class WorkflowStateMachine<TWorkflowBoundary>
         #region Public 方法
 
         /// <inheritdoc cref="WorkflowStateMachine{TWorkflowBoundary}.OnStageCompletedAsync{TStageCompletedMessage}(TStageCompletedMessage, CancellationToken)"/>
+        [DebuggerStepThrough]
         public Task OnStageCompletedAsync<TStageCompletedMessage>(TStageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
             where TStageCompletedMessage : IWorkflowStageCompletedMessage, TWorkflowBoundary
         {
@@ -162,10 +165,12 @@ public abstract class WorkflowStateMachine<TWorkflowBoundary>
         #region Public 方法
 
         /// <inheritdoc cref="WorkflowStateMachine{TWorkflowBoundary}.PublishStageMessageAsync{TStageMessage}(TStageMessage, CancellationToken)"/>
+        [DebuggerStepThrough]
         public Task PublishStageMessageAsync<TStageMessage>(TStageMessage message, CancellationToken cancellationToken)
             where TStageMessage : class, IWorkflowStageMessage, IWorkflowContextCarrier<IWorkflowContext>, TWorkflowBoundary, IEventNameDeclaration
         {
             InvokeCheck();
+            message.Context.SetCurrentStageState(WorkflowStageState.Scheduled);
             return messageDispatcher.PublishAsync(message, cancellationToken);
         }
 
@@ -197,6 +202,7 @@ public abstract class WorkflowStateMachine<TWorkflowBoundary>
         #region Public 方法
 
         /// <inheritdoc/>
+        [DebuggerStepThrough]
         public void Dispose()
         {
             _invocationFlag = 1;
@@ -210,6 +216,7 @@ public abstract class WorkflowStateMachine<TWorkflowBoundary>
         /// 进行执行检查
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
+        [DebuggerStepThrough]
         protected void InvokeCheck()
         {
             if (Interlocked.CompareExchange(ref _invocationFlag, 1, 0) != 0)
