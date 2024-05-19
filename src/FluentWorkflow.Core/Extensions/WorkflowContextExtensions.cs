@@ -32,6 +32,7 @@ public static class WorkflowContextExtensions
     /// <param name="workflowContext"></param>
     /// <param name="alias"></param>
     /// <returns></returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static void SetChildWorkflowAlias(this IWorkflowContext workflowContext, string alias)
     {
         workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.WorkflowAlias, alias);
@@ -58,6 +59,7 @@ public static class WorkflowContextExtensions
     /// </summary>
     /// <param name="workflowContext"></param>
     /// <param name="failureStackTrace"></param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static void SetFailureStackTrace(this IWorkflowContext workflowContext, string? failureStackTrace)
     {
         workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.FailureStackTrace, failureStackTrace);
@@ -84,6 +86,7 @@ public static class WorkflowContextExtensions
     /// </summary>
     /// <param name="workflowContext"></param>
     /// <param name="failureMessage"></param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static void SetFailureMessage(this IWorkflowContext workflowContext, string failureMessage)
     {
         workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.FailureMessage, failureMessage);

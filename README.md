@@ -25,6 +25,10 @@ A message driven distributed asynchronous workflow framework. 消息驱动的分
 - 目标框架 `net7.0`+；
 - *针对单个消息类型的Qos；
 
+### NOTE:
+- 更新包时应当`尽可能`的`全链路更新`，避免导致的未知问题；
+- `WorkflowContext` 核心为 `字符串字典` 其属性在赋值时进行序列化存放，对象后续的修改不会反应到上下文中；
+
 ## 3. 开始使用
 
 ### 3.1 引用 `FluentWorkflow.Core` 包
@@ -261,6 +265,30 @@ internal class SampleWorkflowSampleStage1StageHandler : SampleWorkflowSampleStag
 ```C#
 services.AddFluentWorkFlow().EnableDiagnostic();
 ```
+
+-------
+
+## 6 流程的中止、挂起与恢复
+
+### 6.1 中止流程
+在 `WorkFlow` 的 `On*StageAsync` 和 `On*StageCompletedAsync` 中不执行参数委托 `fireMessage`，则后续流程不再执行
+
+### 6.2 流程挂起
+在 `WorkFlow` 的 `On*StageAsync` 和 `On*StageCompletedAsync` 中不执行参数委托 `fireMessage`，中止流程，在此基础上调用 `SerializeContext` 方法将上下文序列化后存放
+```C#
+// 存放 contextData 以用于流程恢复
+var contextData = SerializeContext(message.Context);
+```
+
+### 6.3 流程恢复
+调用具体 `WorkFlow` 的静态方法 `ResumeAsync` 使用挂起的流程数据进行恢复执行
+```C#
+// contextData 为序列化的上下文数据
+await XXXXWorkflow.ResumeAsync(contextData, serviceProvider, cancellationToken)
+```
+
+#### 注意:
+恢复流程将会再次调用序列化上下文时的方法，需要注意，小心再次被挂起
 
 -------
 

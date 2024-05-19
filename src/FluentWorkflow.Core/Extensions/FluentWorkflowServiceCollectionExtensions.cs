@@ -15,7 +15,7 @@ public static class FluentWorkflowServiceCollectionExtensions
     #region Public 方法
 
     /// <summary>
-    ///
+    /// 添加 FluentWorkflow 基础组件
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>

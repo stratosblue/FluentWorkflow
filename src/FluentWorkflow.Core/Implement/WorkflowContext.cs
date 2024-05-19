@@ -1,4 +1,5 @@
-﻿using FluentWorkflow.Interface;
+﻿using System.ComponentModel;
+using FluentWorkflow.Interface;
 
 namespace FluentWorkflow;
 
@@ -102,9 +103,11 @@ public abstract class WorkflowContext
     #region Public 方法
 
     /// <inheritdoc/>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void SetCurrentStage(string stage) => DataContainer[FluentWorkflowConstants.ContextKeys.Stage] = CheckBeforeSetCurrentStage(stage);
 
     /// <inheritdoc/>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void SetParent(WorkflowContextMetadata parent)
     {
         ArgumentNullException.ThrowIfNull(parent);
