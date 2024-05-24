@@ -27,6 +27,15 @@ internal sealed class WorkflowDiagnosticSource
     }
 
     /// <inheritdoc/>
+    public void MessageReceived(object message)
+    {
+        if (IsEnabled(DiagnosticConstants.MessageReceived))
+        {
+            Write(DiagnosticConstants.MessageReceived, new MessageReceivedEventData(message));
+        }
+    }
+
+    /// <inheritdoc/>
     public void StageMessageHandleEnd(IWorkflowStageMessage stageMessage, bool isThrough, Exception? exception = null)
     {
         if (IsEnabled(DiagnosticConstants.StageMessageHandleEnd))

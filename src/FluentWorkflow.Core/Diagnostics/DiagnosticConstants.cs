@@ -20,6 +20,11 @@ public static class DiagnosticConstants
     public const string MessagePublish = $"{DiagnosticName}.Message.Publish";
 
     /// <summary>
+    /// 消息 - 发送
+    /// </summary>
+    public const string MessageReceived = $"{DiagnosticName}.Message.Received";
+
+    /// <summary>
     /// 阶段消息处理 - 结束
     /// </summary>
     public const string StageMessageHandleEnd = $"{DiagnosticName}.StageMessage.Handle.End";

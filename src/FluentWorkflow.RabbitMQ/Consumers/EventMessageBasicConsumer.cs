@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using FluentWorkflow.Build;
+using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,8 @@ namespace FluentWorkflow.RabbitMQ;
 internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
 {
     #region Protected 字段
+
+    protected readonly IWorkflowDiagnosticSource DiagnosticSource;
 
     protected readonly ILogger Logger;
 
@@ -29,12 +32,14 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
     public EventMessageBasicConsumer(IModel model,
                                      IServiceScopeFactory serviceScopeFactory,
                                      IObjectSerializer objectSerializer,
+                                     IWorkflowDiagnosticSource diagnosticSource,
                                      ILogger logger,
                                      CancellationToken runningCancellationToken)
         : base(model)
     {
         ServiceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
         ObjectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
+        DiagnosticSource = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         RunningCancellationToken = runningCancellationToken;
     }
@@ -147,11 +152,11 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
 
     #region Private 方法
 
-    private static Task InvokeHandlerAsync(ReadOnlyMemory<byte> rawMessageData,
-                                           IServiceProvider serviceProvider,
-                                           WorkflowEventInvokerDescriptor invokerDescriptor,
-                                           IObjectSerializer objectSerializer,
-                                           CancellationToken cancellationToken)
+    private Task InvokeHandlerAsync(ReadOnlyMemory<byte> rawMessageData,
+                                    IServiceProvider serviceProvider,
+                                    WorkflowEventInvokerDescriptor invokerDescriptor,
+                                    IObjectSerializer objectSerializer,
+                                    CancellationToken cancellationToken)
     {
         Activity? activity = null;
         var message = objectSerializer.Deserialize(rawMessageData.Span, invokerDescriptor.MessageType)!;
@@ -168,6 +173,9 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
                 contextCarrier.Context.SetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext, null);
             }
         }
+
+        DiagnosticSource.MessageReceived(message);
+
         var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetType);
         return activity is null
                ? invokerDescriptor.HandlerInvokeDelegate(handler, message, cancellationToken)

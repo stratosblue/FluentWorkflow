@@ -11,8 +11,11 @@ internal sealed class NoopWorkflowDiagnosticSource
     #region Public 方法
 
     /// <inheritdoc/>
-    /// <inheritdoc/>
     public void MessagePublish(IWorkflowMessage message)
+    { }
+
+    /// <inheritdoc/>
+    public void MessageReceived(object message)
     { }
 
     /// <inheritdoc/>

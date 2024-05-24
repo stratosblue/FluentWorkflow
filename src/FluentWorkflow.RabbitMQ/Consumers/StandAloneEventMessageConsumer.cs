@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentWorkflow.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
@@ -22,9 +23,10 @@ internal sealed class StandAloneEventMessageConsumer : EventMessageBasicConsumer
                                           IModel model,
                                           IServiceScopeFactory serviceScopeFactory,
                                           IObjectSerializer objectSerializer,
+                                          IWorkflowDiagnosticSource diagnosticSource,
                                           ILogger logger,
                                           CancellationToken runningToken)
-        : base(model, serviceScopeFactory, objectSerializer, logger, runningToken)
+        : base(model, serviceScopeFactory, objectSerializer, diagnosticSource, logger, runningToken)
     {
         ConsumeDescriptor = consumeDescriptor ?? throw new ArgumentNullException(nameof(consumeDescriptor));
     }

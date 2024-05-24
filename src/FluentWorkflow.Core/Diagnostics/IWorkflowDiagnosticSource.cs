@@ -14,6 +14,9 @@ public interface IWorkflowDiagnosticSource
     /// <inheritdoc cref="DiagnosticConstants.MessagePublish"/>
     void MessagePublish(IWorkflowMessage message);
 
+    /// <inheritdoc cref="DiagnosticConstants.MessageReceived"/>
+    void MessageReceived(object message);
+
     /// <inheritdoc cref="DiagnosticConstants.StageMessageHandleEnd"/>
     void StageMessageHandleEnd(IWorkflowStageMessage stageMessage, bool isThrough, Exception? exception = null);
 

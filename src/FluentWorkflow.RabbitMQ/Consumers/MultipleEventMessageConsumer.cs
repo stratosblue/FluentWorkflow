@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using FluentWorkflow.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -35,9 +36,10 @@ internal sealed class MultipleEventMessageConsumer : EventMessageBasicConsumer
                                         IModel model,
                                         IServiceScopeFactory serviceScopeFactory,
                                         IObjectSerializer objectSerializer,
+                                        IWorkflowDiagnosticSource diagnosticSource,
                                         ILogger logger,
                                         CancellationToken runningToken)
-        : base(model, serviceScopeFactory, objectSerializer, logger, runningToken)
+        : base(model, serviceScopeFactory, objectSerializer, diagnosticSource, logger, runningToken)
     {
         if (options is null)
         {

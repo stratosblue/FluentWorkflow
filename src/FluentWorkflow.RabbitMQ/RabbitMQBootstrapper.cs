@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using FluentWorkflow.Build;
+using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,8 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
     private readonly IRabbitMQConnectionProvider _connectionProvider;
 
     private readonly ILogger _consumeLogger;
+
+    private readonly IWorkflowDiagnosticSource _diagnosticSource;
 
     private readonly ImmutableDictionary<string, WorkflowEventInvokerDescriptor[]> _eventSubscribeDescriptors;
 
@@ -42,12 +45,14 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                                 WorkflowBuildStateCollection workflowBuildStates,
                                 IServiceScopeFactory serviceScopeFactory,
                                 IObjectSerializer objectSerializer,
+                                IWorkflowDiagnosticSource diagnosticSource,
                                 ILoggerFactory loggerFactory,
                                 IOptions<RabbitMQOptions> optionsAccessor)
     {
         _connectionProvider = connectionProvider ?? throw new ArgumentNullException(nameof(connectionProvider));
         _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
         _objectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
+        _diagnosticSource = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
         _options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));
         _eventSubscribeDescriptors = workflowBuildStates.SelectMany(m => m)
                                                         .ToImmutableDictionary(m => m.EventName, m => m.ToArray());
@@ -154,6 +159,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                                                             channel,
                                                             _serviceScopeFactory,
                                                             _objectSerializer,
+                                                            _diagnosticSource,
                                                             _consumeLogger,
                                                             _runningCancellationToken);
 
@@ -210,6 +216,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                                                           channel,
                                                           _serviceScopeFactory,
                                                           _objectSerializer,
+                                                          _diagnosticSource,
                                                           _consumeLogger,
                                                           _runningCancellationToken);
 
