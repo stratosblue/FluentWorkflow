@@ -18,6 +18,15 @@ internal sealed class WorkflowDiagnosticSource
     }
 
     /// <inheritdoc/>
+    public void MessageHandleFinished(object message, Exception? exception)
+    {
+        if (IsEnabled(DiagnosticConstants.MessageHandleFinished))
+        {
+            Write(DiagnosticConstants.MessageHandleFinished, new MessageHandleFinishedEventData(message, exception));
+        }
+    }
+
+    /// <inheritdoc/>
     public void MessagePublish(IWorkflowMessage message)
     {
         if (IsEnabled(DiagnosticConstants.MessagePublish))

@@ -152,6 +152,48 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
 
     #region Private 方法
 
+    [StackTraceHidden]
+    [DebuggerStepThrough]
+    private async Task InnerInvokeAsync(WorkflowEventInvokerDescriptor invokerDescriptor, object message, object handler, CancellationToken cancellationToken)
+    {
+        Exception? exception = null;
+        try
+        {
+            await invokerDescriptor.HandlerInvokeDelegate(handler, message, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            exception = ex;
+            throw;
+        }
+        finally
+        {
+            DiagnosticSource.MessageHandleFinished(message, exception);
+        }
+    }
+
+    [StackTraceHidden]
+    [DebuggerStepThrough]
+    private async Task InnerInvokeWithActivityAsync(WorkflowEventInvokerDescriptor invokerDescriptor, object message, object handler, Activity activity, CancellationToken cancellationToken)
+    {
+        Exception? exception = null;
+        try
+        {
+            await invokerDescriptor.HandlerInvokeDelegate(handler, message, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            activity.RecordException(ex);
+            exception = ex;
+            throw;
+        }
+        finally
+        {
+            DiagnosticSource.MessageHandleFinished(message, exception);
+            activity.Dispose();
+        }
+    }
+
     private Task InvokeHandlerAsync(ReadOnlyMemory<byte> rawMessageData,
                                     IServiceProvider serviceProvider,
                                     WorkflowEventInvokerDescriptor invokerDescriptor,
@@ -178,27 +220,8 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
 
         var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetType);
         return activity is null
-               ? invokerDescriptor.HandlerInvokeDelegate(handler, message, cancellationToken)
-               : InvokeWithActivityAsync(invokerDescriptor, message, handler, activity, cancellationToken);
-    }
-
-    [StackTraceHidden]
-    [DebuggerStepThrough]
-    private static async Task InvokeWithActivityAsync(WorkflowEventInvokerDescriptor invokerDescriptor, object message, object handler, Activity activity, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await invokerDescriptor.HandlerInvokeDelegate(handler, message, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            activity.RecordException(ex);
-            throw;
-        }
-        finally
-        {
-            activity.Dispose();
-        }
+               ? InnerInvokeAsync(invokerDescriptor, message, handler, cancellationToken)
+               : InnerInvokeWithActivityAsync(invokerDescriptor, message, handler, activity, cancellationToken);
     }
 
     #endregion Private 方法

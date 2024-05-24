@@ -11,6 +11,9 @@ public interface IWorkflowDiagnosticSource
 {
     #region Public 方法
 
+    /// <inheritdoc cref="DiagnosticConstants.MessageHandleFinished"/>
+    void MessageHandleFinished(object message, Exception? exception);
+
     /// <inheritdoc cref="DiagnosticConstants.MessagePublish"/>
     void MessagePublish(IWorkflowMessage message);
 

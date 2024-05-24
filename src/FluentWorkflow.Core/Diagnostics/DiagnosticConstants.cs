@@ -15,6 +15,11 @@ public static class DiagnosticConstants
     public const string DiagnosticName = "FluentWorkflowDiagnostic";
 
     /// <summary>
+    /// 消息 - 处理结束
+    /// </summary>
+    public const string MessageHandleFinished = $"{DiagnosticName}.Message.Handle.Finished";
+
+    /// <summary>
     /// 消息 - 发送
     /// </summary>
     public const string MessagePublish = $"{DiagnosticName}.Message.Publish";
