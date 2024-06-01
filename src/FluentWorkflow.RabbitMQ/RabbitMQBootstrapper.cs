@@ -4,6 +4,7 @@ using System.Reflection;
 using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
+using FluentWorkflow.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -165,6 +166,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
             channel.BasicConsume(queue: defaultConsumeQueueName,
                                  autoAck: false,
+                                 consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTagUtil.GetHashCodeTag(this)}",
                                  consumer: consumer);
         }
     }
@@ -222,6 +224,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
         channel.BasicConsume(queue: standaloneQueueName,
                              autoAck: false,
+                             consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTagUtil.GetHashCodeTag(this)}",
                              consumer: consumer);
     }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using FluentWorkflow.Util;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;
@@ -36,6 +37,7 @@ internal class RabbitMQConnectionProvider : IRabbitMQConnectionProvider
                 DispatchConsumersAsync = true,
                 AutomaticRecoveryEnabled = true,
                 Uri = options.Uri,
+                ClientProvidedName = $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTagUtil.GetHashCodeTag(this)}",
             };
         }
     }
