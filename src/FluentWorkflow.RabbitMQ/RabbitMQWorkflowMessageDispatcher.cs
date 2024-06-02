@@ -60,28 +60,19 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
     #region Public 构造函数
 
-#pragma warning disable CS8618
-
     public RabbitMQWorkflowMessageDispatcher(IRabbitMQConnectionProvider connectionProvider,
                                              IWorkflowDiagnosticSource diagnosticSource,
                                              IObjectSerializer objectSerializer,
                                              IOptionsMonitor<RabbitMQOptions> rabbitMQOptionsMonitor,
-                                             ILogger<RabbitMQWorkflowMessageDispatcher> logger) : base(diagnosticSource, logger)
+                                             ILogger<RabbitMQWorkflowMessageDispatcher> logger)
+        : base(diagnosticSource, logger)
     {
         _connectionProvider = connectionProvider ?? throw new ArgumentNullException(nameof(connectionProvider));
         _objectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
 
-        RefreshRabbitMQOptions(rabbitMQOptionsMonitor.CurrentValue);
-
-        _optionsMonitorDisposer = rabbitMQOptionsMonitor.OnChange(RefreshRabbitMQOptions);
-
-        void RefreshRabbitMQOptions(RabbitMQOptions rabbitMQOptions)
-        {
-            _rabbitMQOptions = rabbitMQOptionsMonitor.CurrentValue;
-        }
+        _optionsMonitorDisposer = rabbitMQOptionsMonitor.OnChange(options => _rabbitMQOptions = options);
+        _rabbitMQOptions = rabbitMQOptionsMonitor.CurrentValue;
     }
-
-#pragma warning restore CS8618
 
     #endregion Public 构造函数
 

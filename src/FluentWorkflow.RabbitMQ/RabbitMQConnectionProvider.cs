@@ -12,6 +12,12 @@ internal class RabbitMQConnectionProvider : IRabbitMQConnectionProvider
 
     #endregion Private 字段
 
+    #region Public 属性
+
+    public string ObjectTag { get; }
+
+    #endregion Public 属性
+
     #region Public 构造函数
 
     public RabbitMQConnectionProvider(IOptions<RabbitMQOptions> optionsAccessor)
@@ -20,6 +26,8 @@ internal class RabbitMQConnectionProvider : IRabbitMQConnectionProvider
         {
             throw new ArgumentNullException(nameof(optionsAccessor));
         }
+
+        ObjectTag = ObjectTagUtil.GetHashCodeTag(this);
 
         var options = optionsAccessor.Value;
         if (options.ConnectionFactory is not null)
@@ -37,10 +45,14 @@ internal class RabbitMQConnectionProvider : IRabbitMQConnectionProvider
                 DispatchConsumersAsync = true,
                 AutomaticRecoveryEnabled = true,
                 Uri = options.Uri,
-                ClientProvidedName = $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTagUtil.GetHashCodeTag(this)}",
+                ClientProvidedName = $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
             };
         }
     }
+
+    #endregion Public 构造函数
+
+    #region Public 方法
 
     public Task<IConnection> GetAsync(CancellationToken cancellationToken)
     {
@@ -48,5 +60,11 @@ internal class RabbitMQConnectionProvider : IRabbitMQConnectionProvider
         return Task.FromResult(connection);
     }
 
-    #endregion Public 构造函数
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{nameof(RabbitMQConnectionProvider)}-{ObjectTag}";
+    }
+
+    #endregion Public 方法
 }

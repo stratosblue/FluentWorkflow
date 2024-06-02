@@ -91,7 +91,6 @@ namespace {NameSpace}
                         {{
                             Context.TryGetFailureMessage(out var failureMessage);
                             var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, false, failureMessage);
-                            finishedMessage.Context.SetCurrentStageState(WorkflowStageState.Scheduled);
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }}
@@ -104,7 +103,6 @@ namespace {NameSpace}
                                 || !Context.Flag.HasFlag(WorkflowFlag.NotNotifyOnFinish))
                             {{
                                 var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, true, ""SUCCESS"");
-                                finishedMessage.Context.SetCurrentStageState(WorkflowStageState.Scheduled);
                                 await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             }}
                             return;

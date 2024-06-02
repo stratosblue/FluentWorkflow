@@ -170,7 +170,7 @@ public abstract class WorkflowStateMachine<TWorkflowBoundary>
             where TStageMessage : class, IWorkflowStageMessage, IWorkflowContextCarrier<IWorkflowContext>, TWorkflowBoundary, IEventNameDeclaration
         {
             InvokeCheck();
-            message.Context.SetCurrentStageState(WorkflowStageState.Scheduled);
+
             return messageDispatcher.PublishAsync(message, cancellationToken);
         }
 

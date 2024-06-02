@@ -140,5 +140,28 @@ public static class WorkflowContextExtensions
 
     #endregion StageState
 
+    #region Forwarded
+
+    /// <summary>
+    /// 添加上下文流转信息 <see cref="FluentWorkflowConstants.ContextKeys.Forwarded"/>
+    /// </summary>
+    /// <param name="workflowContext"></param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static void AppendForwarded(this IWorkflowContext workflowContext)
+    {
+        var currentValue = workflowContext.GetValue(FluentWorkflowConstants.ContextKeys.Forwarded);
+
+        if (string.IsNullOrEmpty(currentValue))
+        {
+            workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.Forwarded, FluentWorkflowEnvironment.Description);
+        }
+        else
+        {
+            workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.Forwarded, $"{currentValue}, {FluentWorkflowEnvironment.Description}");
+        }
+    }
+
+    #endregion Forwarded
+
     #endregion Public 方法
 }

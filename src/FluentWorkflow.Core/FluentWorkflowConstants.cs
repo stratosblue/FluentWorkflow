@@ -44,6 +44,13 @@ public static class FluentWorkflowConstants
         public const string FailureStage = "-x-context-failure-stage";
 
         /// <summary>
+        /// 上下文发送信息，记录上下文的流转记录<br/>
+        /// 其值正确情况下应当形如<br/>
+        /// xx@host1, xx@host2, xx@host1, ...
+        /// </summary>
+        public const string Forwarded = "-x-context-forwarded";
+
+        /// <summary>
         /// Id
         /// </summary>
         public const string Id = "-x-context-id";

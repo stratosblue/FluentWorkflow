@@ -75,7 +75,6 @@ namespace TemplateNamespace
                         {
                             Context.TryGetFailureMessage(out var failureMessage);
                             var finishedMessage = new TemplateWorkflowFinishedMessage(TypedContext, false, failureMessage ?? "Unknown error");
-                            finishedMessage.Context.SetCurrentStageState(WorkflowStageState.Scheduled);
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }
@@ -88,7 +87,6 @@ namespace TemplateNamespace
                                 || !Context.Flag.HasFlag(WorkflowFlag.NotNotifyOnFinish))
                             {
                                 var finishedMessage = new TemplateWorkflowFinishedMessage(TypedContext, true, "SUCCESS");
-                                finishedMessage.Context.SetCurrentStageState(WorkflowStageState.Scheduled);
                                 await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             }
                             return;

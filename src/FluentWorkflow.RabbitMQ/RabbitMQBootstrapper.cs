@@ -40,6 +40,12 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
     #endregion Private 字段
 
+    #region Public 属性
+
+    public string ObjectTag { get; }
+
+    #endregion Public 属性
+
     #region Public 构造函数
 
     public RabbitMQBootstrapper(IRabbitMQConnectionProvider connectionProvider,
@@ -61,6 +67,8 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         _runningCancellationToken = _runningCancellationTokenSource.Token;
         _logger = loggerFactory.CreateLogger<RabbitMQBootstrapper>();
         _consumeLogger = loggerFactory.CreateLogger(FluentWorkflowConstants.DefaultConsumerLoggerName);
+
+        ObjectTag = ObjectTagUtil.GetHashCodeTag(this);
     }
 
     #endregion Public 构造函数
@@ -166,9 +174,15 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
             channel.BasicConsume(queue: defaultConsumeQueueName,
                                  autoAck: false,
-                                 consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTagUtil.GetHashCodeTag(this)}",
+                                 consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
                                  consumer: consumer);
         }
+    }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{nameof(RabbitMQBootstrapper)}-{ObjectTag}";
     }
 
     #endregion Public 方法
@@ -224,7 +238,7 @@ internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
         channel.BasicConsume(queue: standaloneQueueName,
                              autoAck: false,
-                             consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTagUtil.GetHashCodeTag(this)}",
+                             consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
                              consumer: consumer);
     }
 
