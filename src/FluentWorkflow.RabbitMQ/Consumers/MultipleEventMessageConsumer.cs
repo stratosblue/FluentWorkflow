@@ -23,7 +23,7 @@ internal sealed class MultipleEventMessageConsumer : EventMessageBasicConsumer
 
     public ImmutableDictionary<string, ConsumeDescriptor> ConsumeDescriptors { get; }
 
-    public HashSet<string> StandaloneEventNames { get; }
+    public ImmutableHashSet<string> StandaloneEventNames { get; }
 
     #endregion Public 属性
 
@@ -47,16 +47,16 @@ internal sealed class MultipleEventMessageConsumer : EventMessageBasicConsumer
         }
 
         ConsumeDescriptors = consumeDescriptors ?? throw new ArgumentNullException(nameof(consumeDescriptors));
-        StandaloneEventNames = standaloneEventNames ?? throw new ArgumentNullException(nameof(standaloneEventNames));
+        StandaloneEventNames = standaloneEventNames?.ToImmutableHashSet() ?? throw new ArgumentNullException(nameof(standaloneEventNames));
         _errorMessageRequeuePolicy = options.ErrorMessageRequeuePolicy;
         _errorMessageRequeueDelay = options.ErrorMessageRequeueDelay;
     }
 
     #endregion Public 构造函数
 
-    #region Public 方法
+    #region Protected 方法
 
-    public override Task HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, ReadOnlyMemory<byte> body)
+    protected override Task InternalHandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, ReadOnlyMemory<byte> body)
     {
         var eventName = "UnknownEventName";
         if (properties?.Headers is { } headers
@@ -84,5 +84,5 @@ internal sealed class MultipleEventMessageConsumer : EventMessageBasicConsumer
                                        forceNotRequeue: forceNotRequeue);
     }
 
-    #endregion Public 方法
+    #endregion Protected 方法
 }

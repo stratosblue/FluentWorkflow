@@ -46,6 +46,27 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
 
     #endregion Public 构造函数
 
+    #region Public 方法
+
+    /// <inheritdoc/>
+    public override sealed async Task HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, ReadOnlyMemory<byte> body)
+    {
+        try
+        {
+            await InternalHandleBasicDeliver(consumerTag, deliveryTag, redelivered, exchange, routingKey, properties, body);
+        }
+        catch (Exception ex)
+        {
+            Model.BasicReject(deliveryTag, true);
+
+            Logger.LogError(ex, "Error at rabbitmq HandleBasicDeliver. DeliveryTag {DeliveryTag} [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}. requeued.", deliveryTag, consumerTag, exchange, routingKey);
+
+            throw;
+        }
+    }
+
+    #endregion Public 方法
+
     #region Protected 方法
 
     public Task HandleErrorMessageAsync(string? eventName,
@@ -118,7 +139,7 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
         {
             await using var serviceScope = ServiceScopeFactory.CreateAsyncScope();
             var serviceProvider = serviceScope.ServiceProvider;
-            if (invokerDescriptors.Length == 1)
+            if (consumeDescriptor.SingleWorkflowEventInvoker)
             {
                 await InvokeHandlerAsync(body, serviceProvider, invokerDescriptors[0], ObjectSerializer, RunningCancellationToken);
             }
@@ -127,7 +148,7 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
                 var tasks = invokerDescriptors.Select([StackTraceHidden][DebuggerStepThrough] (invokerDescriptor) =>
                 {
                     return InvokeHandlerAsync(body, serviceProvider, invokerDescriptor, ObjectSerializer, RunningCancellationToken);
-                }).ToArray();
+                }).ToList();
 
                 await Task.WhenAll(tasks);
             }
@@ -147,6 +168,9 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
             Model.BasicReject(deliveryTag, requeue);
         }
     }
+
+    /// <inheritdoc cref="HandleBasicDeliver(string, ulong, bool, string, string, IBasicProperties, ReadOnlyMemory{byte})"/>
+    protected abstract Task InternalHandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, ReadOnlyMemory<byte> body);
 
     #endregion Protected 方法
 

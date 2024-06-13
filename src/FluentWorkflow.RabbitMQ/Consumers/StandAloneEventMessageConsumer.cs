@@ -33,9 +33,9 @@ internal sealed class StandAloneEventMessageConsumer : EventMessageBasicConsumer
 
     #endregion Public 构造函数
 
-    #region Public 方法
+    #region Protected 方法
 
-    public override Task HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, ReadOnlyMemory<byte> body)
+    protected override Task InternalHandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, ReadOnlyMemory<byte> body)
     {
         var eventName = "UnknownEventName";
         if (properties?.Headers is { } headers
@@ -56,5 +56,5 @@ internal sealed class StandAloneEventMessageConsumer : EventMessageBasicConsumer
                                        forceNotRequeue: false);
     }
 
-    #endregion Public 方法
+    #endregion Protected 方法
 }

@@ -70,7 +70,7 @@ internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
                     {
                         var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetType);
                         return invokerDescriptor.HandlerInvokeDelegate(handler, messageClone, CancellationToken.None);
-                    }).ToArray();
+                    }).ToList();
 
                     await Task.WhenAll(tasks);
                 }

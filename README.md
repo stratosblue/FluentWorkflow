@@ -27,14 +27,17 @@ A message driven distributed asynchronous workflow framework. 消息驱动的分
 
 ### NOTE:
 - 更新包时应当`尽可能`的`全链路更新`，避免导致的未知问题；
-- `WorkflowContext` 核心为 `字符串字典` 其属性在赋值时进行序列化存放，对象后续的修改不会反应到上下文中；
-
+- `WorkflowContext` 核心为 `字符串字典` 其属性在`赋值时`进行`序列化存放`，对象后续的修改`不会`反应到上下文中；
+- `Workflow` 中重写`各个阶段的触发事件`方法时，方法内`不能往外抛出异常`，会导致该阶段消息重新进入队列，再次执行；
+- 默认分发器 `FluentWorkflow.RabbitMQ` 依赖 `交换机` 和 `队列` 进行消息分发，当存在`多套环境`需要`隔离`时，确保 `交换机` 和 `队列` 都不相同，否则将会出现消息重复消费；
+- 默认分发器 `FluentWorkflow.RabbitMQ` 在`绑定信息`（`交换机`、`队列`）变更时不能完全自动调整，需要人工修正，如手动移除队列错误的`交换机绑定`和`RoutingKey绑定`，否则将会出现消息重复消费；
+ 
 ## 3. 开始使用
 
 ### 3.1 引用 `FluentWorkflow.Core` 包
 ```xml
 <ItemGroup>
-  <PackageReference Include="FluentWorkflow.Core" Version="1.0.0-*" />
+  <PackageReference Include="FluentWorkflow.Core" Version="1.1.4" />
 </ItemGroup>
 ```
 
@@ -153,7 +156,7 @@ await workflow.StartAsync(default);
 
 - 启动工作流程的服务可以不是配置工作流程调度器 - `WorkflowScheduler`的服务，但需要接入`消息分发器`并在配置时使用 `Add****Workflow()` 添加对应的工作流程构造器；
 - 源代码生成器生成的绝大部分类型都是`partial`的，可以声明`partial`类进行拓展，不可使用`partial`类拓展的功能基本上都可以继承后重写，在配置服务时替换默认实现即可；
-- 定义的 `Workflow` 类会添加生命周期各个阶段的触发事件方法，可以继承后重写其逻辑以在各个阶段执行相关的逻辑（注意每次触发可能不在同一个服务实例中）；
+- 定义的 `Workflow` 类会添加生命周期`各个阶段的触发事件`方法，可以`继承后重写`其逻辑以在各个阶段执行相关的逻辑（注意每次触发可能不在同一个服务实例中。重写后应当捕获并处理所有异常，不要抛出）；
 - `WorkflowContext` 核心为`字符串字典`，对其修改理论上只对后续可见并在整个执行周期可用，可以将执行参数、结果、中间值等存放其中；
 - 消息的分发、重试等逻辑由具体使用的消息分发器`IWorkflowMessageDispatcher`控制（默认提供了基于`CAP`、`Abp`以及基础的`FluentWorkflow.RabbitMQ`可选）；
 - 默认情况下 `StageHandler` 出现异常则认为工作流程失败，不会将异常抛给上层 `IWorkflowMessageDispatcher`（消息分发的重试不会触发），可以重写 `StageHandler` 的 `OnException` 方法来将异常向上抛出；
@@ -186,7 +189,7 @@ await workflow.StartAsync(default);
 #### 引用 `FluentWorkflow.RabbitMQ` 包
 ```xml
 <ItemGroup>
-    <PackageReference Include="FluentWorkflow.RabbitMQ" Version="1.0.0-*" />
+    <PackageReference Include="FluentWorkflow.RabbitMQ" Version="1.1.4" />
 </ItemGroup>
 ```
 #### 配置
@@ -216,6 +219,8 @@ services.Configure<RabbitMQOptions>(options =>
 #### *消息确认超时
 
 RabbitMQ消息的消费ack超时时间默认为30分钟，进行长时间处理时可能会出现意外情况，可参照 [acknowledgement-timeout](https://www.rabbitmq.com/docs/consumers#acknowledgement-timeout) 进行调整
+ - 框架已默认尝试设置队列参数 `x-consumer-timeout` 为 1 小时（如果RabbitMQ版本支持的话）；
+ - 可使用 `RabbitMQOptions.QueueArgumentsSetup` 对队列的 `x-consumer-timeout` 参数进行调整；
 
 -------
 
