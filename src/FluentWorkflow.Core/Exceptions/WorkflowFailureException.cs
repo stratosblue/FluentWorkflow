@@ -1,4 +1,7 @@
-﻿using System.Runtime.Serialization;
+﻿#pragma warning disable CS0618
+#pragma warning disable CS8618
+
+using System.Runtime.Serialization;
 using FluentWorkflow.Interface;
 
 namespace FluentWorkflow;
@@ -67,11 +70,8 @@ public class WorkflowFailureException : WorkflowException
 
     #region Protected 构造函数
 
-#pragma warning disable CS8618
-
     /// <inheritdoc cref="WorkflowFailureException"/>
     protected WorkflowFailureException(SerializationInfo info, StreamingContext context) : base(info, context)
-#pragma warning restore CS8618
     {
     }
 

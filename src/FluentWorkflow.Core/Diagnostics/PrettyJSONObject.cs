@@ -56,7 +56,17 @@ internal class PrettyJSONObject<T>
     #region Public 方法
 
     /// <inheritdoc/>
-    public override string ToString() => _objectSerializer.PrettySerialize(Value);
+    public override string ToString()
+    {
+        try
+        {
+            return _objectSerializer.PrettySerialize(Value);
+        }
+        catch (Exception ex)
+        {
+            return $"Serialize \"{typeof(T)}\" failed: {ex}";
+        }
+    }
 
     #endregion Public 方法
 }

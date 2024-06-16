@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
+using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
@@ -65,7 +66,7 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
         {
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "completed");
-            task.ContinueWith(static (_, state) => ((IDisposable)state!).Dispose(), activity, CancellationToken.None);
+            task.DisposeActivityWhenTaskCompleted(activity);
         }
         return task;
     }
@@ -80,7 +81,7 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "failure");
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.FailureMessage, message.Message);
-            task.ContinueWith(static (_, state) => ((IDisposable)state!).Dispose(), activity, CancellationToken.None);
+            task.DisposeActivityWhenTaskCompleted(activity);
         }
         return task;
     }

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace FluentWorkflow.RabbitMQ;
 
-internal class BootstrapperHostedService : IHostedService
+internal sealed class BootstrapperHostedService : IHostedService
 {
     #region Private 字段
 

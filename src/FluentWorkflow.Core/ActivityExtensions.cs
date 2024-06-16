@@ -12,6 +12,22 @@ public static class ActivityExtensions
     #region Public 方法
 
     /// <summary>
+    /// 在任务 <paramref name="task"/> 完成时处理 <paramref name="activity"/>
+    /// </summary>
+    /// <param name="task"></param>
+    /// <param name="activity"></param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static void DisposeActivityWhenTaskCompleted(this Task task, Activity? activity)
+    {
+        if (activity is null)
+        {
+            return;
+        }
+
+        task.ContinueWith(RecordTaskExceptionAndDisposeActivity, activity, CancellationToken.None);
+    }
+
+    /// <summary>
     /// 记录异常异常
     /// </summary>
     /// <param name="activity"></param>
@@ -44,6 +60,19 @@ public static class ActivityExtensions
         }
 
         activity.AddEvent(new ActivityEvent("exception", timestamp ?? DateTimeOffset.UtcNow, tagsCollection));
+    }
+
+    private static void RecordTaskExceptionAndDisposeActivity(Task task, object? state)
+    {
+        if (state is Activity stateActivity)
+        {
+            if (task.Exception is not null)
+            {
+                stateActivity.RecordException(task.Exception);
+            }
+
+            stateActivity.Dispose();
+        }
     }
 
     #endregion Private 方法

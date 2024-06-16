@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
+using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
@@ -65,7 +66,7 @@ public abstract class WorkflowScheduler<TWorkflow, TWorkflowStateMachine, TWorkf
         if (activity != null)
         {
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Context, PrettyJSONObject.Create(workflow.Context, ObjectSerializer));
-            task.ContinueWith(static (_, state) => ((IDisposable)state!).Dispose(), activity, CancellationToken.None);
+            task.DisposeActivityWhenTaskCompleted(activity);
         }
 
         return task;

@@ -12,7 +12,7 @@ using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;
 
-internal class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
+internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 {
     #region Private 字段
 

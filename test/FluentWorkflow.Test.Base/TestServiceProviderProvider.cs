@@ -60,6 +60,18 @@ public abstract class TestServiceProviderProvider
         ServiceScope = RootServiceProvider.CreateScope();
     }
 
+    [TestCleanup]
+    public virtual Task TestCleanup()
+    {
+        return CleanupProviderAsync();
+    }
+
+    [TestInitialize]
+    public virtual Task TestInitialize()
+    {
+        return InitializeProviderAsync(null);
+    }
+
     #endregion Public 方法
 
     #region Protected 方法

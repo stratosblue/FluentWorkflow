@@ -3,6 +3,7 @@ using System.ComponentModel;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
+using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -86,13 +87,13 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
         using var activity = ActivitySource.StartActivity($"{DiagnosticConstants.ActivityNames.StageProcessing} - {stageMessage.Stage}", System.Diagnostics.ActivityKind.Consumer);
         activity?.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(stageMessage, ObjectSerializer));
 
-        _diagnosticSource.StageMessageHandleStart(stageMessage);
-
         Exception? exception = null;
         var notFiredDiagnostic = true;
 
         try
         {
+            _diagnosticSource.StageMessageHandleStart(stageMessage);
+
             ThrowIfStageNotMatch(stageMessage.Context);
 
             Logger.LogTrace("Start handle stage message {{{Id}}}[{Message}]", stageMessage.Id, stageMessage);
@@ -159,6 +160,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
         }
         catch (Exception ex)
         {
+            activity?.RecordException(ex);
             _diagnosticSource.StageMessageHandleEnd(stageMessage, false, ex);
             notFiredDiagnostic = false;
             throw;

@@ -9,6 +9,8 @@ using RabbitMQ.Client;
 
 namespace FluentWorkflow;
 
+//TODO 优化发送逻辑，进一步保证消息的发送
+
 internal sealed class RabbitMQWorkflowMessageDispatcher
     : WorkflowMessageDispatcher, IWorkflowMessageDispatcher, IDisposable
 {
@@ -94,7 +96,8 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
     {
         await base.PublishAsync(message, cancellationToken);
 
-        if (_connection is not null)
+        if (_connection is { } connection
+            && connection.IsOpen)
         {
             await SendMessageAsync(message, cancellationToken);
         }
@@ -116,18 +119,25 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
         {
             message.Context.SetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext, TracingContext.Create(activity).Serialize());
         }
-
-        var basicProperties = Channel.CreateBasicProperties();
-        basicProperties.DeliveryMode = 2;
-        basicProperties.Headers = new Dictionary<string, object>(2)
+        try
         {
-            { RabbitMQOptions.EventNameHeaderKey, TMessage.EventName },
-            { RabbitMQOptions.WorkflowIdHeaderKey, message.Id }
-        };
+            var basicProperties = Channel.CreateBasicProperties();
+            basicProperties.DeliveryMode = 2;
+            basicProperties.Headers = new Dictionary<string, object>(2)
+            {
+                { RabbitMQOptions.EventNameHeaderKey, TMessage.EventName },
+                { RabbitMQOptions.WorkflowIdHeaderKey, message.Id }
+            };
 
-        var data = _objectSerializer.SerializeToBytes(message);
+            var data = _objectSerializer.SerializeToBytes(message);
 
-        Channel.BasicPublish(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data);
+            Channel.BasicPublish(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data);
+        }
+        catch (Exception ex)
+        {
+            activity?.RecordException(ex);
+            throw;
+        }
         return Task.CompletedTask;
     }
 
@@ -137,24 +147,30 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
         await _initSemaphore.WaitAsync(cancellationToken);
         try
         {
-            if (_connection is null)
+            if (_connection is not { } existedConnection
+                || !existedConnection.IsOpen)
             {
+                if (_connection is not null)
+                {
+                    if (_connection is IAutorecoveringConnection existedAutorecoveringConnection)
+                    {
+                        existedAutorecoveringConnection.RecoverySucceeded -= OnRecoverySucceeded;
+                    }
+                    _connection.ConnectionShutdown -= OnConnectionShutdown;
+                }
+
+                _connection = null;
+
                 Logger.LogInformation("Creating workflow RabbitMQ channel.");
 
                 var connection = await _connectionProvider.GetAsync(cancellationToken);
 
                 if (connection is IAutorecoveringConnection autorecoveringConnection)
                 {
-                    autorecoveringConnection.RecoverySucceeded += (sender, e) =>
-                    {
-                        Logger.LogWarning("Workflow RabbitMQ connection recovery succeeded.");
-                    };
+                    autorecoveringConnection.RecoverySucceeded += OnRecoverySucceeded;
                 }
 
-                connection.ConnectionShutdown += (sender, e) =>
-                {
-                    Logger.LogWarning("Workflow RabbitMQ connection shutdown.");
-                };
+                connection.ConnectionShutdown += OnConnectionShutdown;
 
                 _connection = connection;
             }
@@ -168,6 +184,27 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
         await SendMessageAsync(message, cancellationToken);
     }
+
+    #region connection events
+
+    private void OnConnectionShutdown(object? sender, ShutdownEventArgs eventArgs)
+    {
+        if (_disposed)
+        {
+            Logger.LogInformation("Workflow RabbitMQ connection shutdown after dispatcher disposed. {EventArgs}", eventArgs);
+        }
+        else
+        {
+            Logger.LogCritical("Workflow RabbitMQ connection shutdown. {EventArgs}", eventArgs);
+        }
+    }
+
+    private void OnRecoverySucceeded(object? sender, EventArgs eventArgs)
+    {
+        Logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {EventArgs}", eventArgs);
+    }
+
+    #endregion connection events
 
     #endregion Private 方法
 }

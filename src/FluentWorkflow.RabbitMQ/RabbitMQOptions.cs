@@ -71,6 +71,12 @@ public class RabbitMQOptions
     public ushort GlobalQos { get; set; } = 0;
 
     /// <summary>
+    /// 更倾向于使用单一链接<br/>
+    /// 值为 <see langword="true"/> 时，会尽可能的使用单个 <see cref="IConnection"/>
+    /// </summary>
+    public bool PreferSingleConnection { get; set; } = false;
+
+    /// <summary>
     /// 队列 Arguments 设置委托
     /// </summary>
     public Action<string, IDictionary<string, object>>? QueueArgumentsSetup { get; set; }
