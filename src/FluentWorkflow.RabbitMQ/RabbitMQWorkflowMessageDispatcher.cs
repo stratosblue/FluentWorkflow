@@ -24,6 +24,8 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
     private readonly IDisposable? _optionsMonitorDisposer;
 
+    private readonly SemaphoreSlim _sendMessageSemaphore = new(1, 1);
+
     private readonly object _syncRoot = new();
 
     private IModel? _channel;
@@ -85,6 +87,7 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
         if (!_disposed)
         {
             _initSemaphore.Dispose();
+            _sendMessageSemaphore.Dispose();
             _channel?.Dispose();
             _connection?.Dispose();
             _optionsMonitorDisposer?.Dispose();
@@ -111,7 +114,7 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
     #region Private 方法
 
-    private Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
+    private async Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
         where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration
     {
         using var activity = PublisherActivitySource.StartActivity("PublishEventMessage", ActivityKind.Producer);
@@ -121,7 +124,8 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
         }
         try
         {
-            var basicProperties = Channel.CreateBasicProperties();
+            var channel = Channel;
+            var basicProperties = channel.CreateBasicProperties();
             basicProperties.DeliveryMode = 2;
             basicProperties.Headers = new Dictionary<string, object>(2)
             {
@@ -131,14 +135,21 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
             var data = _objectSerializer.SerializeToBytes(message);
 
-            Channel.BasicPublish(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data);
+            await _sendMessageSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                channel.BasicPublish(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data);
+            }
+            finally
+            {
+                _sendMessageSemaphore.Release();
+            }
         }
         catch (Exception ex)
         {
             activity?.RecordException(ex);
             throw;
         }
-        return Task.CompletedTask;
     }
 
     private async Task SendMessageWithCreateChannelAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
@@ -177,9 +188,12 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
         }
         catch (Exception ex)
         {
-            _initSemaphore.Release();
             Logger.LogError(ex, "Init workflow RabbitMQ channel failed.");
             throw;
+        }
+        finally
+        {
+            _initSemaphore.Release();
         }
 
         await SendMessageAsync(message, cancellationToken);

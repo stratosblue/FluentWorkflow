@@ -35,7 +35,10 @@ public class RabbitMQOptions
     #region Public 属性
 
     /// <summary>
-    /// 连接工厂，设置此值时会忽略 <see cref="Uri"/>
+    /// 连接工厂，设置此值时会忽略 <see cref="Uri"/><br/>
+    /// 注意:<br/>
+    /// 需要支持自动恢复，即设置 <see cref="ConnectionFactory.AutomaticRecoveryEnabled"/> 和 <see cref="ConnectionFactory.TopologyRecoveryEnabled"/> 为 <see langword="true"/><br/>
+    /// 需要支持异步消费，即设置 <see cref="ConnectionFactory.DispatchConsumersAsync"/> 为 <see langword="true"/>
     /// </summary>
     public IAsyncConnectionFactory? ConnectionFactory { get; set; }
 
