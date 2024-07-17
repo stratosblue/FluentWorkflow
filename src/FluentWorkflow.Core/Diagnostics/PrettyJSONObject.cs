@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace FluentWorkflow.Diagnostics;
+﻿namespace FluentWorkflow.Diagnostics;
 
 /// <summary>
 /// JSON展示对象

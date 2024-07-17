@@ -49,6 +49,7 @@ public static class FluentWorkflowRabbitMQServiceCollectionExtensions
         }
 
         builder.Services.TryAddSingleton<IRabbitMQConnectionProvider, RabbitMQConnectionProvider>();
+        builder.Services.TryAddSingleton<IRabbitMQChannelPool, RabbitMQChannelPool>();
 
         builder.Services.Replace(ServiceDescriptor.Singleton<IFluentWorkflowBootstrapper, RabbitMQBootstrapper>());
         builder.Services.Replace(ServiceDescriptor.Singleton<IWorkflowMessageDispatcher, RabbitMQWorkflowMessageDispatcher>());

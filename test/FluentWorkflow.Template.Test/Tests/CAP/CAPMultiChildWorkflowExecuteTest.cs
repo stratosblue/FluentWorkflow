@@ -1,6 +1,4 @@
-﻿using FluentWorkflow.GenericExtension.TemplateNamespace;
-
-namespace FluentWorkflow;
+﻿namespace FluentWorkflow;
 
 [TestClass]
 public class CAPMultiChildWorkflowExecuteTest : MultiChildWorkflowExecuteTest

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Util;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
@@ -10,6 +11,8 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     #region Private 字段
 
     private readonly IAsyncConnectionFactory _connectionFactory;
+
+    private readonly ILogger _logger;
 
     private SemaphoreSlim? _connectionGetSemaphore;
 
@@ -30,9 +33,11 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
 
     #region Public 构造函数
 
-    public RabbitMQConnectionProvider(IOptions<RabbitMQOptions> optionsAccessor)
+    public RabbitMQConnectionProvider(IOptions<RabbitMQOptions> optionsAccessor,
+                                      ILogger<RabbitMQConnectionProvider> logger)
     {
         ArgumentNullException.ThrowIfNull(optionsAccessor);
+        ArgumentNullException.ThrowIfNull(logger);
 
         ObjectTag = ObjectTagUtil.GetHashCodeTag(this);
 
@@ -61,6 +66,8 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
         {
             _connectionGetSemaphore = new(1, 1);
         }
+
+        _logger = logger;
     }
 
     #endregion Public 构造函数
@@ -85,6 +92,7 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                         if (shutdownEventArgs is null
                             || existedConnection is IAutorecoveringConnection)
                         {
+                            _logger.LogDebug("Provide existed rabbitmq connection {Connection}.", existedConnection);
                             return existedConnection;
                         }
                         _existedConnection = null;
@@ -95,6 +103,7 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                     }
                 }
                 var connection = _connectionFactory.CreateConnection();
+                _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
                 _existedConnection = connection;
                 return connection;
             }
@@ -105,15 +114,14 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
         }
         else
         {
-            return _connectionFactory.CreateConnection();
+            var connection = _connectionFactory.CreateConnection();
+            _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
+            return connection;
         }
     }
 
     /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $"{nameof(RabbitMQConnectionProvider)}-{ObjectTag}";
-    }
+    public override string ToString() => $"{nameof(RabbitMQConnectionProvider)}-{ObjectTag}";
 
     #endregion Public 方法
 

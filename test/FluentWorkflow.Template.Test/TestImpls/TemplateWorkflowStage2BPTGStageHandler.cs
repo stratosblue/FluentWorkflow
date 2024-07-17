@@ -1,5 +1,4 @@
-﻿using TemplateNamespace;
-using TemplateNamespace.Handler;
+﻿using TemplateNamespace.Handler;
 using TemplateNamespace.Message;
 
 namespace FluentWorkflow;

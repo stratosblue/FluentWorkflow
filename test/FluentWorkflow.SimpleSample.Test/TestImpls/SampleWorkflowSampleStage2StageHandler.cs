@@ -1,5 +1,4 @@
-﻿using FluentWorkflow.SimpleSample;
-using FluentWorkflow.SimpleSample.Handler;
+﻿using FluentWorkflow.SimpleSample.Handler;
 using FluentWorkflow.SimpleSample.Message;
 
 namespace FluentWorkflow;

@@ -35,6 +35,11 @@ public class RabbitMQOptions
     #region Public 属性
 
     /// <summary>
+    /// <see cref="IModel"/> 最大池化数量
+    /// </summary>
+    public uint ChannelPoolMaxSize { get; set; } = (uint)Environment.ProcessorCount;
+
+    /// <summary>
     /// 连接工厂，设置此值时会忽略 <see cref="Uri"/><br/>
     /// 注意:<br/>
     /// 需要支持自动恢复，即设置 <see cref="ConnectionFactory.AutomaticRecoveryEnabled"/> 和 <see cref="ConnectionFactory.TopologyRecoveryEnabled"/> 为 <see langword="true"/><br/>
@@ -78,6 +83,16 @@ public class RabbitMQOptions
     /// 值为 <see langword="true"/> 时，会尽可能的使用单个 <see cref="IConnection"/>
     /// </summary>
     public bool PreferSingleConnection { get; set; } = false;
+
+    /// <summary>
+    /// 发送者确认 see: https://www.rabbitmq.com/docs/confirms
+    /// </summary>
+    public bool PublisherConfirms { get; set; } = true;
+
+    /// <summary>
+    /// 启用 <see cref="PublisherConfirms"/> 时内部 <see cref="IModel.WaitForConfirms(TimeSpan)"/> 所使用的超时时间
+    /// </summary>
+    public TimeSpan PublisherConfirmsCheckTimeout { get; set; } = TimeSpan.FromSeconds(5);
 
     /// <summary>
     /// 队列 Arguments 设置委托

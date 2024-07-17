@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 namespace FluentWorkflow;
 
 [TestClass]
-public class RabbitMQConnectionProviderPreferSingleConnectionTest : TestServiceProviderProvider
+public class RabbitMQPublisherConfirmsConnectionProviderPreferSingleConnectionTest : TestServiceProviderProvider
 {
     #region Public 方法
 
@@ -35,7 +35,7 @@ public class RabbitMQConnectionProviderPreferSingleConnectionTest : TestServiceP
                     options.ConsumeQueueName = $"RabbitMQTestQueue-{DateTime.Now:yyyy:MM:dd:HH.mm.ss.ffff}";
                     options.Uri = new Uri(context.Configuration.GetRequiredSection("RabbitMQ").Value!);
                     options.PreferSingleConnection = true;
-                    options.PublisherConfirms = false;
+                    options.PublisherConfirms = true;
                 });
     }
 
