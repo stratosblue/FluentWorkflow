@@ -67,30 +67,28 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
     #region Private 方法
 
-    private void SendMessage<TMessage>(IModel channel, TMessage message, CancellationToken cancellationToken)
+    private async Task SendMessageAsync<TMessage>(IChannel channel, TMessage message, CancellationToken cancellationToken)
         where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration
     {
-        var basicProperties = channel.CreateBasicProperties();
-        basicProperties.DeliveryMode = 2;
-        basicProperties.Headers = new Dictionary<string, object>(2)
+        var basicProperties = new BasicProperties
         {
-            { RabbitMQOptions.EventNameHeaderKey, TMessage.EventName },
-            { RabbitMQOptions.WorkflowIdHeaderKey, message.Id }
+            DeliveryMode = DeliveryModes.Persistent,
+            Headers = new Dictionary<string, object?>(2)
+            {
+                { RabbitMQOptions.EventNameHeaderKey, TMessage.EventName },
+                { RabbitMQOptions.WorkflowIdHeaderKey, message.Id }
+            }
         };
 
         var data = _objectSerializer.SerializeToBytes(message);
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        channel.BasicPublish(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data);
+        await channel.BasicPublishAsync(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data, mandatory: false, cancellationToken: cancellationToken);
 
         if (channel.NextPublishSeqNo > 0)
         {
-            while (!channel.WaitForConfirms(_rabbitMQOptions.PublisherConfirmsCheckTimeout))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                //TODO 取消正在确认的消息？
-            }
+            await channel.WaitForConfirmsAsync(cancellationToken);
         }
     }
 
@@ -103,11 +101,11 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
             message.Context.SetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext, TracingContext.Create(activity).Serialize());
         }
 
-        IModel? channel = null;
+        IChannel? channel = null;
         try
         {
             channel = await _rabbitMQChannelPool.RentAsync(cancellationToken);
-            SendMessage(channel, message, cancellationToken);
+            await SendMessageAsync(channel, message, cancellationToken);
         }
         catch (Exception ex)
         {

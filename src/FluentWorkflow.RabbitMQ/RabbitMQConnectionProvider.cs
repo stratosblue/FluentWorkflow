@@ -10,7 +10,7 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
 {
     #region Private 字段
 
-    private readonly IAsyncConnectionFactory _connectionFactory;
+    private readonly IConnectionFactory _connectionFactory;
 
     private readonly ILogger _logger;
 
@@ -90,7 +90,7 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                     {
                         var shutdownEventArgs = existedConnection.CloseReason;
                         if (shutdownEventArgs is null
-                            || existedConnection is IAutorecoveringConnection)
+                            || existedConnection is IRecoverable)
                         {
                             _logger.LogDebug("Provide existed rabbitmq connection {Connection}.", existedConnection);
                             return existedConnection;
@@ -102,13 +102,13 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                         _existedConnection = null;
                     }
                 }
-                var connection = _connectionFactory.CreateConnection();
+                var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
                 _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
                 _existedConnection = connection;
-                if (connection is IAutorecoveringConnection autorecoveringConnection)
+                if (connection is IRecoverable recoverable)
                 {
-                    autorecoveringConnection.ConnectionShutdown += OnConnectionShutdown;
-                    autorecoveringConnection.RecoverySucceeded += OnRecoverySucceeded;
+                    connection.ConnectionShutdown += OnConnectionShutdown;
+                    recoverable.Recovery += OnRecoverySucceeded;
                 }
                 return connection;
             }
@@ -119,7 +119,7 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
         }
         else
         {
-            var connection = _connectionFactory.CreateConnection();
+            var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
             _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
             return connection;
         }

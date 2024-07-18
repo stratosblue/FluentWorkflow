@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading;
 using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
@@ -105,20 +106,20 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         var exchangeName = _options.ExchangeName ?? RabbitMQOptions.DefaultExchangeName;
 
         //global channel
-        var channel = connection.CreateModel();
+        var channel = await connection.CreateChannelAsync(cancellationToken);
         //声明交换机
-        channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Topic, durable: true, autoDelete: false, arguments: null);
+        await channel.ExchangeDeclareAsync(exchange: exchangeName, type: ExchangeType.Topic, durable: true, autoDelete: false, arguments: null, noWait: false, cancellationToken: cancellationToken);
 
         var defaultConsumeQueueName = NormalizConsumeQueueName(_options.ConsumeQueueName ?? Assembly.GetEntryAssembly()?.GetName().Name?.ToLowerInvariant());
 
         var queueArguments = GetQueueArguments(defaultConsumeQueueName);
 
         //声明默认队列
-        channel.QueueDeclare(queue: defaultConsumeQueueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArguments);
+        await channel.QueueDeclareAsync(queue: defaultConsumeQueueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArguments!, noWait: false, cancellationToken: cancellationToken);
 
         if (_options.GlobalQos > 0)
         {
-            channel.BasicQos(prefetchSize: 0, prefetchCount: _options.GlobalQos, global: false);
+            await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: _options.GlobalQos, global: false, cancellationToken: cancellationToken);
         }
 
         var defaultConsumeDescriptors = new Dictionary<string, ConsumeDescriptor>();
@@ -132,16 +133,16 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
                 _logger.LogInformation("Use standalone channel consume workflow messages. EventName: {EventName}. QueueName: {QueueName}.", eventName, standaloneQueueName);
 
-                var standaloneChannel = connection.CreateModel();
+                var standaloneChannel = await connection.CreateChannelAsync(cancellationToken);
                 var consumeDescriptor = new ConsumeDescriptor(EventName: eventName,
                                                               InvokerDescriptors: invokerDescriptors,
                                                               RequeuePolicy: messageHandleOptions.RequeuePolicy,
                                                               RequeueDelay: messageHandleOptions.RequeueDelay);
-                SetupStandAloneConsumer(standaloneChannel, standaloneQueueName, consumeDescriptor, messageHandleOptions);
+                await SetupStandAloneConsumerAsync(standaloneChannel, standaloneQueueName, consumeDescriptor, messageHandleOptions, cancellationToken);
                 //从默认队列解绑
-                channel.QueueUnbind(queue: defaultConsumeQueueName, exchange: exchangeName, routingKey: eventName, arguments: null);
+                await channel.QueueUnbindAsync(queue: defaultConsumeQueueName, exchange: exchangeName, routingKey: eventName, arguments: null, cancellationToken: cancellationToken);
                 //绑定到独立队列
-                channel.QueueBind(queue: standaloneQueueName, exchange: exchangeName, routingKey: eventName, arguments: null);
+                await channel.QueueBindAsync(queue: standaloneQueueName, exchange: exchangeName, routingKey: eventName, arguments: null, noWait: false, cancellationToken: cancellationToken);
                 standaloneEventNames.Add(eventName);
             }
             else
@@ -152,7 +153,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                                                               RequeueDelay: messageHandleOptions?.RequeueDelay ?? RabbitMQOptions.MessageRequeueDelay);
                 defaultConsumeDescriptors.Add(eventName, consumeDescriptor);
                 //绑定到默认队列
-                channel.QueueBind(queue: defaultConsumeQueueName, exchange: exchangeName, routingKey: eventName, arguments: null);
+                await channel.QueueBindAsync(queue: defaultConsumeQueueName, exchange: exchangeName, routingKey: eventName, arguments: null, noWait: false, cancellationToken: cancellationToken);
             }
         }
 
@@ -172,10 +173,14 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                                                             _consumeLogger,
                                                             _runningCancellationToken);
 
-            channel.BasicConsume(queue: defaultConsumeQueueName,
-                                 autoAck: false,
-                                 consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
-                                 consumer: consumer);
+            await channel.BasicConsumeAsync(queue: defaultConsumeQueueName,
+                                            autoAck: false,
+                                            consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
+                                            noLocal: false,
+                                            exclusive: false,
+                                            arguments: null,
+                                            consumer: consumer,
+                                            cancellationToken: cancellationToken);
         }
     }
 
@@ -221,25 +226,29 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         }
     }
 
-    private void SetupStandAloneConsumer(IModel channel, string standaloneQueueName, ConsumeDescriptor consumeDescriptor, MessageHandleOptions messageHandleOptions)
+    private async Task SetupStandAloneConsumerAsync(IChannel channel, string standaloneQueueName, ConsumeDescriptor consumeDescriptor, MessageHandleOptions messageHandleOptions, CancellationToken cancellationToken)
     {
         var queueArguments = GetQueueArguments(standaloneQueueName);
 
-        channel.QueueDeclare(queue: standaloneQueueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArguments);
-        channel.BasicQos(prefetchSize: 0, prefetchCount: messageHandleOptions.Qos, global: false);
+        await channel.QueueDeclareAsync(queue: standaloneQueueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArguments!, noWait: false, cancellationToken: cancellationToken);
+        await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: messageHandleOptions.Qos, global: false, cancellationToken: cancellationToken);
 
         var consumer = new StandAloneEventMessageConsumer(consumeDescriptor: consumeDescriptor,
-                                                          model: channel,
+                                                          channel: channel,
                                                           serviceScopeFactory: _serviceScopeFactory,
                                                           objectSerializer: _objectSerializer,
                                                           diagnosticSource: _diagnosticSource,
                                                           logger: _consumeLogger,
                                                           runningToken: _runningCancellationToken);
 
-        channel.BasicConsume(queue: standaloneQueueName,
-                             autoAck: false,
-                             consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
-                             consumer: consumer);
+        await channel.BasicConsumeAsync(queue: standaloneQueueName,
+                                        autoAck: false,
+                                        consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
+                                        noLocal: false,
+                                        exclusive: false,
+                                        arguments: null,
+                                        consumer: consumer,
+                                        cancellationToken: cancellationToken);
     }
 
     #endregion Private 方法
