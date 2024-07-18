@@ -46,7 +46,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.Test.Base", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.Template.Extension.Redis", "template\FluentWorkflow.Template\FluentWorkflow.Template.Extension.Redis.csproj", "{B85C3F9E-EED6-4689-B850-DC0B1CFC7387}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.RabbitMQ", "src\FluentWorkflow.RabbitMQ\FluentWorkflow.RabbitMQ.csproj", "{01A832AA-384D-4F5B-8ACE-3583BB855B8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.RabbitMQ.Legacy", "src\FluentWorkflow.RabbitMQ.Legacy\FluentWorkflow.RabbitMQ.Legacy.csproj", "{01A832AA-384D-4F5B-8ACE-3583BB855B8C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.Template.Test", "test\FluentWorkflow.Template.Test\FluentWorkflow.Template.Test.csproj", "{7008689B-EDA5-4AF6-BC31-480115C691DD}"
 EndProject
