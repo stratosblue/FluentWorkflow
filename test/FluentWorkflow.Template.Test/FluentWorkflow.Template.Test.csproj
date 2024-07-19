@@ -22,4 +22,9 @@
     <ProjectReference Include="..\FluentWorkflow.Test.Base\FluentWorkflow.Test.Base.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="**\obj\**" />
+    <EmbeddedResource Remove="**\obj\**" />
+    <None Remove="**\obj\**" />
+  </ItemGroup>
 </Project>

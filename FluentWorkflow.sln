@@ -52,7 +52,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.Template.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.SimpleSample.Test", "test\FluentWorkflow.SimpleSample.Test\FluentWorkflow.SimpleSample.Test.csproj", "{49938E79-3DCB-472C-801F-BB8C446C9FE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentWorkflow.RabbitMQ", "src\FluentWorkflow.RabbitMQ\FluentWorkflow.RabbitMQ.csproj", "{23653E2F-FB84-4FBA-AAA6-9C02AA636CFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.RabbitMQ", "src\FluentWorkflow.RabbitMQ\FluentWorkflow.RabbitMQ.csproj", "{23653E2F-FB84-4FBA-AAA6-9C02AA636CFA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.Test.Base.LegacyRabbitMQ", "test\FluentWorkflow.Test.Base\FluentWorkflow.Test.Base.LegacyRabbitMQ.csproj", "{DE158D6E-DDB4-4A21-81BF-DD3C90F8D670}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.Test.LegacyRabbitMQ", "test\FluentWorkflow.Test\FluentWorkflow.Test.LegacyRabbitMQ.csproj", "{4F18BF39-6AA9-4F2E-AA79-69BCB8589E0B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.Template.Test.LegacyRabbitMQ", "test\FluentWorkflow.Template.Test\FluentWorkflow.Template.Test.LegacyRabbitMQ.csproj", "{B25B30F3-3F38-44FB-9B96-94592614E411}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentWorkflow.SimpleSample.Test.LegacyRabbitMQ", "test\FluentWorkflow.SimpleSample.Test\FluentWorkflow.SimpleSample.Test.LegacyRabbitMQ.csproj", "{FCC0060C-4D51-493C-BEE8-C398A78F39E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -120,6 +128,22 @@ Global
 		{23653E2F-FB84-4FBA-AAA6-9C02AA636CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23653E2F-FB84-4FBA-AAA6-9C02AA636CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23653E2F-FB84-4FBA-AAA6-9C02AA636CFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE158D6E-DDB4-4A21-81BF-DD3C90F8D670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE158D6E-DDB4-4A21-81BF-DD3C90F8D670}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE158D6E-DDB4-4A21-81BF-DD3C90F8D670}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE158D6E-DDB4-4A21-81BF-DD3C90F8D670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F18BF39-6AA9-4F2E-AA79-69BCB8589E0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F18BF39-6AA9-4F2E-AA79-69BCB8589E0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F18BF39-6AA9-4F2E-AA79-69BCB8589E0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F18BF39-6AA9-4F2E-AA79-69BCB8589E0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B25B30F3-3F38-44FB-9B96-94592614E411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B25B30F3-3F38-44FB-9B96-94592614E411}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B25B30F3-3F38-44FB-9B96-94592614E411}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B25B30F3-3F38-44FB-9B96-94592614E411}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCC0060C-4D51-493C-BEE8-C398A78F39E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCC0060C-4D51-493C-BEE8-C398A78F39E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCC0060C-4D51-493C-BEE8-C398A78F39E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCC0060C-4D51-493C-BEE8-C398A78F39E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +164,10 @@ Global
 		{7008689B-EDA5-4AF6-BC31-480115C691DD} = {BBBDA882-ED61-4F42-8380-11A6D6E6C82C}
 		{49938E79-3DCB-472C-801F-BB8C446C9FE3} = {BBBDA882-ED61-4F42-8380-11A6D6E6C82C}
 		{23653E2F-FB84-4FBA-AAA6-9C02AA636CFA} = {722A2DEB-1919-4A63-9F2A-CF068C8A1618}
+		{DE158D6E-DDB4-4A21-81BF-DD3C90F8D670} = {BBBDA882-ED61-4F42-8380-11A6D6E6C82C}
+		{4F18BF39-6AA9-4F2E-AA79-69BCB8589E0B} = {BBBDA882-ED61-4F42-8380-11A6D6E6C82C}
+		{B25B30F3-3F38-44FB-9B96-94592614E411} = {BBBDA882-ED61-4F42-8380-11A6D6E6C82C}
+		{FCC0060C-4D51-493C-BEE8-C398A78F39E6} = {BBBDA882-ED61-4F42-8380-11A6D6E6C82C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {546877d0-f5a8-42cf-ad15-a160822c2f35}

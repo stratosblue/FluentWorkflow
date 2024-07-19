@@ -1,0 +1,15 @@
+﻿<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup Condition="!$(MSBuildProjectName.EndsWith('LegacyRabbitMQ'))">
+    <BuildIntermediatePath>./obj/current</BuildIntermediatePath>
+    <BaseIntermediateOutputPath>$(BuildIntermediatePath)</BaseIntermediateOutputPath>
+    <OutputPath>./bin/current</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('LegacyRabbitMQ'))">
+    <BuildIntermediatePath>./obj/legacy</BuildIntermediatePath>
+    <BaseIntermediateOutputPath>$(BuildIntermediatePath)</BaseIntermediateOutputPath>
+    <OutputPath>./bin/legacy</OutputPath>
+  </PropertyGroup>
+</Project>

@@ -36,8 +36,13 @@ public class RabbitMQTestServiceProviderProvider : TestServiceProviderProvider
         var options = ServiceProvider.GetRequiredService<IOptions<RabbitMQOptions>>();
         var connectionProvider = ServiceProvider.GetRequiredService<IRabbitMQConnectionProvider>();
         using var connection = await connectionProvider.GetAsync(default);
+#if LEGACY_RABBITMQ
         using var model = connection.CreateModel();
         model.QueueDeleteNoWait(options.Value.ConsumeQueueName, false, false);
+#else
+        using var model = await connection.CreateChannelAsync();
+        await model.QueueDeleteAsync(options.Value.ConsumeQueueName!, false, false);
+#endif
         await base.CleanupProviderAsync();
     }
 

@@ -5,8 +5,15 @@
     <IsTestProject>true</IsTestProject>
 
     <UserSecretsId>FluentWorkflowTest_05b88fa0-f476-470f-a4f6-9c5a087b5eb7</UserSecretsId>
+
+    <DefineConstants>$(DefineConstants);LEGACY_RABBITMQ</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="**\*.cs" />
+    <Compile Include="**\*RabbitMQ*.cs;*.cs;TestImpls\**\*.cs" />
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="8.1.0" />
     <PackageReference Include="Savorboard.CAP.InMemoryMessageQueue" Version="7.0.0" />
@@ -18,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\sample\FluentWorkflow.SimpleSample\FluentWorkflow.SimpleSample.csproj" />
-    <ProjectReference Include="..\FluentWorkflow.Test.Base\FluentWorkflow.Test.Base.csproj" />
+    <ProjectReference Include="..\FluentWorkflow.Test.Base\FluentWorkflow.Test.Base.LegacyRabbitMQ.csproj" />
   </ItemGroup>
 
   <ItemGroup>
