@@ -54,7 +54,6 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
             }
             _connectionFactory = new ConnectionFactory()
             {
-                DispatchConsumersAsync = true,
                 AutomaticRecoveryEnabled = true,
                 Uri = options.Uri,
                 ClientProvidedName = $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",

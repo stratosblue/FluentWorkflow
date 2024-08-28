@@ -8,6 +8,18 @@ namespace FluentWorkflow.RabbitMQ;
 /// </summary>
 public class RabbitMQOptions
 {
+    #region Public 委托
+
+    /// <summary>
+    /// 队列 Arguments 设置委托
+    /// </summary>
+    /// <param name="queueName"></param>
+    /// <param name="arguments"></param>
+
+    public delegate void QueueArgumentsSetupDelegate(string queueName, IDictionary<string, object> arguments);
+
+    #endregion Public 委托
+
     #region Public 字段
 
     /// <summary>
@@ -43,7 +55,6 @@ public class RabbitMQOptions
     /// 连接工厂，设置此值时会忽略 <see cref="Uri"/><br/>
     /// 注意:<br/>
     /// 需要支持自动恢复，即设置 <see cref="ConnectionFactory.AutomaticRecoveryEnabled"/> 和 <see cref="ConnectionFactory.TopologyRecoveryEnabled"/> 为 <see langword="true"/><br/>
-    /// 需要支持异步消费，即设置 <see cref="ConnectionFactory.DispatchConsumersAsync"/> 为 <see langword="true"/>
     /// </summary>
     public IConnectionFactory? ConnectionFactory { get; set; }
 
@@ -92,7 +103,7 @@ public class RabbitMQOptions
     /// <summary>
     /// 队列 Arguments 设置委托
     /// </summary>
-    public Action<string, IDictionary<string, object>>? QueueArgumentsSetup { get; set; }
+    public QueueArgumentsSetupDelegate? QueueArgumentsSetup { get; set; }
 
     /// <summary>
     /// Uri

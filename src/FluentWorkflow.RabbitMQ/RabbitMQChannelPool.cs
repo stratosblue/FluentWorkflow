@@ -72,7 +72,7 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
                 return ValueTask.FromResult(channel);
             }
 
-            _logger.LogDebug("Poold channel {Channel} is invalid. Drop it.", channel);
+            _logger.LogDebug("Pooled channel {Channel} is invalid. Drop it.", channel);
 
             channel.Dispose();
             Interlocked.Decrement(ref _currentPoolSize);

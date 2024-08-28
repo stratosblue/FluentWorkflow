@@ -51,7 +51,7 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
     #region Public 方法
 
     /// <inheritdoc/>
-    public override sealed async Task HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body)
+    public override sealed async Task HandleBasicDeliverAsync(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body)
     {
         try
         {
@@ -104,7 +104,7 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
             }
         }
 
-        return RequiredChannel.BasicRejectAsync(deliveryTag, false, RunningCancellationToken);
+        return RequiredChannel.BasicRejectAsync(deliveryTag, false, RunningCancellationToken).AsTask();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -170,7 +170,7 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
         }
     }
 
-    /// <inheritdoc cref="HandleBasicDeliver(string, ulong, bool, string, string, IReadOnlyBasicProperties, ReadOnlyMemory{byte})"/>
+    /// <inheritdoc cref="HandleBasicDeliverAsync(string, ulong, bool, string, string, IReadOnlyBasicProperties, ReadOnlyMemory{byte})"/>
     protected abstract Task InternalHandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body);
 
     #endregion Protected 方法

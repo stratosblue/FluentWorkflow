@@ -28,7 +28,7 @@
     </Content>
   </ItemGroup>
 
-  <Target Name="_IncludeSourceGenerator" BeforeTargets="_GetPackageFiles">
+  <Target Name="_IncludeFluentWorkflowSourceGenerator" BeforeTargets="_GetPackageFiles">
     <ItemGroup>
       <None Include="..\FluentWorkflow.Generator\bin\$(Configuration)\**\*.dll" Pack="True" PackagePath="analyzers\dotnet\cs" />
     </ItemGroup>
