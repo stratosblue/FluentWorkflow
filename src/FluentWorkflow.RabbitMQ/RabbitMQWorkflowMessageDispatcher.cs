@@ -84,12 +84,12 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await channel.BasicPublishAsync(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName, routingKey: TMessage.EventName, basicProperties, body: data, mandatory: false, cancellationToken: cancellationToken);
-
-        if (channel.NextPublishSeqNo > 0)
-        {
-            await channel.WaitForConfirmsAsync(cancellationToken);
-        }
+        await channel.BasicPublishAsync(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName,
+                                        routingKey: TMessage.EventName,
+                                        mandatory: false,
+                                        basicProperties: basicProperties,
+                                        body: data,
+                                        cancellationToken: cancellationToken);
     }
 
     private async Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken)

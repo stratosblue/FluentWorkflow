@@ -106,7 +106,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         var exchangeName = _options.ExchangeName ?? RabbitMQOptions.DefaultExchangeName;
 
         //global channel
-        var channel = await connection.CreateChannelAsync(cancellationToken);
+        var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
         //声明交换机
         await channel.ExchangeDeclareAsync(exchange: exchangeName, type: ExchangeType.Topic, durable: true, autoDelete: false, arguments: null, noWait: false, cancellationToken: cancellationToken);
 
@@ -133,7 +133,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
                 _logger.LogInformation("Use standalone channel consume workflow messages. EventName: {EventName}. QueueName: {QueueName}.", eventName, standaloneQueueName);
 
-                var standaloneChannel = await connection.CreateChannelAsync(cancellationToken);
+                var standaloneChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
                 var consumeDescriptor = new ConsumeDescriptor(EventName: eventName,
                                                               InvokerDescriptors: invokerDescriptors,
                                                               RequeuePolicy: messageHandleOptions.RequeuePolicy,

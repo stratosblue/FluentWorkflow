@@ -35,7 +35,7 @@ internal sealed class StandAloneEventMessageConsumer : EventMessageBasicConsumer
 
     #region Protected 方法
 
-    protected override Task InternalHandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body)
+    protected override Task InternalHandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body, CancellationToken cancellationToken)
     {
         var eventName = "UnknownEventName";
         if (properties?.Headers is { } headers

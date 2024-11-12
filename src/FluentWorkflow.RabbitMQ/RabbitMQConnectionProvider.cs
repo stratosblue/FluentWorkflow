@@ -3,6 +3,7 @@ using FluentWorkflow.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace FluentWorkflow.RabbitMQ;
 
@@ -106,8 +107,8 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                 _existedConnection = connection;
                 if (connection is IRecoverable recoverable)
                 {
-                    connection.ConnectionShutdown += OnConnectionShutdown;
-                    recoverable.Recovery += OnRecoverySucceeded;
+                    connection.ConnectionShutdownAsync += OnConnectionShutdownAsync;
+                    recoverable.RecoveryAsync += OnRecoverySucceededAsync;
                 }
                 return connection;
             }
@@ -131,7 +132,7 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
 
     #region connection events
 
-    private void OnConnectionShutdown(object? sender, ShutdownEventArgs eventArgs)
+    private Task OnConnectionShutdownAsync(object? sender, ShutdownEventArgs eventArgs)
     {
         if (_isDisposed)
         {
@@ -141,11 +142,14 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
         {
             _logger.LogCritical("Workflow RabbitMQ connection shutdown. {EventArgs}", eventArgs);
         }
+
+        return Task.CompletedTask;
     }
 
-    private void OnRecoverySucceeded(object? sender, EventArgs eventArgs)
+    private Task OnRecoverySucceededAsync(object? sender, AsyncEventArgs eventArgs)
     {
         _logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {EventArgs}", eventArgs);
+        return Task.CompletedTask;
     }
 
     #endregion connection events

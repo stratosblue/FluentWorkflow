@@ -13,6 +13,10 @@ A message driven distributed asynchronous workflow framework. 消息驱动的分
 
 在典型的消息驱动处理流程中，阶段的`开始消息`与`结束消息`、各个消息的触发都需要手动定义，这些多数属于重复工作，`FluentWorkflow`是为了减少这些重复劳动而诞生的
 
+## BreakChanges
+
+ - 已在包 `FluentWorkflow.RabbitMQ` 启用 `RabbitMQ.Client` 的 `7.0` 版本支持，`6.*` 版本支持使用包 `FluentWorkflow.RabbitMQ.Legacy`
+
 -------
 
 ## 2. Features

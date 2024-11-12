@@ -51,11 +51,12 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
     #region Public 方法
 
     /// <inheritdoc/>
-    public override sealed async Task HandleBasicDeliverAsync(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body)
+    public override sealed async Task HandleBasicDeliverAsync(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body, CancellationToken cancellationToken)
     {
+        //TODO cancellationToken 的处理
         try
         {
-            await InternalHandleBasicDeliver(consumerTag, deliveryTag, redelivered, exchange, routingKey, properties, body);
+            await InternalHandleBasicDeliver(consumerTag, deliveryTag, redelivered, exchange, routingKey, properties, body, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -170,8 +171,8 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
         }
     }
 
-    /// <inheritdoc cref="HandleBasicDeliverAsync(string, ulong, bool, string, string, IReadOnlyBasicProperties, ReadOnlyMemory{byte})"/>
-    protected abstract Task InternalHandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body);
+    /// <inheritdoc cref="HandleBasicDeliverAsync(string, ulong, bool, string, string, IReadOnlyBasicProperties, ReadOnlyMemory{byte}, CancellationToken)"/>
+    protected abstract Task InternalHandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body, CancellationToken cancellationToken);
 
     #endregion Protected 方法
 

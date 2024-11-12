@@ -5,7 +5,6 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-    <PackageId>FluentWorkflow.RabbitMQ</PackageId>
     <RootNamespace>FluentWorkflow.RabbitMQ</RootNamespace>
     <IsPackable>true</IsPackable>
   </PropertyGroup>

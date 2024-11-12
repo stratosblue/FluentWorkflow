@@ -85,11 +85,13 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
         async ValueTask<IChannel> InnerRentAsync(CancellationToken cancellationToken = default)
         {
             var connection = await EnsureConnectionAsync(cancellationToken);
-            var channel = await connection.CreateChannelAsync(cancellationToken);
-            if (_options.PublisherConfirms)
-            {
-                await channel.ConfirmSelectAsync(cancellationToken);
-            }
+
+            var createChannelOptions = new CreateChannelOptions(publisherConfirmationsEnabled: _options.PublisherConfirms,
+                                                                publisherConfirmationTrackingEnabled: _options.PublisherConfirms,
+                                                                outstandingPublisherConfirmationsRateLimiter: null,
+                                                                consumerDispatchConcurrency: null);
+
+            var channel = await connection.CreateChannelAsync(createChannelOptions, cancellationToken: cancellationToken);
 
             Interlocked.Increment(ref _currentPoolSize);
 
