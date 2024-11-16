@@ -12,6 +12,21 @@ public static class ActivityExtensions
     #region Public 方法
 
     /// <summary>
+    /// 批量添加Baggage
+    /// </summary>
+    /// <param name="activity"></param>
+    /// <param name="baggages"></param>
+    /// <returns></returns>
+    public static Activity AddBaggages(this Activity activity, IEnumerable<KeyValuePair<string, string?>> baggages)
+    {
+        foreach (var (key, value) in baggages)
+        {
+            activity.AddBaggage(key, value);
+        }
+        return activity;
+    }
+
+    /// <summary>
     /// 在任务 <paramref name="task"/> 完成时处理 <paramref name="activity"/>
     /// </summary>
     /// <param name="task"></param>
@@ -39,6 +54,21 @@ public static class ActivityExtensions
     {
         activity.RecordExceptionEvent(exception, timestamp);
         activity.SetStatus(ActivityStatusCode.Error, exception.Message);
+        return activity;
+    }
+
+    /// <summary>
+    /// 批量添加Baggage
+    /// </summary>
+    /// <param name="activity"></param>
+    /// <param name="baggages"></param>
+    /// <returns></returns>
+    public static Activity SetBaggages(this Activity activity, IEnumerable<KeyValuePair<string, string?>> baggages)
+    {
+        foreach (var (key, value) in baggages)
+        {
+            activity.SetBaggage(key, value);
+        }
         return activity;
     }
 

@@ -236,7 +236,9 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
                 var tracingContext = TracingContext.Deserialize(parentTraceContextData);
                 var activityContext = tracingContext.RestoreActivityContext(true);
 
-                activity = ConsumerActivitySource.StartActivity("ConsumeEventMessage", ActivityKind.Consumer, activityContext);
+                activity = ConsumerActivitySource.CreateActivity("ConsumeEventMessage", ActivityKind.Consumer, activityContext);
+                activity?.AddBaggages(tracingContext.Baggage);
+                activity?.Start();
 
                 contextCarrier.Context.SetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext, null);
             }
