@@ -228,7 +228,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         channel.QueueDeclare(queue: standaloneQueueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArguments);
         channel.BasicQos(prefetchSize: 0, prefetchCount: messageHandleOptions.Qos, global: false);
 
-        var consumer = new StandAloneEventMessageConsumer(consumeDescriptor: consumeDescriptor,
+        var consumer = new StandaloneEventMessageConsumer(consumeDescriptor: consumeDescriptor,
                                                           model: channel,
                                                           serviceScopeFactory: _serviceScopeFactory,
                                                           objectSerializer: _objectSerializer,

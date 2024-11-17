@@ -8,7 +8,7 @@ namespace FluentWorkflow.RabbitMQ;
 /// <summary>
 /// 独立事件消息消费者
 /// </summary>
-internal sealed class StandAloneEventMessageConsumer : EventMessageBasicConsumer
+internal sealed class StandaloneEventMessageConsumer : EventMessageBasicConsumer
 {
     #region Public 属性
 
@@ -18,8 +18,8 @@ internal sealed class StandAloneEventMessageConsumer : EventMessageBasicConsumer
 
     #region Public 构造函数
 
-    /// <inheritdoc cref="StandAloneEventMessageConsumer"/>
-    public StandAloneEventMessageConsumer(ConsumeDescriptor consumeDescriptor,
+    /// <inheritdoc cref="StandaloneEventMessageConsumer"/>
+    public StandaloneEventMessageConsumer(ConsumeDescriptor consumeDescriptor,
                                           IModel model,
                                           IServiceScopeFactory serviceScopeFactory,
                                           IObjectSerializer objectSerializer,
