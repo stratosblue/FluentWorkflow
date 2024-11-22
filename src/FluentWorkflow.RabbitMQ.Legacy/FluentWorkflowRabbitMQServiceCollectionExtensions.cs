@@ -48,6 +48,7 @@ public static class FluentWorkflowRabbitMQServiceCollectionExtensions
             builder.Services.Configure<RabbitMQOptions>(optionsSetup);
         }
 
+        builder.Services.TryAddSingleton<IRabbitMQExchangeSelector, OptionsBasedRabbitMQExchangeSelector>();
         builder.Services.TryAddSingleton<IRabbitMQConnectionProvider, RabbitMQConnectionProvider>();
         builder.Services.TryAddSingleton<IRabbitMQChannelPool, RabbitMQChannelPool>();
 

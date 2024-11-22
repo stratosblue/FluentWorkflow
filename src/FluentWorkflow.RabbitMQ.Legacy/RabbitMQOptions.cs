@@ -68,8 +68,7 @@ public class RabbitMQOptions
     public MessageRequeuePolicy ErrorMessageRequeuePolicy { get; set; } = MessageRequeuePolicy.Default;
 
     /// <summary>
-    /// 使用的交换机名称
-    /// TODO 单元测试
+    /// 默认使用的交换机名称（如果注册了自定义的 <see cref="IRabbitMQExchangeSelector"/>，则此配置无效）
     /// </summary>
     public string? ExchangeName { get; set; } = DefaultExchangeName;
 

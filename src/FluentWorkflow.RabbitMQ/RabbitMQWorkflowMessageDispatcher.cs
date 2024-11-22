@@ -1,45 +1,47 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
 using FluentWorkflow.RabbitMQ;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace FluentWorkflow;
 
-internal sealed class RabbitMQWorkflowMessageDispatcher
+/// <summary>
+/// 基于RabbitMQ的 <inheritdoc cref="WorkflowMessageDispatcher"/>
+/// </summary>
+[EditorBrowsable(EditorBrowsableState.Advanced)]
+public class RabbitMQWorkflowMessageDispatcher
     : WorkflowMessageDispatcher, IWorkflowMessageDispatcher, IDisposable
 {
-    #region Private 字段
+    #region Protected 属性
 
-    private readonly IObjectSerializer _objectSerializer;
+    /// <inheritdoc cref="IRabbitMQExchangeSelector"/>
+    protected IRabbitMQExchangeSelector ExchangeSelector { get; }
 
-    private readonly IDisposable? _optionsMonitorDisposer;
+    /// <inheritdoc cref="IObjectSerializer"/>
+    protected IObjectSerializer ObjectSerializer { get; }
 
-    private readonly IRabbitMQChannelPool _rabbitMQChannelPool;
+    /// <inheritdoc cref="IRabbitMQChannelPool"/>
+    protected IRabbitMQChannelPool RabbitMQChannelPool { get; }
 
-    private bool _disposed;
-
-    private RabbitMQOptions _rabbitMQOptions;
-
-    #endregion Private 字段
+    #endregion Protected 属性
 
     #region Public 构造函数
 
+    /// <inheritdoc cref="RabbitMQWorkflowMessageDispatcher"/>
     public RabbitMQWorkflowMessageDispatcher(IRabbitMQChannelPool rabbitMQChannelPool,
                                              IWorkflowDiagnosticSource diagnosticSource,
+                                             IRabbitMQExchangeSelector exchangeSelector,
                                              IObjectSerializer objectSerializer,
-                                             IOptionsMonitor<RabbitMQOptions> rabbitMQOptionsMonitor,
                                              ILogger<RabbitMQWorkflowMessageDispatcher> logger)
         : base(diagnosticSource, logger)
     {
-        _rabbitMQChannelPool = rabbitMQChannelPool;
-        _objectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
-
-        _optionsMonitorDisposer = rabbitMQOptionsMonitor.OnChange(options => _rabbitMQOptions = options);
-        _rabbitMQOptions = rabbitMQOptionsMonitor.CurrentValue;
+        RabbitMQChannelPool = rabbitMQChannelPool ?? throw new ArgumentNullException(nameof(rabbitMQChannelPool));
+        ExchangeSelector = exchangeSelector ?? throw new ArgumentNullException(nameof(exchangeSelector));
+        ObjectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
     }
 
     #endregion Public 构造函数
@@ -49,11 +51,6 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (!_disposed)
-        {
-            _optionsMonitorDisposer?.Dispose();
-            _disposed = true;
-        }
     }
 
     /// <inheritdoc/>
@@ -80,11 +77,13 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
             }
         };
 
-        var data = _objectSerializer.SerializeToBytes(message);
+        var exchange = await ExchangeSelector.GetExchangeAsync(message, cancellationToken);
+
+        var data = ObjectSerializer.SerializeToBytes(message);
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        await channel.BasicPublishAsync(exchange: _rabbitMQOptions.ExchangeName ?? RabbitMQOptions.DefaultExchangeName,
+        await channel.BasicPublishAsync(exchange: exchange,
                                         routingKey: TMessage.EventName,
                                         mandatory: false,
                                         basicProperties: basicProperties,
@@ -104,7 +103,7 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
         IChannel? channel = null;
         try
         {
-            channel = await _rabbitMQChannelPool.RentAsync(cancellationToken);
+            channel = await RabbitMQChannelPool.RentAsync(cancellationToken);
             await SendMessageAsync(channel, message, cancellationToken);
         }
         catch (Exception ex)
@@ -116,7 +115,7 @@ internal sealed class RabbitMQWorkflowMessageDispatcher
         {
             if (channel is not null)
             {
-                _rabbitMQChannelPool.Return(channel);
+                RabbitMQChannelPool.Return(channel);
             }
         }
     }
