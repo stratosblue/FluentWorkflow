@@ -14,7 +14,10 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var declarationsProvider = context.SyntaxProvider.CreateSyntaxProvider(FilterContextSyntaxNode, TransformContextSyntaxNode);
+        var declarationsProvider = context.SyntaxProvider.CreateSyntaxProvider(FilterContextSyntaxNode, TransformContextSyntaxNode)
+                                                         .Collect()
+                                                         .SelectMany((items, _) => items.Distinct())
+                                                         .WithComparer(WorkflowDescriptorEqualityComparer.Shared);
 
         var compilationPropertiesProvider = context.AnalyzerConfigOptionsProvider.Select((configOptions, token) =>
         {
@@ -23,7 +26,7 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
             if (configOptions.GlobalOptions.TryGetValue("build_property.FluentWorkflowGeneratorAdditional", out var generatorAdditionalValues)
                 && !string.IsNullOrWhiteSpace(generatorAdditionalValues))
             {
-                foreach (var generatorAdditionalValue in generatorAdditionalValues.Split(new[] { ',', ';', ' ', '\t' }))
+                foreach (var generatorAdditionalValue in generatorAdditionalValues.Split([',', ';', ' ', '\t']))
                 {
                     if (Enum.TryParse<GeneratorAdditional>(generatorAdditionalValue, out var value))
                     {
@@ -34,11 +37,8 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
 
             configOptions.GlobalOptions.TryGetValue("build_property.rootnamespace", out var rootNameSpace);
 
-            return new CompilationProperties()
-            {
-                RootNameSpace = rootNameSpace ?? string.Empty,
-                GeneratorAdditionals = generatorAdditionals,
-            };
+            return new CompilationProperties(RootNameSpace: rootNameSpace ?? string.Empty,
+                                             GeneratorAdditionals: generatorAdditionals.ToList());
         });
 
         context.RegisterSourceOutput(declarationsProvider.Combine(compilationPropertiesProvider),
@@ -117,6 +117,7 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
     {
         if (syntaxNode is ClassDeclarationSyntax classDeclarationSyntax
             && classDeclarationSyntax.AttributeLists.Count == 0
+            && classDeclarationSyntax.Modifiers.Any(SyntaxKind.PartialKeyword)
             && !classDeclarationSyntax.Modifiers.Any(SyntaxKind.AbstractKeyword)
             && IsBaseOnIWorkflowDirectly(classDeclarationSyntax))
         {
@@ -127,7 +128,8 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
         static bool IsBaseOnIWorkflowDirectly(ClassDeclarationSyntax classDeclarationSyntax)
         {
             var types = classDeclarationSyntax.BaseList?.Types;
-            if (types is null)
+            if (types is null
+                || types.Value.Count == 0)
             {
                 return false;
             }
@@ -144,7 +146,7 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
         var workflowName = classDeclarationSyntax.Identifier.ValueText;
         var nameSpace = typeSymbol.ContainingNamespace.ToDisplayString();
 
-        return new(classDeclarationSyntax, typeSymbol, workflowName, nameSpace);
+        return new(classDeclarationSyntax, workflowName, nameSpace);
     }
 
     #endregion filter

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 using FluentWorkflow.Interface;
 
@@ -71,6 +72,7 @@ public sealed class WorkflowContextMetadata
     WorkflowFlag IWorkflowContext.Flag
     {
         get => Values.TryGetValue(FluentWorkflowConstants.ContextKeys.WorkflowFlag, out var valueString) ? Enum.Parse<WorkflowFlag>(valueString) : WorkflowFlag.None;
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         set => throw new InvalidOperationException();
     }
 

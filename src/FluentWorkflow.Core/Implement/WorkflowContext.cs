@@ -33,6 +33,7 @@ public abstract class WorkflowContext
     public WorkflowFlag Flag
     {
         get => _flag ??= this.GetEnum<WorkflowFlag>(FluentWorkflowConstants.ContextKeys.WorkflowFlag, WorkflowFlag.None).Value;
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         set
         {
             ThrowIfStarted();

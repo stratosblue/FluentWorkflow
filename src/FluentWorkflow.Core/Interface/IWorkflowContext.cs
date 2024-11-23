@@ -14,7 +14,7 @@ public interface IWorkflowContext
     /// <summary>
     /// 工作流程标识
     /// </summary>
-    public WorkflowFlag Flag { get; set; }
+    public WorkflowFlag Flag { get; [EditorBrowsable(EditorBrowsableState.Advanced)] set; }
 
     /// <summary>
     /// 父工作流程上下文

@@ -12,8 +12,8 @@ dotnet_style_qualification_for_property = false:silent
 dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_event = false:silent
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
-indent_size = 4
-tab_width = 4
+indent_size = 2
+tab_width = 2
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 
 # c# 文件
@@ -300,19 +300,3 @@ dotnet_naming_style.以_为前缀.required_prefix = _
 dotnet_naming_style.以_为前缀.required_suffix =
 dotnet_naming_style.以_为前缀.word_separator =
 dotnet_naming_style.以_为前缀.capitalization = camel_case
-
-[*.csproj]
-indent_size = 2
-tab_width = 2
-
-[*.props]
-indent_size = 2
-tab_width = 2
-
-[*.targets]
-indent_size = 2
-tab_width = 2
-
-[*.json]
-indent_size = 2
-tab_width = 2
