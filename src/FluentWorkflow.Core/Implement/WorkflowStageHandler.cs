@@ -186,6 +186,29 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
     protected abstract TStageCompletedMessage CreateCompletedMessage(TWorkflowContext context);
 
     /// <summary>
+    /// 将 <paramref name="source"/> 的内容合并到 <paramref name="destination"/>
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    protected virtual void MergeContext(IWorkflowContext source, IWorkflowContext destination)
+    {
+        var sourceSnapshot = source.GetSnapshot();
+        foreach (var (key, value) in sourceSnapshot)
+        {
+            destination.SetValue(key, value);
+        }
+
+        foreach (var (key, _) in destination.GetSnapshot())
+        {
+            if (!sourceSnapshot.ContainsKey(key))
+            {
+                destination.SetValue(key, null);
+            }
+        }
+    }
+
+    /// <summary>
     /// 在 <see cref="ProcessAsync(ProcessContext, TStageMessage, CancellationToken)"/> 中出现异常
     /// </summary>
     /// <param name="exception"></param>

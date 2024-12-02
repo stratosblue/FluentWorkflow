@@ -95,10 +95,7 @@ public abstract partial class TemplateWorkflowStageHandler<TStage, TStageMessage
         await OnAwaitFinishedAsync(typedContext, childWorkflowContexts, cancellationToken);
 
         //将修改反应回原上下文
-        foreach (var (key, value) in ((IWorkflowContext)typedContext).GetSnapshot())
-        {
-            context.SetValue(key, value);
-        }
+        MergeContext(typedContext, context);
     }
 
     /// <inheritdoc/>
