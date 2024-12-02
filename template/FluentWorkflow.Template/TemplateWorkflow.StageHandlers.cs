@@ -105,6 +105,7 @@ public abstract partial class TemplateWorkflowStageHandler<TStage, TStageMessage
 
         var typedContext = new TemplateWorkflowContext(context.GetSnapshot());
 
+        //HACK 包装 OnProcessSuccessAsync 的用户异常，保证消息正确发送？
         await OnProcessSuccessAsync(typedContext, cancellationToken);
         var stageCompletedMessage = CreateCompletedMessage(typedContext);
         await MessageDispatcher.PublishAsync(stageCompletedMessage, cancellationToken);
@@ -117,6 +118,7 @@ public abstract partial class TemplateWorkflowStageHandler<TStage, TStageMessage
 
         var typedContext = new TemplateWorkflowContext(context.GetSnapshot());
 
+        //HACK 包装 OnProcessFailedAsync 的用户异常，保证消息正确发送？
         await OnProcessFailedAsync(typedContext, cancellationToken);
 
         var failureMessage = context.TryGetFailureMessage(out var failureMessageValue) ? failureMessageValue : "Unknown error";

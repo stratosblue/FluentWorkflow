@@ -40,7 +40,7 @@ public abstract partial class {WorkflowName}Continuator<TStageFinalizer>
     protected readonly TStageFinalizer StageFinalizer;
 
     /// <inheritdoc cref=""{WorkflowName}Continuator{{TStageFinalizer}}""/>
-    public {WorkflowName}Continuator(TStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor) : base(workflowAwaitProcessor)
+    public {WorkflowName}Continuator(TStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger) : base(workflowAwaitProcessor, logger)
     {{
         StageFinalizer = stageFinalizer ?? throw new ArgumentNullException(nameof(stageFinalizer));
     }}
@@ -71,8 +71,8 @@ public abstract partial class {WorkflowName}{stage.Name}ContinuatorBase
     public static string StageName => {WorkflowName}Stages.{stage.Name};
 
     /// <inheritdoc cref=""{WorkflowName}{stage.Name}ContinuatorBase""/>
-    protected {WorkflowName}{stage.Name}ContinuatorBase(I{WorkflowName}{stage.Name}StageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor)
-        : base(stageFinalizer, workflowAwaitProcessor)
+    protected {WorkflowName}{stage.Name}ContinuatorBase(I{WorkflowName}{stage.Name}StageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger)
+        : base(stageFinalizer, workflowAwaitProcessor, logger)
     {{
     }}
 }}");
@@ -87,8 +87,8 @@ public abstract partial class {WorkflowName}{stage.Name}ContinuatorBase
 public partial class {WorkflowName}{stage.Name}Continuator : {WorkflowName}{stage.Name}ContinuatorBase
 {{
     /// <inheritdoc cref=""{WorkflowName}{stage.Name}Continuator""/>
-    public {WorkflowName}{stage.Name}Continuator(I{WorkflowName}{stage.Name}StageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor)
-        : base(stageFinalizer, workflowAwaitProcessor)
+    public {WorkflowName}{stage.Name}Continuator(I{WorkflowName}{stage.Name}StageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<{WorkflowName}{stage.Name}Continuator> logger)
+        : base(stageFinalizer, workflowAwaitProcessor, logger)
     {{
     }}
 }}");

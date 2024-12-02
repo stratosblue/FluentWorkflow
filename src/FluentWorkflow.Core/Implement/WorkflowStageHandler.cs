@@ -223,6 +223,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
 
     /// <summary>
     /// <see cref="ProcessAsync(ProcessContext, TStageMessage, CancellationToken)"/> 执行失败，认为工作流程已失败
+    /// <br/>(此方法内不应该抛出异常，会导致消息重新消费)
     /// </summary>
     /// <param name="context"></param>
     /// <param name="cancellationToken"></param>
@@ -231,6 +232,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
 
     /// <summary>
     /// <see cref="ProcessAsync(ProcessContext, TStageMessage, CancellationToken)"/> 执行成功
+    /// <br/>(此方法内不应该抛出异常，会导致消息重新消费)
     /// </summary>
     /// <param name="context"></param>
     /// <param name="cancellationToken"></param>

@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
+using Microsoft.Extensions.Logging;
 
 namespace FluentWorkflow;
 
@@ -16,6 +18,9 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
 {
     #region Protected 字段
 
+    /// <inheritdoc cref="ILogger"/>
+    protected readonly ILogger Logger;
+
     /// <inheritdoc cref="IWorkflowAwaitProcessor"/>
     protected readonly IWorkflowAwaitProcessor WorkflowAwaitProcessor;
 
@@ -24,9 +29,10 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
     #region Public 构造函数
 
     /// <inheritdoc/>
-    public WorkflowContinuator(IWorkflowAwaitProcessor workflowAwaitProcessor)
+    public WorkflowContinuator(IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger)
     {
         WorkflowAwaitProcessor = workflowAwaitProcessor ?? throw new ArgumentNullException(nameof(workflowAwaitProcessor));
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     #endregion Public 构造函数
@@ -53,7 +59,17 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
 
         var parentWorkflowContext = workflowAwaitState.ParentWorkflowContext as IWorkflowContext;
 
-        await finalizer.AwaitFinishedAsync(parentWorkflowContext, workflowAwaitState.ChildWorkflowContexts, cancellationToken);
+        try
+        {
+            await finalizer.AwaitFinishedAsync(parentWorkflowContext, workflowAwaitState.ChildWorkflowContexts, cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            var currentAlias = childWorkflowFinishedMessage.Context.TryGetChildWorkflowAlias(out var aliasValue) ? aliasValue : "Unknown";
+            Logger.LogError(exception, "Await finished child workflow \"{Alias}\" failed.", currentAlias);
+            parentWorkflowContext.SetFailureMessage($"Await finished child workflow \"{currentAlias}\" failed: {exception.Message}");
+            parentWorkflowContext.SetFailureStackTrace(exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());
+        }
 
         if (workflowAwaitState.GetFailed(true).FirstOrDefault() is { } failedWorkflowItem
             && failedWorkflowItem.Key is string alias
