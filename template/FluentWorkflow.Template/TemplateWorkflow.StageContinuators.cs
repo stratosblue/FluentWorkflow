@@ -23,7 +23,7 @@ public abstract partial class TemplateWorkflowContinuator<TStageFinalizer>
     protected readonly TStageFinalizer StageFinalizer;
 
     /// <inheritdoc cref="TemplateWorkflowContinuator{TStageFinalizer}"/>
-    public TemplateWorkflowContinuator(TStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger) : base(workflowAwaitProcessor, logger)
+    public TemplateWorkflowContinuator(TStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider) : base(workflowAwaitProcessor, logger, serviceProvider)
     {
         StageFinalizer = stageFinalizer ?? throw new ArgumentNullException(nameof(stageFinalizer));
     }
@@ -50,8 +50,8 @@ public abstract partial class TemplateWorkflowStage1CAUKContinuatorBase
     public static string StageName => TemplateWorkflowStages.Stage1CAUK;
 
     /// <inheritdoc cref="TemplateWorkflowStage1CAUKContinuatorBase"/>
-    protected TemplateWorkflowStage1CAUKContinuatorBase(ITemplateWorkflowStage1CAUKStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger)
-        : base(stageFinalizer, workflowAwaitProcessor, logger)
+    protected TemplateWorkflowStage1CAUKContinuatorBase(ITemplateWorkflowStage1CAUKStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
+        : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
@@ -71,8 +71,8 @@ public abstract partial class TemplateWorkflowStage2BPTGContinuatorBase
     public static string StageName => TemplateWorkflowStages.Stage2BPTG;
 
     /// <inheritdoc cref="TemplateWorkflowStage2BPTGContinuatorBase"/>
-    protected TemplateWorkflowStage2BPTGContinuatorBase(ITemplateWorkflowStage2BPTGStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger)
-        : base(stageFinalizer, workflowAwaitProcessor, logger)
+    protected TemplateWorkflowStage2BPTGContinuatorBase(ITemplateWorkflowStage2BPTGStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
+        : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
@@ -92,8 +92,8 @@ public abstract partial class TemplateWorkflowStage3AWBNContinuatorBase
     public static string StageName => TemplateWorkflowStages.Stage3AWBN;
 
     /// <inheritdoc cref="TemplateWorkflowStage3AWBNContinuatorBase"/>
-    protected TemplateWorkflowStage3AWBNContinuatorBase(ITemplateWorkflowStage3AWBNStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger)
-        : base(stageFinalizer, workflowAwaitProcessor, logger)
+    protected TemplateWorkflowStage3AWBNContinuatorBase(ITemplateWorkflowStage3AWBNStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
+        : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
@@ -104,8 +104,8 @@ public abstract partial class TemplateWorkflowStage3AWBNContinuatorBase
 public partial class TemplateWorkflowStage1CAUKContinuator : TemplateWorkflowStage1CAUKContinuatorBase
 {
     /// <inheritdoc cref="TemplateWorkflowStage1CAUKContinuator"/>
-    public TemplateWorkflowStage1CAUKContinuator(ITemplateWorkflowStage1CAUKStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<TemplateWorkflowStage1CAUKContinuator> logger)
-        : base(stageFinalizer, workflowAwaitProcessor, logger)
+    public TemplateWorkflowStage1CAUKContinuator(ITemplateWorkflowStage1CAUKStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<TemplateWorkflowStage1CAUKContinuator> logger, IServiceProvider serviceProvider)
+        : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
@@ -116,8 +116,8 @@ public partial class TemplateWorkflowStage1CAUKContinuator : TemplateWorkflowSta
 public partial class TemplateWorkflowStage2BPTGContinuator : TemplateWorkflowStage2BPTGContinuatorBase
 {
     /// <inheritdoc cref="TemplateWorkflowStage2BPTGContinuator"/>
-    public TemplateWorkflowStage2BPTGContinuator(ITemplateWorkflowStage2BPTGStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<TemplateWorkflowStage2BPTGContinuator> logger)
-        : base(stageFinalizer, workflowAwaitProcessor, logger)
+    public TemplateWorkflowStage2BPTGContinuator(ITemplateWorkflowStage2BPTGStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<TemplateWorkflowStage2BPTGContinuator> logger, IServiceProvider serviceProvider)
+        : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
@@ -128,8 +128,8 @@ public partial class TemplateWorkflowStage2BPTGContinuator : TemplateWorkflowSta
 public partial class TemplateWorkflowStage3AWBNContinuator : TemplateWorkflowStage3AWBNContinuatorBase
 {
     /// <inheritdoc cref="TemplateWorkflowStage3AWBNContinuator"/>
-    public TemplateWorkflowStage3AWBNContinuator(ITemplateWorkflowStage3AWBNStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger)
-        : base(stageFinalizer, workflowAwaitProcessor, logger)
+    public TemplateWorkflowStage3AWBNContinuator(ITemplateWorkflowStage3AWBNStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<TemplateWorkflowStage3AWBNContinuator> logger, IServiceProvider serviceProvider)
+        : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }

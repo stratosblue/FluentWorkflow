@@ -69,6 +69,8 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
             {
                 _logger.LogDebug("Provide existed channel {Channel}.", channel);
 
+                Interlocked.Decrement(ref _currentPoolSize);
+
                 return ValueTask.FromResult(channel);
             }
 
@@ -93,8 +95,6 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
 
             var channel = await connection.CreateChannelAsync(createChannelOptions, cancellationToken: cancellationToken);
 
-            Interlocked.Increment(ref _currentPoolSize);
-
             _logger.LogInformation("Created new channel {Channel}.", channel);
 
             return channel;
@@ -113,11 +113,11 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
             return;
         }
 
-        _logger.LogDebug("Return channel {Channel} into pool fail. Drop it. CurrentPoolSize: {PoolSize}.", channel, currentPoolSize);
+        currentPoolSize = Interlocked.Decrement(ref _currentPoolSize);
+
+        _logger.LogDebug("Return channel {Channel}[{IsOpen}] into pool fail. Drop it. CurrentPoolSize: {PoolSize}.", channel, channel.IsOpen, currentPoolSize);
 
         channel.Dispose();
-
-        Interlocked.Decrement(ref _currentPoolSize);
 
         Debug.Assert(_currentPoolSize >= 0);
     }

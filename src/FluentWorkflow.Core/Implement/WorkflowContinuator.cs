@@ -21,6 +21,9 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
     /// <inheritdoc cref="ILogger"/>
     protected readonly ILogger Logger;
 
+    /// <inheritdoc cref="IServiceProvider"/>
+    protected readonly IServiceProvider ServiceProvider;
+
     /// <inheritdoc cref="IWorkflowAwaitProcessor"/>
     protected readonly IWorkflowAwaitProcessor WorkflowAwaitProcessor;
 
@@ -29,10 +32,11 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
     #region Public 构造函数
 
     /// <inheritdoc/>
-    public WorkflowContinuator(IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger)
+    public WorkflowContinuator(IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
     {
         WorkflowAwaitProcessor = workflowAwaitProcessor ?? throw new ArgumentNullException(nameof(workflowAwaitProcessor));
         Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }
 
     #endregion Public 构造函数
