@@ -73,6 +73,10 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
             Logger.LogError(exception, "Await finished child workflow \"{Alias}\" failed.", currentAlias);
             parentWorkflowContext.SetFailureMessage($"Await finished child workflow \"{currentAlias}\" failed: {exception.Message}");
             parentWorkflowContext.SetFailureStackTrace(exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());
+
+            //执行等待失败，直接失败
+            await finalizer.FailAsync(parentWorkflowContext, cancellationToken);
+            return;
         }
 
         if (workflowAwaitState.GetFailed(true).FirstOrDefault() is { } failedWorkflowItem

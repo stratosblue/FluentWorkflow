@@ -77,7 +77,7 @@ public abstract class WorkflowContext
         if (!DataContainer.TryGetValue(FluentWorkflowConstants.ContextKeys.WorkflowName, out var workflowName)
             || !string.Equals(ValidWorkflowName(), workflowName))
         {
-            throw new ArgumentException($"\"{workflowName}\" 对于 {GetType()} 是无效的工作流程名称");
+            throw new ArgumentException($"\"{workflowName}\" 对于 {GetType()} 是无效的工作流程名称, 这通常是因为使用了错误的上下文数据进行构造。");
         }
 
         if (!DataContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.Stage))
