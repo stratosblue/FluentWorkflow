@@ -95,10 +95,16 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
     {{
         var typedContext = new {WorkflowName}Context(context.GetSnapshot());
 
-        await OnAwaitFinishedAsync(typedContext, childWorkflowContexts, cancellationToken);
-
-        //将修改反应回原上下文
-        MergeContext(typedContext, context);
+        try
+        {{
+            await OnAwaitFinishedAsync(typedContext, childWorkflowContexts, cancellationToken);
+        }}
+        finally
+        {{
+            //在完成等待时出现异常也需要将修改反应回原上下文
+            //将修改反应回原上下文
+            MergeContext(typedContext, context);
+        }}
     }}
 
     /// <inheritdoc/>

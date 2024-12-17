@@ -91,11 +91,16 @@ public abstract partial class TemplateWorkflowStageHandler<TStage, TStageMessage
     async Task IWorkflowStageFinalizer.AwaitFinishedAsync(IWorkflowContext context, IReadOnlyDictionary<string, IWorkflowContext?> childWorkflowContexts, CancellationToken cancellationToken)
     {
         var typedContext = new TemplateWorkflowContext(context.GetSnapshot());
-
-        await OnAwaitFinishedAsync(typedContext, childWorkflowContexts, cancellationToken);
-
-        //将修改反应回原上下文
-        MergeContext(typedContext, context);
+        try
+        {
+            await OnAwaitFinishedAsync(typedContext, childWorkflowContexts, cancellationToken);
+        }
+        finally
+        {
+            //在完成等待时出现异常也需要将修改反应回原上下文
+            //将修改反应回原上下文
+            MergeContext(typedContext, context);
+        }
     }
 
     /// <inheritdoc/>
