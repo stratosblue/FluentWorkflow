@@ -39,13 +39,13 @@ public static class {WorkflowName}StageHandlerDIExtensions
     /// 添加对工作流程 <see cref=""{WorkflowName}""/> 的阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 的处理器
     /// </summary>
     /// <typeparam name=""THandler"">基于 <see cref=""{WorkflowName}{stage.Name}StageHandlerBase""/> 实现的处理器类型</typeparam>
-    /// <param name=""builder""></param>
+    /// <param name=""configuration""></param>
     /// <param name=""serviceLifetime""></param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder Add{WorkflowName}{stage.Name}StageHandler<THandler>(this IFluentWorkflowBuilder builder, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+    public static {WorkflowName}Configuration Add{stage.Name}StageHandler<THandler>(this {WorkflowName}Configuration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where THandler : {WorkflowName}{stage.Name}StageHandlerBase
     {{
-        return builder.Add{WorkflowName}{stage.Name}StageHandler<THandler, {WorkflowName}{stage.Name}Continuator>(serviceLifetime);
+        return configuration.Add{stage.Name}StageHandler<THandler, {WorkflowName}{stage.Name}Continuator>(serviceLifetime);
     }}
 
     /// <summary>
@@ -53,13 +53,15 @@ public static class {WorkflowName}StageHandlerDIExtensions
     /// </summary>
     /// <typeparam name=""THandler"">基于 <see cref=""{WorkflowName}{stage.Name}StageHandlerBase""/> 实现的处理器类型</typeparam>
     /// <typeparam name=""TContinuator"">基于 <see cref=""{WorkflowName}{stage.Name}ContinuatorBase""/> 实现的流程延续器类型</typeparam>
-    /// <param name=""builder""></param>
+    /// <param name=""configuration""></param>
     /// <param name=""serviceLifetime""></param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder Add{WorkflowName}{stage.Name}StageHandler<THandler, TContinuator>(this IFluentWorkflowBuilder builder, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+    public static {WorkflowName}Configuration Add{stage.Name}StageHandler<THandler, TContinuator>(this {WorkflowName}Configuration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where THandler : {WorkflowName}{stage.Name}StageHandlerBase
         where TContinuator : {WorkflowName}{stage.Name}ContinuatorBase
     {{
+        var builder = configuration.Builder;
+
         ServiceCollectionUniqueAddHelper.RegisterContinuator<TContinuator>(builder.Services, serviceLifetime);
 
         builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowName}, THandler, {WorkflowName}{stage.Name}StageMessage, I{WorkflowName}>();
@@ -68,7 +70,7 @@ public static class {WorkflowName}StageHandlerDIExtensions
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(I{WorkflowName}{stage.Name}StageFinalizer), typeof(THandler), serviceLifetime));
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowStageHandler<{WorkflowName}{stage.Name}StageMessage>), typeof(THandler), serviceLifetime));
 
-        return builder;
+        return configuration;
     }}
 ");
         }

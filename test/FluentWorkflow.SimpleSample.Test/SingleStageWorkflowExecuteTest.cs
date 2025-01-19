@@ -74,8 +74,11 @@ public abstract class SingleStageWorkflowExecuteTest : FluentWorkflowTestBase
     protected override void ConfigureServices(IServiceCollection services)
     {
         services.AddFluentWorkflow()
-                .AddSingleStageWorkflowScheduler<SingleStageWorkflowImpl>()
-                .AddSingleStageWorkflowSampleStage5StageHandler<SingleStageWorkflowSampleStage5StageHandler>();
+                .AddSingleStageWorkflow<SingleStageWorkflowImpl>(configuration =>
+                {
+                    configuration.AddScheduler()
+                                 .AddSampleStage5StageHandler<SingleStageWorkflowSampleStage5StageHandler>();
+                });
 
         services.AddSingleton<WorkflowExecuteLogger>();
     }

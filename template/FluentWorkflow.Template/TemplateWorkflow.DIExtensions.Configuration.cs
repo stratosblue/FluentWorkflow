@@ -11,27 +11,60 @@ using TemplateNamespace.Message;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 
+/// <see cref="TemplateWorkflow"/> 配置
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public static class TemplateWorkflowSchedulerDIExtensions
+public abstract class TemplateWorkflowConfiguration : ITemplateWorkflow
 {
+    /// <inheritdoc cref="IFluentWorkflowBuilder"/>
+    public IFluentWorkflowBuilder Builder { get; }
+
+    /// <inheritdoc cref="IServiceCollection"/>
+    public IServiceCollection Services { get; }
+
+    /// <summary>
+    /// 最终使用的流程实现类型
+    /// </summary>
+    public abstract Type WorkflowType { get; }
+
+    /// <inheritdoc cref="TemplateWorkflowConfiguration{TWorkflow}"/>
+    internal TemplateWorkflowConfiguration(IFluentWorkflowBuilder builder)
+    {
+        Builder = builder ?? throw new ArgumentNullException(nameof(builder));
+        Services = builder.Services ?? throw new ArgumentNullException(nameof(builder.Services));
+    }
+
     /// <summary>
     /// 添加 <see cref="TemplateWorkflow"/> 的调度器
     /// </summary>
-    /// <param name="builder"></param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder AddTemplateWorkflowScheduler(this IFluentWorkflowBuilder builder) => builder.AddTemplateWorkflowScheduler<TemplateWorkflow>();
+    public abstract TemplateWorkflowConfiguration AddScheduler();
+}
+
+/// <summary>
+/// <see cref="TemplateWorkflow"/> 配置
+/// <br/>使用的流程实现为 <typeparamref name="TWorkflow"/>
+/// </summary>
+[EditorBrowsable(EditorBrowsableState.Never)]
+internal sealed class TemplateWorkflowConfiguration<TWorkflow>
+    : TemplateWorkflowConfiguration
+    where TWorkflow : TemplateWorkflow
+{
+    /// <inheritdoc/>
+    public override Type WorkflowType { get; } = typeof(TWorkflow);
+
+    /// <inheritdoc cref="TemplateWorkflowConfiguration"/>
+    internal TemplateWorkflowConfiguration(IFluentWorkflowBuilder builder) : base(builder)
+    {
+    }
 
     /// <summary>
-    /// 添加 <see cref="TemplateWorkflow"/> 的调度器，使用 <typeparamref name="TWorkflow"/> 替代 <see cref="TemplateWorkflow"/>
+    /// 添加 <see cref="TemplateWorkflow"/> 的调度器
     /// </summary>
-    /// <typeparam name="TWorkflow"></typeparam>
-    /// <param name="builder"></param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder AddTemplateWorkflowScheduler<TWorkflow>(this IFluentWorkflowBuilder builder) where TWorkflow : TemplateWorkflow
+    public override TemplateWorkflowConfiguration AddScheduler()
     {
-        builder.AddTemplateWorkflow<TWorkflow>();
+        var builder = Builder;
 
         #region StartRequestHandler
 
@@ -59,6 +92,6 @@ public static class TemplateWorkflowSchedulerDIExtensions
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowScheduler<TemplateWorkflow>), typeof(TemplateWorkflowScheduler), ServiceLifetime.Scoped));
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowScheduler<TWorkflow>), typeof(TemplateWorkflowScheduler), ServiceLifetime.Scoped));
 
-        return builder;
+        return this;
     }
 }

@@ -16,45 +16,57 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class TemplateWorkflowDIExtensions
 {
     /// <summary>
-    /// 添加 <see cref="TemplateWorkflow"/> 的构造器
+    /// 添加 <see cref="TemplateWorkflow"/> 的构造器，以支持使用 <see cref="IWorkflowBuilder{TWorkflow}"/> 构造并发起 <see cref="TemplateWorkflow"/>
     /// </summary>
     /// <param name="builder"></param>
+    /// <param name="setupAction">配置委托</param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder AddTemplateWorkflow(this IFluentWorkflowBuilder builder) => builder.AddTemplateWorkflow<TemplateWorkflow>();
+    public static IFluentWorkflowBuilder AddTemplateWorkflow(this IFluentWorkflowBuilder builder, Action<TemplateWorkflowConfiguration>? setupAction = null) => builder.AddTemplateWorkflow<TemplateWorkflow>(setupAction);
 
     /// <summary>
-    /// 添加 <see cref="TemplateWorkflow"/> 的构造器，使用 <typeparamref name="TWorkflow"/> 替代 <see cref="TemplateWorkflow"/>
+    /// 添加 <see cref="TemplateWorkflow"/> 的构造器，以支持使用 <see cref="IWorkflowBuilder{TWorkflow}"/> 构造并发起 <see cref="TemplateWorkflow"/>
+    /// <br/>使用 <typeparamref name="TWorkflow"/> 替代默认调度实现类型 <see cref="TemplateWorkflow"/>
     /// </summary>
     /// <typeparam name="TWorkflow"></typeparam>
     /// <param name="builder"></param>
+    /// <param name="setupAction">配置委托</param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder AddTemplateWorkflow<TWorkflow>(this IFluentWorkflowBuilder builder)
+    public static IFluentWorkflowBuilder AddTemplateWorkflow<TWorkflow>(this IFluentWorkflowBuilder builder, Action<TemplateWorkflowConfiguration>? setupAction = null)
         where TWorkflow : TemplateWorkflow
     {
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowBuilder<TemplateWorkflow>), typeof(TemplateWorkflowBuilder<TWorkflow>), ServiceLifetime.Scoped));
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowBuilder<TWorkflow>), typeof(TemplateWorkflowBuilder<TWorkflow>), ServiceLifetime.Scoped));
+
+        if (setupAction is not null)
+        {
+            var workflowConfiguration = new TemplateWorkflowConfiguration<TWorkflow>(builder);
+            setupAction(workflowConfiguration);
+        }
+
         return builder;
     }
 
     /// <summary>
     /// 添加 <see cref="TemplateWorkflow"/> 的结果观察器 <see cref="TemplateWorkflowResultObserver"/>
     /// </summary>
-    /// <param name="builder"></param>
+    /// <param name="configuration"></param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder AddTemplateWorkflowResultObserver(this IFluentWorkflowBuilder builder) => builder.AddTemplateWorkflowResultObserver<TemplateWorkflowResultObserver>();
+    public static TemplateWorkflowConfiguration AddResultObserver(this TemplateWorkflowConfiguration configuration) => configuration.AddResultObserver<TemplateWorkflowResultObserver>();
 
     /// <summary>
     /// 添加 <see cref="TemplateWorkflow"/> 的结果观察器，使用 <typeparamref name="TWorkflowResultObserver"/> 替代默认的 <see cref="TemplateWorkflowResultObserver"/>
     /// </summary>
-    /// <param name="builder"></param>
+    /// <param name="configuration"></param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder AddTemplateWorkflowResultObserver<TWorkflowResultObserver>(this IFluentWorkflowBuilder builder)
+    public static TemplateWorkflowConfiguration AddResultObserver<TWorkflowResultObserver>(this TemplateWorkflowConfiguration configuration)
         where TWorkflowResultObserver : TemplateWorkflowResultObserverBase
     {
+        var builder = configuration.Builder;
+
         builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TWorkflowResultObserver, TemplateWorkflowFinishedMessage, ITemplateWorkflow>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowResultObserver<TemplateWorkflow>), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TWorkflowResultObserver), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));
-        return builder;
+        return configuration;
     }
 }

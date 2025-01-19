@@ -224,11 +224,14 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
     {
         services.AddFluentWorkflow()
                 .UseWorkflowAwaitProcessor<InMemoryWorkflowAwaitProcessor>()
-                .AddTemplateWorkflowScheduler<TemplateWorkflowImpl>()
-                .AddTemplateWorkflowResultObserver()
-                .AddTemplateWorkflowStage1CAUKStageHandler<TemplateWorkflowStage1CAUKStageHandler>()
-                .AddTemplateWorkflowStage2BPTGStageHandler<TemplateWorkflowStage2BPTGStageHandler>()
-                .AddTemplateWorkflowStage3AWBNStageHandler<TemplateWorkflowStage3AWBNStageHandler>();
+                .AddTemplateWorkflow<TemplateWorkflowImpl>(configuration =>
+                {
+                    configuration.AddScheduler()
+                                 .AddResultObserver()
+                                 .AddStage1CAUKStageHandler<TemplateWorkflowStage1CAUKStageHandler>()
+                                 .AddStage2BPTGStageHandler<TemplateWorkflowStage2BPTGStageHandler>()
+                                 .AddStage3AWBNStageHandler<TemplateWorkflowStage3AWBNStageHandler>();
+                });
 
         services.AddSingleton<WorkflowExecuteLogger>();
     }

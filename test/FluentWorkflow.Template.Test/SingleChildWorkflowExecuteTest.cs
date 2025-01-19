@@ -182,11 +182,14 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
     protected override void ConfigureServices(IServiceCollection services)
     {
         services.AddFluentWorkflow()
-                .AddTemplateWorkflowScheduler<TemplateWorkflowImpl>()
-                .AddTemplateWorkflowResultObserver()
-                .AddTemplateWorkflowStage1CAUKStageHandler<TemplateWorkflowStage1CAUKStageHandler>()
-                .AddTemplateWorkflowStage2BPTGStageHandler<TemplateWorkflowStage2BPTGStageHandler>()
-                .AddTemplateWorkflowStage3AWBNStageHandler<TemplateWorkflowStage3AWBNStageHandler>();
+                .AddTemplateWorkflow<TemplateWorkflowImpl>(configuration =>
+                {
+                    configuration.AddScheduler()
+                                 .AddResultObserver()
+                                 .AddStage1CAUKStageHandler<TemplateWorkflowStage1CAUKStageHandler>()
+                                 .AddStage2BPTGStageHandler<TemplateWorkflowStage2BPTGStageHandler>()
+                                 .AddStage3AWBNStageHandler<TemplateWorkflowStage3AWBNStageHandler>();
+                });
 
         services.AddSingleton<WorkflowExecuteLogger>();
     }

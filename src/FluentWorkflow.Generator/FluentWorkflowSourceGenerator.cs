@@ -53,7 +53,7 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
                                          context.AddSource(new BuilderSourceProvider(generateContext));
                                          context.AddSource(new ContextSourceProvider(generateContext));
                                          context.AddSource(new DIExtensionsSourceProvider(generateContext));
-                                         context.AddSource(new DIExtensionsSchedulerSourceProvider(generateContext));
+                                         context.AddSource(new DIExtensionsConfigurationSourceProvider(generateContext));
                                          context.AddSource(new DIExtensionsStageHandlerSourceProvider(generateContext));
                                          context.AddSource(new MessagesSourceProvider(generateContext));
                                          context.AddSource(new ResultObserverSourceProvider(generateContext));
