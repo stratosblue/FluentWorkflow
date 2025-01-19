@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Threading;
 using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
@@ -36,6 +35,8 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
     private readonly CancellationTokenSource _runningCancellationTokenSource;
 
     private readonly IServiceScopeFactory _serviceScopeFactory;
+
+    private IConnection? _connection;
 
     private bool _disposed;
 
@@ -93,6 +94,9 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
             _runningCancellationTokenSource.Dispose();
         }
         catch { }
+
+        _connection?.Dispose();
+
         _disposed = true;
         return ValueTask.CompletedTask;
     }
@@ -102,6 +106,8 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         _logger.LogInformation("Start initializing workflow RabbitMQ message dispatcher.");
 
         var connection = await _connectionProvider.GetAsync(cancellationToken);
+
+        _connection = connection;
 
         var exchangeName = _options.ExchangeName ?? RabbitMQOptions.DefaultExchangeName;
 

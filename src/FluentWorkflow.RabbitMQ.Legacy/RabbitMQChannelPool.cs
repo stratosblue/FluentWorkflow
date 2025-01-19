@@ -139,7 +139,14 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
         async ValueTask<IConnection> InnerEnsureConnectionAsync(CancellationToken cancellationToken)
         {
             DisposeConnection();
-            return await _connectionProvider.GetAsync(cancellationToken);
+            var connection = await _connectionProvider.GetAsync(cancellationToken);
+            var existedConnection = Interlocked.CompareExchange(ref _connection, connection, null);
+            if (existedConnection is not null)
+            {
+                connection.Dispose();
+                return existedConnection;
+            }
+            return await EnsureConnectionAsync(cancellationToken);
         }
     }
 
