@@ -69,6 +69,17 @@ public abstract partial class {WorkflowName}Base
     /// </summary>
     /// <param name=""stageBuilder""></param>
     protected abstract void BuildStages({Names.StageBuilder} stageBuilder);
+
+    /// <summary>
+    /// 在工作流程启动时
+    /// </summary>
+    /// <param name=""context""></param>
+    /// <param name=""cancellationToken""></param>
+    /// <returns>返回 <see langword=""false""/> 则停止工作流程运行</returns>
+    protected virtual Task<bool> OnStartingAsync({WorkflowContextName} context, CancellationToken cancellationToken)
+    {{
+        return Task.FromResult(true);
+    }}
 ");
 
         foreach (var stage in Context.Stages)

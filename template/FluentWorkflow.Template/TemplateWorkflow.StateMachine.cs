@@ -44,6 +44,10 @@ namespace TemplateNamespace
                 {
                     currentStage = TemplateWorkflowStages.Stage1CAUK;
                     Context.SetCurrentStage(currentStage);
+                    if (!await Workflow.OnStartingAsync(TypedContext, cancellationToken))
+                    {
+                        return;
+                    }
                 }
 
                 using var singleCaller = new ScopePublishStageMessageSingleCaller(MessageDispatcher);

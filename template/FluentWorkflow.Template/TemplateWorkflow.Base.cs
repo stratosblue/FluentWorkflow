@@ -56,6 +56,17 @@ public abstract partial class TemplateWorkflowBase
     protected abstract void BuildStages(ITemplateWorkflowStageBuilder stageBuilder);
 
     /// <summary>
+    /// 在工作流程启动时
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>返回 <see langword="false"/> 则停止工作流程运行</returns>
+    protected virtual Task<bool> OnStartingAsync(TemplateWorkflowContext context, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(true);
+    }
+
+    /// <summary>
     /// 在阶段 <see cref="TemplateWorkflowStages.Stage1CAUK"/> 发起前
     /// </summary>
     /// <param name="message"></param>
