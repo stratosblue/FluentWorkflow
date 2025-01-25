@@ -13,33 +13,47 @@ namespace FluentWorkflow;
 [EditorBrowsable(EditorBrowsableState.Never)]
 public class PropertyMapObject
 {
-    //TODO 测试
-
     #region Private 静态字段
 
     private static readonly IReadOnlyDictionary<string, string> s_empty = ImmutableDictionary.Create<string, string>();
 
     #endregion Private 静态字段
 
-    #region Protected 索引器
+    #region Private 字段
+
+    private IObjectSerializer _objectSerializer = IObjectSerializer.Default;
+
+    #endregion Private 字段
+
+    #region Protected 属性
 
     /// <summary>
-    /// <see cref="DataContainer"/> 索引器（无验证）
+    /// 原始数据容器
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    protected internal string this[string key] { get => DataContainer[key]; set => DataContainer[key] = value; }
-
-    #endregion Protected 索引器
-
-    #region Protected 字段
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    protected internal Dictionary<string, string> DataContainer { get; }
 
     /// <summary>
-    /// 数据容器
+    /// 引用对象容器
     /// </summary>
-    protected internal readonly Dictionary<string, string> DataContainer;
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    protected internal Dictionary<string, object> ObjectContainer { get; }
 
-    #endregion Protected 字段
+    /// <summary>
+    /// 获取对象时使用的对象序列化器
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    protected internal IObjectSerializer ObjectSerializer
+    {
+        get => _objectSerializer;
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            _objectSerializer = value;
+        }
+    }
+
+    #endregion Protected 属性
 
     #region Public 构造函数
 
@@ -48,6 +62,7 @@ public class PropertyMapObject
     public PropertyMapObject(StringComparer comparer)
     {
         DataContainer = new(8, comparer);
+        ObjectContainer = new(8, comparer);
     }
 
     /// <inheritdoc cref="PropertyMapObject"/>
@@ -55,6 +70,7 @@ public class PropertyMapObject
     public PropertyMapObject(IEnumerable<KeyValuePair<string, string>>? collection, StringComparer comparer)
     {
         DataContainer = new(collection ?? s_empty, comparer);
+        ObjectContainer = new(DataContainer.Count, comparer);
     }
 
     #endregion Public 构造函数
@@ -62,132 +78,72 @@ public class PropertyMapObject
     #region Public 方法
 
     /// <summary>
-    /// 转换为字符串，类似 K1=V1; K2=V2....
+    /// 获取当前数据的快照 (引用对象的变更将会固化在返回数据中)
     /// </summary>
     /// <returns></returns>
-    public virtual string ToFormatString() => string.Join("; ", DataContainer.Select(m => $"{m.Key}={m.Value}"));
+    public IReadOnlyDictionary<string, string> GetSnapshot()
+    {
+        var snapshot = new Dictionary<string, string>((DataContainer.Count + ObjectContainer.Count) / 2, DataContainer.Comparer);
+        //先存放对象数据
+        foreach (var (key, value) in ObjectContainer)
+        {
+            snapshot.Add(key, ObjectSerializer.Serialize(value));
+        }
+        //补充未序列化的原始数据
+        foreach (var (key, value) in DataContainer)
+        {
+            snapshot.TryAdd(key, value);
+        }
+        return snapshot;
+    }
 
     #endregion Public 方法
 
     #region Inner
 
-    #region bool
-
     /// <summary>
-    /// 获取枚举值
-    /// </summary>
-    /// <param name="defaultValue"></param>
-    /// <param name="propName"></param>
-    /// <returns></returns>
-    [return: NotNullIfNotNull(nameof(defaultValue))]
-    protected bool? InnerGetBoolean(bool? defaultValue = default, [CallerMemberName] string propName = null!) => this.GetBoolean(propName, defaultValue);
-
-    /// <summary>
-    /// 设置枚举值
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="propName"></param>
-    protected void InnerSetBoolean(bool? value, [CallerMemberName] string propName = null!) => this.SetBoolean(propName, value);
-
-    #endregion bool
-
-    #region Enum
-
-    /// <summary>
-    /// 获取枚举值
-    /// </summary>
-    /// <param name="defaultValue"></param>
-    /// <param name="propName"></param>
-    /// <returns></returns>
-    [return: NotNullIfNotNull(nameof(defaultValue))]
-    protected T? InnerGetEnum<T>(T? defaultValue = default, [CallerMemberName] string propName = null!) where T : struct, Enum => this.GetEnum<T>(propName, defaultValue);
-
-    /// <summary>
-    /// 设置枚举值
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="propName"></param>
-    protected void InnerSetEnum<T>(T? value, [CallerMemberName] string propName = null!) where T : struct, Enum => this.SetEnum(propName, value);
-
-    #endregion Enum
-
-    #region Nullable
-
-    /// <summary>
-    /// 获取可空类型的 <see cref="IParsable{TSelf}"/> 值
-    /// </summary>
-    /// <param name="defaultValue"></param>
-    /// <param name="propName"></param>
-    [return: NotNullIfNotNull(nameof(defaultValue))]
-    protected void InnerGetNullable<T>(T? defaultValue = default, [CallerMemberName] string propName = null!) where T : struct, IParsable<T> => this.GetNullable(propName, defaultValue);
-
-    #endregion Nullable
-
-    #region IParsable
-
-    /// <summary>
-    /// 获取 <see cref="IParsable{TSelf}"/> 值
+    /// 获取值 <paramref name="propName"/> 的类型化值
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="defaultValue"></param>
     /// <param name="propName"></param>
     /// <returns></returns>
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    protected T? InnerGetValue<T>(T? defaultValue = default, [CallerMemberName] string propName = null!) where T : IParsable<T> => this.GetValue<T>(propName, defaultValue);
+    protected internal T? InnerGet<T>(T? defaultValue = default, [CallerMemberName] string propName = null!)
+    {
+        if (ObjectContainer.TryGetValue(propName, out var objectValue))
+        {
+            return (T)objectValue;
+        }
+        if (DataContainer.TryGetValue(propName, out var value)
+            && value is not null)
+        {
+            objectValue = ObjectSerializer.Deserialize<T>(value) ?? defaultValue;
+        }
+
+        InnerSet(objectValue, propName);
+
+        return (T?)objectValue;
+    }
 
     /// <summary>
-    /// 设置 <see cref="IParsable{TSelf}"/> 值
+    /// 设置 <paramref name="propName"/> 的值为 <paramref name="value"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="value"></param>
     /// <param name="propName"></param>
-    protected void InnerSetValue<T>(T? value, [CallerMemberName] string propName = null!) where T : IParsable<T> => this.SetValue<T>(propName, value);
+    protected internal void InnerSet<T>(T? value, [CallerMemberName] string propName = null!)
+    {
+        ThrowIfImmutable(propName);
 
-    #endregion IParsable
-
-    #region Object
-
-    /// <summary>
-    /// 获取值并将其使用 <paramref name="serializer"/> 反序列化为<typeparamref name="T"/>
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="defaultValue"></param>
-    /// <param name="serializer"></param>
-    /// <param name="propName"></param>
-    /// <returns></returns>
-    [return: NotNullIfNotNull(nameof(defaultValue))]
-    protected T? InnerGetObject<T>(T? defaultValue = default, IObjectSerializer? serializer = null, [CallerMemberName] string propName = null!) => this.GetObject<T>(propName, defaultValue, serializer);
-
-    /// <summary>
-    /// 将 <paramref name="value"/> 使用 <paramref name="serializer"/> 序列化为字符串进行设置值
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="value"></param>
-    /// <param name="serializer"></param>
-    /// <param name="propName"></param>
-    protected void InnerSetObject<T>(T? value, IObjectSerializer? serializer = null, [CallerMemberName] string propName = null!) => this.SetObject<T>(propName, value, serializer);
-
-    #endregion Object
-
-    #region String
-
-    /// <summary>
-    /// 获取字符串值
-    /// </summary>
-    /// <param name="defaultValue"></param>
-    /// <param name="propName"></param>
-    /// <returns></returns>
-    [return: NotNullIfNotNull(nameof(defaultValue))]
-    protected string? InnerGet(string? defaultValue = default, [CallerMemberName] string propName = null!) => this.Get(propName, defaultValue);
-
-    /// <summary>
-    /// 设置字符串值
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="propName"></param>
-    protected void InnerSet(string? value, [CallerMemberName] string propName = null!) => this.Set(propName, value);
-
-    #endregion String
+        if (value is null)
+        {
+            DataContainer.Remove(propName);
+            ObjectContainer.Remove(propName);
+            return;
+        }
+        ObjectContainer[propName] = value;
+    }
 
     #endregion Inner
 

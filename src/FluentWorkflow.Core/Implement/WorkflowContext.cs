@@ -32,23 +32,23 @@ public abstract class WorkflowContext
     /// <inheritdoc/>
     public WorkflowFlag Flag
     {
-        get => _flag ??= this.GetEnum<WorkflowFlag>(FluentWorkflowConstants.ContextKeys.WorkflowFlag, WorkflowFlag.None).Value;
+        get => _flag ??= InnerGet<WorkflowFlag?>(WorkflowFlag.None, FluentWorkflowConstants.ContextKeys.WorkflowFlag).Value;
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         set
         {
             ThrowIfStarted();
-            this.SetEnum<WorkflowFlag>(FluentWorkflowConstants.ContextKeys.WorkflowFlag, value);
+            InnerSet(value, FluentWorkflowConstants.ContextKeys.WorkflowFlag);
         }
     }
 
     /// <inheritdoc/>
-    public string Id => this.Get(FluentWorkflowConstants.ContextKeys.Id) ?? throw new WorkflowInvalidOperationException("上下文数据错误：不存在Id");
+    public string Id => InnerGet<string>(FluentWorkflowConstants.ContextKeys.Id) ?? throw new WorkflowInvalidOperationException("上下文数据错误：不存在Id");
 
     /// <inheritdoc/>
     public WorkflowContextMetadata? Parent => _parent ??= DataContainer.TryGetValue(FluentWorkflowConstants.ContextKeys.ParentWorkflow, out var valueString) ? IObjectSerializer.Default.Deserialize<WorkflowContextMetadata?>(Convert.FromBase64String(valueString)) : null;
 
     /// <inheritdoc/>
-    public string Stage => this.Get(FluentWorkflowConstants.ContextKeys.Stage) ?? throw new WorkflowInvalidOperationException($"上下文数据错误：不存在 {nameof(FluentWorkflowConstants.ContextKeys.Stage)}");
+    public string Stage => InnerGet<string>(FluentWorkflowConstants.ContextKeys.Stage) ?? throw new WorkflowInvalidOperationException($"上下文数据错误：不存在 {nameof(FluentWorkflowConstants.ContextKeys.Stage)}");
 
     #endregion Public 属性
 
@@ -63,9 +63,9 @@ public abstract class WorkflowContext
     {
         WorkflowException.ThrowIfNullOrWhiteSpace(id);
 
-        this[FluentWorkflowConstants.ContextKeys.Id] = id;
-        this[FluentWorkflowConstants.ContextKeys.WorkflowName] = ValidWorkflowName();
-        this[FluentWorkflowConstants.ContextKeys.Stage] = string.Empty;
+        InnerSet(id, FluentWorkflowConstants.ContextKeys.Id);
+        InnerSet(ValidWorkflowName(), FluentWorkflowConstants.ContextKeys.WorkflowName);
+        InnerSet(string.Empty, FluentWorkflowConstants.ContextKeys.Stage);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public abstract class WorkflowContext
 
         if (!DataContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.Stage))
         {
-            this[FluentWorkflowConstants.ContextKeys.Stage] = string.Empty;
+            InnerSet(string.Empty, FluentWorkflowConstants.ContextKeys.Stage);
         }
     }
 
@@ -96,7 +96,7 @@ public abstract class WorkflowContext
     {
         WorkflowException.ThrowIfNullOrWhiteSpace(id);
 
-        this[FluentWorkflowConstants.ContextKeys.Id] = id;
+        InnerSet(id, FluentWorkflowConstants.ContextKeys.Id);
     }
 
     #endregion Public 构造函数
@@ -125,13 +125,33 @@ public abstract class WorkflowContext
     }
 
     /// <inheritdoc/>
-    IReadOnlyDictionary<string, string> IWorkflowContext.GetSnapshot() => DataContainer.AsReadOnly();
+    void IWorkflowContext.ApplyChanges(IWorkflowContext snapshotContext)
+    {
+        var sourceSnapshot = snapshotContext.GetSnapshot();
+        foreach (var (key, value) in sourceSnapshot)
+        {
+            DataContainer[key] = value;
+            ObjectContainer.Remove(key);
+        }
+
+        foreach (var key in DataContainer.Keys)
+        {
+            if (!sourceSnapshot.ContainsKey(key))
+            {
+                DataContainer.Remove(key);
+                ObjectContainer.Remove(key);
+            }
+        }
+    }
 
     /// <inheritdoc/>
-    string? IWorkflowContext.GetValue(string key) => this.Get(key);
+    IReadOnlyDictionary<string, string> IWorkflowContext.GetSnapshot() => GetSnapshot();
 
     /// <inheritdoc/>
-    void IWorkflowContext.SetValue(string key, string? value) => this.Set(key, value);
+    TValue? IWorkflowContext.GetValue<TValue>(string key) where TValue : default => InnerGet<TValue>(default, key);
+
+    /// <inheritdoc/>
+    void IWorkflowContext.SetValue<TValue>(string key, TValue? value) where TValue : default => InnerGet(value, key);
 
     #endregion Public 方法
 

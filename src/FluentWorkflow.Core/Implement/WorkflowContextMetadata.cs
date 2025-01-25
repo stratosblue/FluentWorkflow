@@ -15,7 +15,7 @@ public sealed class WorkflowContextMetadata
 {
     #region Private 字段
 
-    private ImmutableDictionary<string, string> _rawValues;
+    private PropertyMapObject _rawValues;
 
     #endregion Private 字段
 
@@ -26,11 +26,6 @@ public sealed class WorkflowContextMetadata
 
     /// <inheritdoc/>
     public string Stage { get; }
-
-    /// <summary>
-    /// 原始值
-    /// </summary>
-    public IReadOnlyDictionary<string, string> Values => _rawValues;
 
     /// <summary>
     /// 工作流程名称
@@ -44,25 +39,20 @@ public sealed class WorkflowContextMetadata
     /// <inheritdoc cref="WorkflowContextMetadata"/>
     public WorkflowContextMetadata(IEnumerable<KeyValuePair<string, string>> values)
     {
-        _rawValues = values.ToImmutableDictionary();
+        _rawValues = new(values, StringComparer.Ordinal);
 
-        WorkflowName = GetRequiredKey(FluentWorkflowConstants.ContextKeys.WorkflowName);
-        Id = GetRequiredKey(FluentWorkflowConstants.ContextKeys.Id);
-        Stage = GetRequiredKey(FluentWorkflowConstants.ContextKeys.Stage);
+        WorkflowName = GetRequiredKey<string>(FluentWorkflowConstants.ContextKeys.WorkflowName);
+        Id = GetRequiredKey<string>(FluentWorkflowConstants.ContextKeys.Id);
+        Stage = GetRequiredKey<string>(FluentWorkflowConstants.ContextKeys.Stage);
     }
 
     #endregion Public 构造函数
 
     #region Private 方法
 
-    private string GetRequiredKey(string key)
+    private TValue GetRequiredKey<TValue>(string key)
     {
-        if (Values.TryGetValue(key, out var value)
-            && !string.IsNullOrEmpty(value))
-        {
-            return value;
-        }
-        throw new InvalidOperationException($"Not found require \"{key}\"");
+        return _rawValues.InnerGet<TValue>(default, key) ?? throw new InvalidOperationException($"Not found require \"{key}\"");
     }
 
     #endregion Private 方法
@@ -71,44 +61,46 @@ public sealed class WorkflowContextMetadata
 
     WorkflowFlag IWorkflowContext.Flag
     {
-        get => Values.TryGetValue(FluentWorkflowConstants.ContextKeys.WorkflowFlag, out var valueString) ? Enum.Parse<WorkflowFlag>(valueString) : WorkflowFlag.None;
+        get => _rawValues.InnerGet<WorkflowFlag>(WorkflowFlag.None, FluentWorkflowConstants.ContextKeys.WorkflowFlag);
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         set => throw new InvalidOperationException();
     }
 
-    WorkflowContextMetadata? IWorkflowContext.Parent => Values.TryGetValue(FluentWorkflowConstants.ContextKeys.ParentWorkflow, out var valueString) ? IObjectSerializer.Default.Deserialize<WorkflowContextMetadata?>(Convert.FromBase64String(valueString)) : null;
+    WorkflowContextMetadata? IWorkflowContext.Parent => _rawValues.InnerGet<WorkflowContextMetadata>(null, FluentWorkflowConstants.ContextKeys.ParentWorkflow);
 
-    IReadOnlyDictionary<string, string> IWorkflowContext.GetSnapshot() => Values;
+    IReadOnlyDictionary<string, string> IWorkflowContext.GetSnapshot() => _rawValues.GetSnapshot();
 
-    string? IWorkflowContext.GetValue(string key) => Values.TryGetValue(key, out var value) ? value : default;
+    TValue? IWorkflowContext.GetValue<TValue>(string key) where TValue : default => _rawValues.InnerGet<TValue>(default, key);
 
     void IWorkflowContext.SetCurrentStage(string stage) => throw new InvalidOperationException();
 
     void IWorkflowContext.SetParent(WorkflowContextMetadata parent) => throw new InvalidOperationException();
 
-    void IWorkflowContext.SetValue(string key, string? value)
+    void IWorkflowContext.SetValue<TValue>(string key, TValue? value) where TValue : default
     {
-        //如果未修改值，直接返回
-        if (_rawValues.TryGetValue(key, out var existedValue))
-        {
-            if (string.Equals(existedValue, value, StringComparison.Ordinal))
-            {
-                return;
-            }
-        }
-
         if (FluentWorkflowConstants.ContextKeys.IsInitOnlyKey(key))
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Can not set init only key \"{key}\".");
+        }
+        _rawValues.InnerSet(value, key);
+    }
+
+    void IWorkflowContext.ApplyChanges(IWorkflowContext snapshotContext)
+    {
+        var sourceSnapshot = snapshotContext.GetSnapshot();
+        foreach (var (key, value) in sourceSnapshot)
+        {
+            _rawValues.DataContainer[key] = value;
+            _rawValues.ObjectContainer.Remove(key);
         }
 
-        if (value is null)
+        foreach (var key in _rawValues.DataContainer.Keys)
         {
-            _rawValues = _rawValues.Remove(key);
-        }
-        else
-        {
-            _rawValues = _rawValues.SetItem(key, value);
+            if (!sourceSnapshot.ContainsKey(key))
+            {
+                _rawValues.DataContainer.Remove(key);
+                _rawValues.ObjectContainer.Remove(key);
+            }
         }
     }
 
@@ -120,7 +112,7 @@ public sealed class WorkflowContextMetadata
     public static WorkflowContextMetadata ConstructFromKeyValues(IEnumerable<KeyValuePair<string, string>> values) => new(values);
 
     /// <inheritdoc/>
-    public static IEnumerable<KeyValuePair<string, string>> ConvertToKeyValues(WorkflowContextMetadata instance) => instance.Values;
+    public static IEnumerable<KeyValuePair<string, string>> ConvertToKeyValues(WorkflowContextMetadata instance) => instance._rawValues.GetSnapshot();
 
     #endregion IKeyValuesConvertable
 }

@@ -20,7 +20,7 @@ public static class WorkflowContextExtensions
     /// <returns></returns>
     public static string GetChildWorkflowAlias(this IWorkflowContext workflowContext)
     {
-        var alias = workflowContext.GetValue(FluentWorkflowConstants.ContextKeys.WorkflowAlias)
+        var alias = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.WorkflowAlias)
                     ?? throw new WorkflowInvalidOperationException($"The context not contains the alias key \"{FluentWorkflowConstants.ContextKeys.WorkflowAlias}\".");
 
         return alias;
@@ -46,7 +46,7 @@ public static class WorkflowContextExtensions
     /// <returns></returns>
     public static bool TryGetChildWorkflowAlias(this IWorkflowContext workflowContext, [NotNullWhen(true)] out string? alias)
     {
-        alias = workflowContext.GetValue(FluentWorkflowConstants.ContextKeys.WorkflowAlias);
+        alias = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.WorkflowAlias);
         return alias != null;
     }
 
@@ -73,7 +73,7 @@ public static class WorkflowContextExtensions
     /// <returns></returns>
     public static bool TryGetFailureStackTrace(this IWorkflowContext workflowContext, [NotNullWhen(true)] out string? failureStackTrace)
     {
-        failureStackTrace = workflowContext.GetValue(FluentWorkflowConstants.ContextKeys.FailureStackTrace);
+        failureStackTrace = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.FailureStackTrace);
         return failureStackTrace != null;
     }
 
@@ -100,7 +100,7 @@ public static class WorkflowContextExtensions
     /// <returns></returns>
     public static bool TryGetFailureMessage(this IWorkflowContext workflowContext, [NotNullWhen(true)] out string? failureMessage)
     {
-        failureMessage = workflowContext.GetValue(FluentWorkflowConstants.ContextKeys.FailureMessage);
+        failureMessage = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.FailureMessage);
         return failureMessage != null;
     }
 
@@ -116,7 +116,7 @@ public static class WorkflowContextExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static void SetCurrentStageState(this IWorkflowContext workflowContext, WorkflowStageState state)
     {
-        workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.StageState, ((int)state).ToString());
+        workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.StageState, state);
     }
 
     /// <summary>
@@ -127,15 +127,9 @@ public static class WorkflowContextExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static bool TryGetCurrentStageState(this IWorkflowContext workflowContext, out WorkflowStageState state)
     {
-        var value = workflowContext.GetValue(FluentWorkflowConstants.ContextKeys.StageState);
-        if (value is null)
-        {
-            state = WorkflowStageState.Unknown;
-            return false;
-        }
-        //不做检查，认为一定是通过 SetCurrentStageState 设置的
-        state = (WorkflowStageState)int.Parse(value);
-        return true;
+        var value = workflowContext.GetValue<WorkflowStageState?>(FluentWorkflowConstants.ContextKeys.StageState);
+        state = value ?? WorkflowStageState.Unknown;
+        return value.HasValue;
     }
 
     #endregion StageState
@@ -149,7 +143,7 @@ public static class WorkflowContextExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static void AppendForwarded(this IWorkflowContext workflowContext)
     {
-        var currentValue = workflowContext.GetValue(FluentWorkflowConstants.ContextKeys.Forwarded);
+        var currentValue = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.Forwarded);
 
         if (string.IsNullOrEmpty(currentValue))
         {

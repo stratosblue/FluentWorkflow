@@ -16,7 +16,7 @@ public static class WorkflowExtensions
     /// <returns></returns>
     public static bool IsFailed(this IWorkflowContext workflowContext)
     {
-        return !string.IsNullOrEmpty(workflowContext.GetValue(FluentWorkflowConstants.ContextKeys.FailureStage));
+        return !string.IsNullOrEmpty(workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.FailureStage));
     }
 
     /// <summary>

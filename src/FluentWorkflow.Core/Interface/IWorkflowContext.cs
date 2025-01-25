@@ -26,6 +26,13 @@ public interface IWorkflowContext
     #region Public 方法
 
     /// <summary>
+    /// 应用修改 (<paramref name="snapshotContext"/> 应当是由当前上下文的快照创建的新上下文)
+    /// </summary>
+    /// <param name="snapshotContext"></param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public void ApplyChanges(IWorkflowContext snapshotContext);
+
+    /// <summary>
     /// 获取上下文数据快照
     /// </summary>
     /// <returns></returns>
@@ -36,7 +43,7 @@ public interface IWorkflowContext
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public string? GetValue(string key);
+    public TValue? GetValue<TValue>(string key);
 
     /// <summary>
     /// 设置上下文当前阶段
@@ -57,7 +64,7 @@ public interface IWorkflowContext
     /// </summary>
     /// <param name="key"></param>
     /// <param name="value"></param>
-    public void SetValue(string key, string? value);
+    public void SetValue<TValue>(string key, TValue? value);
 
     #endregion Public 方法
 }

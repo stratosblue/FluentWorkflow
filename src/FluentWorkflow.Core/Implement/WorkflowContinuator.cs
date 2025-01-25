@@ -92,8 +92,8 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
             if (!parentWorkflowContext.TryGetFailureStackTrace(out _)
                 && failedWorkflowContext.TryGetFailureStackTrace(out var failureStackTrace))    //如果父流程上下文当前没有失败堆栈，则设置为第一个失败子流程堆栈
             {
-                var failedWorkflowName = failedWorkflowContext.GetValue(FluentWorkflowConstants.ContextKeys.WorkflowName);
-                var failedWorkflowStage = failedWorkflowContext.GetValue(FluentWorkflowConstants.ContextKeys.FailureStage);
+                var failedWorkflowName = failedWorkflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.WorkflowName);
+                var failedWorkflowStage = failedWorkflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.FailureStage);
                 parentWorkflowContext.SetFailureStackTrace($"{failureStackTrace}\n   at {failedWorkflowName} stage {failedWorkflowStage} <- \"{alias}\"[{failedWorkflowContext.Id}]");
             }
 
