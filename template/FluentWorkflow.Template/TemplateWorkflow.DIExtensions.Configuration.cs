@@ -4,9 +4,10 @@ using FluentWorkflow;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TemplateNamespace;
-using TemplateNamespace.Handler;
-using TemplateNamespace.Internal;
-using TemplateNamespace.Message;
+using TemplateNamespace.Template;
+using TemplateNamespace.Template.Handler;
+using TemplateNamespace.Template.Internal;
+using TemplateNamespace.Template.Message;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

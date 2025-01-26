@@ -2,9 +2,9 @@
 
 using System.ComponentModel;
 using FluentWorkflow;
-using TemplateNamespace.Message;
+using TemplateNamespace.Template.Message;
 
-namespace TemplateNamespace.Handler;
+namespace TemplateNamespace.Template.Handler;
 
 /// <summary>
 /// <see cref="TemplateWorkflow"/> 的 <inheritdoc cref="WorkflowResultObserver{TWorkflow, TWorkflowFinishedMessage, TWorkflowBoundary}"/> 基类

@@ -5,9 +5,9 @@ using System.Diagnostics;
 using FluentWorkflow;
 using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
-using TemplateNamespace.Message;
+using TemplateNamespace.Template.Message;
 
-namespace TemplateNamespace.Handler;
+namespace TemplateNamespace.Template.Handler;
 
 /// <summary>
 /// 阶段完成器
@@ -99,7 +99,7 @@ public abstract partial class TemplateWorkflowStageHandler<TStage, TStageMessage
         {
             //在完成等待时出现异常也需要将修改反应回原上下文
             //将修改反应回原上下文
-            MergeContext(typedContext, context);
+            context.ApplyChanges(typedContext);
         }
     }
 

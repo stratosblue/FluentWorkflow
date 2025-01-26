@@ -230,17 +230,16 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
         var message = objectSerializer.Deserialize(rawMessageData.Span, invokerDescriptor.MessageType)!;
         if (message is IWorkflowContextCarrier<IWorkflowContext> contextCarrier)
         {
-            var parentTraceContextData = contextCarrier.Context.GetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext);
-            if (!string.IsNullOrWhiteSpace(parentTraceContextData)) //恢复并移除上下文中的追踪上下文数据
+            var parentTraceContext = contextCarrier.Context.GetValue<TracingContext?>(FluentWorkflowConstants.ContextKeys.ParentTraceContext);
+            if (parentTraceContext.HasValue) //恢复并移除上下文中的追踪上下文数据
             {
-                var tracingContext = TracingContext.Deserialize(parentTraceContextData);
-                var activityContext = tracingContext.RestoreActivityContext(true);
+                var activityContext = parentTraceContext.Value.RestoreActivityContext(true);
 
                 activity = ConsumerActivitySource.CreateActivity($"ConsumeWorkflowEventMessage - {invokerDescriptor.EventName}", ActivityKind.Consumer, activityContext);
-                activity?.AddBaggages(tracingContext.Baggage);
+                activity?.AddBaggages(parentTraceContext.Value.Baggage);
                 activity?.Start();
 
-                contextCarrier.Context.SetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext, null);
+                contextCarrier.Context.SetValue<TracingContext?>(FluentWorkflowConstants.ContextKeys.ParentTraceContext, null);
             }
         }
 

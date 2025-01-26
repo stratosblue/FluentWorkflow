@@ -15,7 +15,7 @@ public sealed class WorkflowContextMetadata
 {
     #region Private 字段
 
-    private PropertyMapObject _rawValues;
+    private readonly PropertyMapObject _rawValues;
 
     #endregion Private 字段
 

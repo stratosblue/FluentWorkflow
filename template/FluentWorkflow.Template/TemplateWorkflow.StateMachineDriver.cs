@@ -4,9 +4,9 @@ using System.ComponentModel;
 using FluentWorkflow;
 using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
-using TemplateNamespace.Message;
+using TemplateNamespace.Template.Message;
 
-namespace TemplateNamespace.Internal;
+namespace TemplateNamespace.Template.Internal;
 
 /// <summary>
 /// <see cref="TemplateWorkflow"/> 的状态机驱动器基类

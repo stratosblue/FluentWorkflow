@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using FluentWorkflow.Internal;
 
 namespace FluentWorkflow.Tracing;
 
@@ -17,6 +15,7 @@ public readonly struct TracingContext
     /// <summary>
     /// 行李
     /// </summary>
+    [JsonConverter(typeof(ActivityBaggageJsonConverter))]
     public IEnumerable<KeyValuePair<string, string?>> Baggage { get; }
 
     /// <summary>
@@ -51,7 +50,7 @@ public readonly struct TracingContext
         var context = activity.Context;
         TraceId = context.TraceId.ToHexString();
         SpanId = context.SpanId.ToHexString();
-        Baggage = activity.Baggage.ToList();
+        Baggage = activity.Baggage.Reverse().ToList();  //HACK 当前baggage遍历时为从后往前，在此处反向排序，以保证符合添加顺序
         TraceFlags = context.TraceFlags;
         TraceState = context.TraceState;
     }
@@ -90,12 +89,6 @@ public readonly struct TracingContext
     /// <returns></returns>
     public ActivityContext RestoreActivityContext(bool isRemote) => new(GetTraceId(), GetSpanId(), TraceFlags, TraceState, isRemote);
 
-    /// <summary>
-    /// 序列化为json
-    /// </summary>
-    /// <returns></returns>
-    public string Serialize() => JsonSerializer.Serialize(this, TracingContextSerializerContext.CustomInstance.TracingContext);
-
     #endregion Public 方法
 
     #region Util
@@ -112,13 +105,6 @@ public readonly struct TracingContext
     /// <param name="activity"></param>
     /// <returns></returns>
     public static TracingContext Create(Activity activity) => new(activity);
-
-    /// <summary>
-    /// 反序列化描述
-    /// </summary>
-    /// <param name="json"></param>
-    /// <returns></returns>
-    public static TracingContext Deserialize(string json) => JsonSerializer.Deserialize<TracingContext>(json, TracingContextSerializerContext.CustomInstance.TracingContext);
 
     #endregion Util
 }

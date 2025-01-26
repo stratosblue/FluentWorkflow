@@ -75,13 +75,13 @@ public class PropertyMapObject
 
     #endregion Public 构造函数
 
-    #region Public 方法
+    #region Protected Internal 方法
 
     /// <summary>
     /// 获取当前数据的快照 (引用对象的变更将会固化在返回数据中)
     /// </summary>
     /// <returns></returns>
-    public IReadOnlyDictionary<string, string> GetSnapshot()
+    protected internal IReadOnlyDictionary<string, string> GetSnapshot()
     {
         var snapshot = new Dictionary<string, string>((DataContainer.Count + ObjectContainer.Count) / 2, DataContainer.Comparer);
         //先存放对象数据
@@ -97,7 +97,7 @@ public class PropertyMapObject
         return snapshot;
     }
 
-    #endregion Public 方法
+    #endregion Protected Internal 方法
 
     #region Inner
 
@@ -115,13 +115,19 @@ public class PropertyMapObject
         {
             return (T)objectValue;
         }
+
         if (DataContainer.TryGetValue(propName, out var value)
             && value is not null)
         {
             objectValue = ObjectSerializer.Deserialize<T>(value) ?? defaultValue;
         }
+        else
+        {
+            objectValue = defaultValue;
+        }
 
-        InnerSet(objectValue, propName);
+        //缓存对象
+        InnerSetWithoutValidation(objectValue, propName);
 
         return (T?)objectValue;
     }
@@ -136,6 +142,17 @@ public class PropertyMapObject
     {
         ThrowIfImmutable(propName);
 
+        InnerSetWithoutValidation(value, propName);
+    }
+
+    /// <summary>
+    /// 不进行验证，直接设置 <paramref name="propName"/> 的值为 <paramref name="value"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="propName"></param>
+    protected internal void InnerSetWithoutValidation<T>(T? value, [CallerMemberName] string propName = null!)
+    {
         if (value is null)
         {
             DataContainer.Remove(propName);

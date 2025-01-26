@@ -13,6 +13,31 @@ namespace TemplateNamespace;
 public abstract partial class TemplateWorkflowContextBase
     : WorkflowContext, ITemplateWorkflow
 {
+    /// <summary>
+    /// 注释UserId
+    /// </summary>
+    public virtual int UserId { get => InnerGet<int>(); set => InnerSet(value); }
+
+    /// <summary>
+    /// 注释Name
+    /// </summary>
+    public virtual string Name { get => RequiredInnerGet<string>(); set => InnerSet(value); }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public virtual int? Age { get => InnerGet<int?>(); set => InnerSet(value); }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public virtual string? Address { get => InnerGet<string>(); set => InnerSet(value); }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public virtual TemplateWorkflowTestInfo? TestInfo { get => InnerGet<TemplateWorkflowTestInfo>(); set => InnerSet(value); }
+
     /// <inheritdoc/>
     protected sealed override string WorkflowName => TemplateWorkflow.WorkflowName;
 
@@ -79,6 +104,6 @@ public sealed partial class TemplateWorkflowContext
     /// <inheritdoc/>
     public static IEnumerable<KeyValuePair<string, string>> ConvertToKeyValues(TemplateWorkflowContext instance)
     {
-        return instance.DataContainer.AsReadOnly();
+        return instance.GetSnapshot();
     }
 }

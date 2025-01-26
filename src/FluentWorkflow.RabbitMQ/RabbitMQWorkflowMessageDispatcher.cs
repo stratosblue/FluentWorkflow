@@ -97,7 +97,7 @@ public class RabbitMQWorkflowMessageDispatcher
         using var activity = PublisherActivitySource.StartActivity($"PublishWorkflowEventMessage {TMessage.EventName}", ActivityKind.Producer);
         if (activity is not null)
         {
-            message.Context.SetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext, TracingContext.Create(activity).Serialize());
+            message.Context.SetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext, TracingContext.Create(activity));
         }
 
         IChannel? channel = null;

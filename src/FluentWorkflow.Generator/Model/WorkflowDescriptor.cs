@@ -5,6 +5,11 @@ namespace FluentWorkflow.Generator.Model;
 internal record struct WorkflowDescriptor(ClassDeclarationSyntax DeclarationSyntax, string Name, string NameSpace)
     : IEquatable<WorkflowDescriptor>
 {
+    /// <summary>
+    /// 短名称
+    /// </summary>
+    public string ShortName { get; } = CreateShortName(Name);
+
     /// <inheritdoc/>
     public override readonly int GetHashCode()
     {
@@ -17,6 +22,13 @@ internal record struct WorkflowDescriptor(ClassDeclarationSyntax DeclarationSynt
     {
         return string.Equals(Name, other.Name, StringComparison.Ordinal)
                && string.Equals(NameSpace, other.NameSpace, StringComparison.Ordinal);
+    }
+
+    private static string CreateShortName(string name)
+    {
+        return name.EndsWith("Workflow", StringComparison.OrdinalIgnoreCase)
+               ? name.Substring(0, name.Length - "Workflow".Length)
+               : name;
     }
 }
 

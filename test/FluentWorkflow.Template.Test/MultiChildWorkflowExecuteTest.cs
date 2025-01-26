@@ -59,14 +59,17 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new TemplateWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            MaxStageDelay = 50,
-            MaxSubWorkflow = subflowCount,
-            ExceptionStep = exceptionStep,
-            ExceptionDepth = depth,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                MaxStageDelay = 50,
+                MaxSubWorkflow = subflowCount,
+                ExceptionStep = exceptionStep,
+                ExceptionDepth = depth,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -123,13 +126,16 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new TemplateWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            ExceptionStep = exceptionStep,
-            ExceptionDepth = depth,
-            MaxStageDelay = 50,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                ExceptionStep = exceptionStep,
+                ExceptionDepth = depth,
+                MaxStageDelay = 50,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -162,12 +168,15 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new TemplateWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            MaxStageDelay = 50,
-            MaxSubWorkflow = subflowCount,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                MaxStageDelay = 50,
+                MaxSubWorkflow = subflowCount,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -201,11 +210,14 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new TemplateWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            MaxStageDelay = 50,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                MaxStageDelay = 50,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 

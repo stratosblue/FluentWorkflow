@@ -1,7 +1,7 @@
 ﻿using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using TemplateNamespace;
-using TemplateNamespace.Message;
+using TemplateNamespace.Template.Message;
 
 namespace FluentWorkflow;
 
@@ -98,7 +98,7 @@ internal class TemplateWorkflowImpl : TemplateWorkflow
 
     protected Task RunWithResumeAsync(IWorkflowContextCarrier<TemplateWorkflowContext> message)
     {
-        message.Context.SetBoolean("CurrentStageResumed", true);
+        message.Context.SetValue("CurrentStageResumed", true);
         var bytes = SerializeContext(message.Context);
 
         Task.Run(async () =>
@@ -112,13 +112,13 @@ internal class TemplateWorkflowImpl : TemplateWorkflow
 
     protected bool ShouldWorkWithResume(TemplateWorkflowContext context)
     {
-        if (Context.WorkWithResume
-            && context.GetBoolean("CurrentStageResumed", false) == false)
+        if (Context.TestInfo?.WorkWithResume == true
+            && context.GetValue<bool>("CurrentStageResumed") == false)
         {
             return true;
         }
 
-        context.SetBoolean("CurrentStageResumed", false);
+        context.SetValue("CurrentStageResumed", false);
 
         return false;
     }

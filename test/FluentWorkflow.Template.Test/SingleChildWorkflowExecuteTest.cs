@@ -36,14 +36,17 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new TemplateWorkflowContext(id)
         {
-            StepBase = 1,
-            Step = 0,
-            Depth = 1,
-            MaxStageDelay = 50,
-            MaxSubWorkflow = subflowCount,
-            ExceptionStep = exceptionStep,
-            ExceptionDepth = 1,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = 1,
+                Step = 0,
+                Depth = 1,
+                MaxStageDelay = 50,
+                MaxSubWorkflow = subflowCount,
+                ExceptionStep = exceptionStep,
+                ExceptionDepth = 1,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -95,13 +98,16 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new TemplateWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            ExceptionStep = exceptionStep,
-            ExceptionDepth = depth,
-            MaxStageDelay = 50,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                ExceptionStep = exceptionStep,
+                ExceptionDepth = depth,
+                MaxStageDelay = 50,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -134,11 +140,14 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new TemplateWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            MaxStageDelay = 50,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                MaxStageDelay = 50,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -161,12 +170,15 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new TemplateWorkflowContext(id)
         {
-            StepBase = 1,
-            Step = 0,
-            Depth = 1,
-            MaxStageDelay = 50,
-            MaxSubWorkflow = subflowCount,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new TemplateWorkflowTestInfo()
+            {
+                StepBase = 1,
+                Step = 0,
+                Depth = 1,
+                MaxStageDelay = 50,
+                MaxSubWorkflow = subflowCount,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 

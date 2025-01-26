@@ -3,9 +3,9 @@
 using System.ComponentModel;
 using FluentWorkflow;
 using FluentWorkflow.Interface;
-using TemplateNamespace.Message;
+using TemplateNamespace.Template.Message;
 
-namespace TemplateNamespace.Handler;
+namespace TemplateNamespace.Template.Handler;
 
 /// <summary>
 /// <see cref="TemplateWorkflow"/> 的启动请求处理器

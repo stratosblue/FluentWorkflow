@@ -4,7 +4,7 @@ using System.ComponentModel;
 using FluentWorkflow;
 using FluentWorkflow.Interface;
 
-namespace TemplateNamespace.Message;
+namespace TemplateNamespace.Template.Message;
 
 /// <summary>
 /// <see cref="TemplateWorkflowContext"/> 携带者接口

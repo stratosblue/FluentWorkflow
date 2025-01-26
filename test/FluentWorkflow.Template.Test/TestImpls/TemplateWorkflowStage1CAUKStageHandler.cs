@@ -1,8 +1,8 @@
 ﻿using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using TemplateNamespace;
-using TemplateNamespace.Handler;
-using TemplateNamespace.Message;
+using TemplateNamespace.Template.Handler;
+using TemplateNamespace.Template.Message;
 
 namespace FluentWorkflow;
 
@@ -22,7 +22,7 @@ internal class TemplateWorkflowStage1CAUKStageHandler : TemplateWorkflowStage1CA
     {
         serviceProvider.GetRequiredService<WorkflowExecuteLogger>().Step(stageMessage);
 
-        var context = stageMessage.Context;
+        var context = stageMessage.Context.TestInfo!;
         if (context.Depth > 0
             && context.Step-- == 0)
         {
@@ -35,11 +35,14 @@ internal class TemplateWorkflowStage1CAUKStageHandler : TemplateWorkflowStage1CA
             {
                 var subContext = new TemplateWorkflowContext(Guid.NewGuid().ToString())
                 {
-                    Depth = context.Depth,
-                    StepBase = context.StepBase,
-                    Step = context.StepBase,
-                    ExceptionDepth = nextExceptionDepth,
-                    ExceptionStep = context.ExceptionStep,
+                    TestInfo = new()
+                    {
+                        Depth = context.Depth,
+                        StepBase = context.StepBase,
+                        Step = context.StepBase,
+                        ExceptionDepth = nextExceptionDepth,
+                        ExceptionStep = context.ExceptionStep,
+                    }
                 };
                 var subWorkflow = serviceProvider.GetRequiredService<IWorkflowBuilder<TemplateWorkflow>>().Build(subContext);
                 onChildWorkflowCreated(subWorkflow);

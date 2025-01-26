@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using FluentWorkflow.Interface;
 
 namespace FluentWorkflow;
@@ -42,13 +44,13 @@ public abstract class WorkflowContext
     }
 
     /// <inheritdoc/>
-    public string Id => InnerGet<string>(FluentWorkflowConstants.ContextKeys.Id) ?? throw new WorkflowInvalidOperationException("上下文数据错误：不存在Id");
+    public string Id => InnerGet<string>(default, FluentWorkflowConstants.ContextKeys.Id) ?? throw new WorkflowInvalidOperationException("上下文数据错误：不存在Id");
 
     /// <inheritdoc/>
-    public WorkflowContextMetadata? Parent => _parent ??= DataContainer.TryGetValue(FluentWorkflowConstants.ContextKeys.ParentWorkflow, out var valueString) ? IObjectSerializer.Default.Deserialize<WorkflowContextMetadata?>(Convert.FromBase64String(valueString)) : null;
+    public WorkflowContextMetadata? Parent => _parent ??= InnerGet<WorkflowContextMetadata>(null, FluentWorkflowConstants.ContextKeys.ParentWorkflow);
 
     /// <inheritdoc/>
-    public string Stage => InnerGet<string>(FluentWorkflowConstants.ContextKeys.Stage) ?? throw new WorkflowInvalidOperationException($"上下文数据错误：不存在 {nameof(FluentWorkflowConstants.ContextKeys.Stage)}");
+    public string Stage => InnerGet<string>(default, FluentWorkflowConstants.ContextKeys.Stage) ?? throw new WorkflowInvalidOperationException($"上下文数据错误：不存在 {nameof(FluentWorkflowConstants.ContextKeys.Stage)}");
 
     #endregion Public 属性
 
@@ -63,9 +65,9 @@ public abstract class WorkflowContext
     {
         WorkflowException.ThrowIfNullOrWhiteSpace(id);
 
-        InnerSet(id, FluentWorkflowConstants.ContextKeys.Id);
-        InnerSet(ValidWorkflowName(), FluentWorkflowConstants.ContextKeys.WorkflowName);
-        InnerSet(string.Empty, FluentWorkflowConstants.ContextKeys.Stage);
+        InnerSetWithoutValidation(id, FluentWorkflowConstants.ContextKeys.Id);
+        InnerSetWithoutValidation(ValidWorkflowName(), FluentWorkflowConstants.ContextKeys.WorkflowName);
+        InnerSetWithoutValidation(string.Empty, FluentWorkflowConstants.ContextKeys.Stage);
     }
 
     /// <summary>
@@ -74,15 +76,18 @@ public abstract class WorkflowContext
     /// <param name="values"></param>
     public WorkflowContext(IEnumerable<KeyValuePair<string, string>> values) : base(values, StringComparer.Ordinal)
     {
-        if (!DataContainer.TryGetValue(FluentWorkflowConstants.ContextKeys.WorkflowName, out var workflowName)
-            || !string.Equals(ValidWorkflowName(), workflowName))
+        var currentWorkflowName = InnerGet<string>(null, FluentWorkflowConstants.ContextKeys.WorkflowName);
+        if (currentWorkflowName is null
+            || !string.Equals(ValidWorkflowName(), currentWorkflowName))
         {
-            throw new ArgumentException($"\"{workflowName}\" 对于 {GetType()} 是无效的工作流程名称, 这通常是因为使用了错误的上下文数据进行构造。");
+            throw new ArgumentException($"\"{currentWorkflowName}\" 对于 {GetType()} 是无效的工作流程名称, 这通常是因为使用了错误的上下文数据进行构造。");
         }
 
-        if (!DataContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.Stage))
+        //保证上下文中一定存在阶段的非 null 值
+        if (!DataContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.Stage)
+            || ObjectContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.Stage))
         {
-            InnerSet(string.Empty, FluentWorkflowConstants.ContextKeys.Stage);
+            InnerSetWithoutValidation(string.Empty, FluentWorkflowConstants.ContextKeys.Stage);
         }
     }
 
@@ -96,7 +101,7 @@ public abstract class WorkflowContext
     {
         WorkflowException.ThrowIfNullOrWhiteSpace(id);
 
-        InnerSet(id, FluentWorkflowConstants.ContextKeys.Id);
+        InnerSetWithoutValidation(id, FluentWorkflowConstants.ContextKeys.Id);
     }
 
     #endregion Public 构造函数
@@ -104,8 +109,11 @@ public abstract class WorkflowContext
     #region Public 方法
 
     /// <inheritdoc/>
+    public TValue? GetValue<TValue>(string key) => InnerGet<TValue>(default, key);
+
+    /// <inheritdoc/>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public void SetCurrentStage(string stage) => DataContainer[FluentWorkflowConstants.ContextKeys.Stage] = CheckBeforeSetCurrentStage(stage);
+    public void SetCurrentStage(string stage) => ObjectContainer[FluentWorkflowConstants.ContextKeys.Stage] = CheckBeforeSetCurrentStage(stage);
 
     /// <inheritdoc/>
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -115,14 +123,18 @@ public abstract class WorkflowContext
 
         ThrowIfStarted();
 
-        if (DataContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.ParentWorkflow))
+        if (DataContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.ParentWorkflow)
+            || ObjectContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.ParentWorkflow))
         {
             throw new InvalidOperationException("The context already has parent context now.");
         }
 
-        DataContainer[FluentWorkflowConstants.ContextKeys.ParentWorkflow] = Convert.ToBase64String(IObjectSerializer.Default.SerializeToBytes(parent));
+        ObjectContainer[FluentWorkflowConstants.ContextKeys.ParentWorkflow] = parent;
         Flag |= WorkflowFlag.HasParentWorkflow;
     }
+
+    /// <inheritdoc/>
+    public void SetValue<TValue>(string key, TValue? value) => InnerSet(value, key);
 
     /// <inheritdoc/>
     void IWorkflowContext.ApplyChanges(IWorkflowContext snapshotContext)
@@ -147,18 +159,29 @@ public abstract class WorkflowContext
     /// <inheritdoc/>
     IReadOnlyDictionary<string, string> IWorkflowContext.GetSnapshot() => GetSnapshot();
 
-    /// <inheritdoc/>
-    TValue? IWorkflowContext.GetValue<TValue>(string key) where TValue : default => InnerGet<TValue>(default, key);
-
-    /// <inheritdoc/>
-    void IWorkflowContext.SetValue<TValue>(string key, TValue? value) where TValue : default => InnerGet(value, key);
-
     #endregion Public 方法
 
     #region Protected 方法
 
     /// <inheritdoc/>
     protected internal override sealed bool IsMutable(string key) => !FluentWorkflowConstants.ContextKeys.IsInitOnlyKey(key);
+
+    /// <summary>
+    /// 获取 <paramref name="propName"/> 的值，并确保其不为空，否则抛出异常
+    /// </summary>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="propName"></param>
+    /// <returns></returns>
+    [return: NotNull]
+    protected internal TValue RequiredInnerGet<TValue>([CallerMemberName] string propName = null!)
+    {
+        var value = InnerGet<TValue>(default, propName);
+        if (value == null)
+        {
+            throw new InvalidOperationException($"Can not get \"{propName}\" as \"{typeof(TValue)}\" in context.");
+        }
+        return value;
+    }
 
     /// <summary>
     /// 在设置阶段前进行检查，并返回进行设置的阶段

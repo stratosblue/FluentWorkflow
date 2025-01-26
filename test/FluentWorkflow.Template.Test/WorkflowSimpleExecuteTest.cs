@@ -23,7 +23,10 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
 
         var context = new TemplateWorkflowContext(id)
         {
-            ExceptionStep = exceptionStep,
+            TestInfo = new()
+            {
+                ExceptionStep = exceptionStep,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -43,7 +46,7 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
 
         var id = Guid.NewGuid().ToString();
 
-        var context = new TemplateWorkflowContext(id);
+        var context = new TemplateWorkflowContext(id) { TestInfo = new() };
         var workflow = workflowBuilder.Build(context);
 
         await workflow.StartAsync(default);

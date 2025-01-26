@@ -6,7 +6,7 @@ using FluentWorkflow.Interface;
 using FluentWorkflow.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using TemplateNamespace.Message;
+using TemplateNamespace.Template.Message;
 
 namespace TemplateNamespace;
 
@@ -48,12 +48,6 @@ public abstract partial class TemplateWorkflowBase
         Context = context ?? throw new ArgumentNullException(nameof(context));
         ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }
-
-    /// <summary>
-    /// 声明 <see cref="TemplateWorkflow"/> 的步骤
-    /// </summary>
-    /// <param name="stageBuilder"></param>
-    protected abstract void BuildStages(ITemplateWorkflowStageBuilder stageBuilder);
 
     /// <summary>
     /// 在工作流程启动时

@@ -4,9 +4,9 @@ using System.ComponentModel;
 using FluentWorkflow;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.Logging;
-using TemplateNamespace.Handler;
+using TemplateNamespace.Template.Handler;
 
-namespace TemplateNamespace.Continuator;
+namespace TemplateNamespace.Template.Continuator;
 
 /// <summary>
 /// <see cref="TemplateWorkflow"/> 流程延续器
