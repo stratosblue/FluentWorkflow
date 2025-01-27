@@ -13,5 +13,5 @@ public enum GeneratorVersion
     /// <summary>
     /// 版本2
     /// </summary>
-    Version2
+    Version2 = 2,
 }

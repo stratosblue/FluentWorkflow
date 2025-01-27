@@ -8,7 +8,7 @@ internal class DeclarationBaseSourceProvider : SourceProvider
 {
     #region Private 字段
 
-    private readonly WorkflowDeclarationDescriptor _descriptor;
+    private readonly WorkflowDeclaration _descriptor;
 
     private readonly string _usings;
 
@@ -16,7 +16,7 @@ internal class DeclarationBaseSourceProvider : SourceProvider
 
     #region Public 构造函数
 
-    public DeclarationBaseSourceProvider(WorkflowDeclarationDescriptor descriptor)
+    public DeclarationBaseSourceProvider(WorkflowDeclaration descriptor)
     {
         _descriptor = descriptor;
 
@@ -46,10 +46,10 @@ internal class DeclarationBaseSourceProvider : SourceProvider
 namespace {_descriptor.NameSpace};
 
 /// <summary>
-/// <see cref=""{_descriptor.Name}""/> 的辅助定义基类
+/// <see cref=""{_descriptor.DeclarationName}""/> 的辅助定义基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract class {_descriptor.Name}Base : IWorkflowDeclaration
+public abstract class {_descriptor.DeclarationName}Base : IWorkflowDeclaration
 {{
     #region Internal 方法
 
@@ -68,11 +68,11 @@ public abstract class {_descriptor.Name}Base : IWorkflowDeclaration
     #endregion Internal 方法
 }}
 
-partial class {_descriptor.Name} : {_descriptor.Name}Base 
+partial class {_descriptor.DeclarationName} : {_descriptor.DeclarationName}Base 
 {{
 }}
 ");
-        yield return new($"{_descriptor.Name}.DeclarationBase.g.cs", builder.ToString());
+        yield return new($"{_descriptor.DeclarationName}.DeclarationBase.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

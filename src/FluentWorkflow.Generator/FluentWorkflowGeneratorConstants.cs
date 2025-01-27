@@ -26,6 +26,8 @@ using FluentWorkflow.Util;
 
     public static class CodeNames
     {
+        public const string PropertyDefineMethod = "Property";
+        public const string WorkflowName = "Name";
         public const string StageBuilderBegin = "Begin";
         public const string StageBuilderThen = "Then";
         public const string StageBuilderCompletion = "Completion";

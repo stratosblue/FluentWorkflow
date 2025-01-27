@@ -10,6 +10,6 @@ namespace TemplateNamespace;
 [WorkflowContextTypedProperty<int>("Age", "")]
 [WorkflowContextTypedProperty<string>("Address", "")]
 [WorkflowContextTypedProperty<TemplateWorkflowTestInfo>("TestInfo", "")]
-public sealed partial class TemplateWorkflowDeclaration : TemplateWorkflowDeclarationBase, IWorkflowDeclaration
+sealed partial class TemplateWorkflowDeclaration : TemplateWorkflowDeclarationBase, IWorkflowDeclaration
 {
 }

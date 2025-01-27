@@ -45,13 +45,13 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
                                              GeneratorAdditionals: generatorAdditionals.ToList());
         });
 
-        context.RegisterSourceOutput(declarationsProvider.Combine(compilationPropertiesProvider),
+        context.RegisterSourceOutput(declarationsProvider,
                                      (context, input) =>
                                      {
-                                         var workflowDeclarationDescriptor = input.Left;
-                                         var properties = input.Right;
+                                         var workflowDeclaration = input;
 
-                                         context.AddSource(new DeclarationBaseSourceProvider(workflowDeclarationDescriptor));
+                                         context.AddSource(new DeclarationBaseSourceProvider(workflowDeclaration));
+                                         context.AddSource(new DeclarationSourceProvider(workflowDeclaration));
                                      });
 
         //context.RegisterSourceOutput(declarationsProvider.Combine(compilationPropertiesProvider),
@@ -151,15 +151,13 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
         }
     }
 
-    private static WorkflowDeclarationDescriptor TransformWorkflowDeclarationSyntaxNode(GeneratorSyntaxContext syntaxContext, CancellationToken cancellationToken)
+    private static WorkflowDeclaration TransformWorkflowDeclarationSyntaxNode(GeneratorSyntaxContext syntaxContext, CancellationToken cancellationToken)
     {
         var classDeclarationSyntax = (ClassDeclarationSyntax)syntaxContext.Node;
-        var typeSymbol = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax, cancellationToken)!;
+        var workflowDeclarationAnalyzer = new WorkflowDeclarationAnalyzer(classDeclarationSyntax, syntaxContext.SemanticModel);
+        workflowDeclarationAnalyzer.Visit(classDeclarationSyntax);
 
-        var workflowDeclarationName = classDeclarationSyntax.Identifier.ValueText;
-        var nameSpace = typeSymbol.ContainingNamespace.ToDisplayString();
-
-        return new(classDeclarationSyntax, workflowDeclarationName, nameSpace);
+        return workflowDeclarationAnalyzer.WorkflowDeclaration;
     }
 
     #endregion filter

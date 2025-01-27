@@ -2,8 +2,6 @@
 
 namespace FluentWorkflow.Generator.Model;
 
-internal record struct WorkflowDeclarationDescriptor(ClassDeclarationSyntax DeclarationSyntax, string Name, string NameSpace);
-
 internal record struct WorkflowDescriptor(ClassDeclarationSyntax DeclarationSyntax, string Name, string NameSpace)
     : IEquatable<WorkflowDescriptor>
 {
