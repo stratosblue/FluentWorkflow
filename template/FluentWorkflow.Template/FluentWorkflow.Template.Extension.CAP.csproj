@@ -25,6 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\src\FluentWorkflow.Generator\Codes\IWorkflowDeclaration.cs" Link="refs/IWorkflowDeclaration.cs" />
+    <Compile Include="..\..\src\FluentWorkflow.Generator\Codes\WorkflowDeclarations.cs" Link="refs/WorkflowDeclarations.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <PackageReference Include="DotNetCore.CAP" Version="8.1.0" />
   </ItemGroup>
 

@@ -11,6 +11,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Codes\IWorkflowDeclaration.cs" />
+	  <Compile Remove="Codes\WorkflowDeclarations.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 
@@ -18,5 +23,10 @@
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.0.1" PrivateAssets="All" />
 		<CompilerVisibleProperty Include="RootNamespace" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Codes\IWorkflowDeclaration.cs" />
+	  <EmbeddedResource Include="Codes\WorkflowDeclarations.cs" />
 	</ItemGroup>
 </Project>

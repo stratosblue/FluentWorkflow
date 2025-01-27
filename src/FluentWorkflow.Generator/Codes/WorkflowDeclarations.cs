@@ -112,8 +112,7 @@ internal sealed class WorkflowContextTypedPropertyAttribute<T> : Attribute
     /// </summary>
     /// <param name="propertyName">属性名称</param>
     /// <param name="comment">注释</param>
-    /// <param name="nullable">是否可空</param>
-    public WorkflowContextTypedPropertyAttribute(string propertyName, string comment, bool nullable)
+    public WorkflowContextTypedPropertyAttribute(string propertyName, string comment)
     {
     }
 
@@ -143,6 +142,5 @@ internal sealed class WorkflowDefineAttribute : Attribute
 }
 
 #endregion attributes
-
 
 #endif
