@@ -11,15 +11,15 @@ internal class WorkflowDeclarationAnalyzer : CSharpSyntaxWalker
 
     private readonly ClassDeclarationSyntax _classDeclarationSyntax;
 
+    private readonly string _declarationName;
+
+    private readonly string _nameSpace;
+
     private readonly List<WorkflowContextProperty> _properties = [];
 
     private readonly SemanticModel _semanticModel;
 
     private readonly List<string> _stages = [];
-
-    private readonly string _declarationName;
-
-    private readonly string _nameSpace;
 
     private string? _workflowName;
 
@@ -34,7 +34,7 @@ internal class WorkflowDeclarationAnalyzer : CSharpSyntaxWalker
             return new(DeclarationSyntax: _classDeclarationSyntax,
                        NameSpace: _nameSpace,
                        DeclarationName: _declarationName,
-                       WorkflowName: _workflowName ?? throw new InvalidOperationException("No WorkflowName"),
+                       WorkflowName: _workflowName ?? "Undefined",
                        Stages: ImmutableArray.Create((_stages as IEnumerable<string>).Reverse().ToArray()),
                        ContextProperties: ImmutableArray.Create((_properties as IEnumerable<WorkflowContextProperty>).Reverse().ToArray()));
         }
@@ -51,11 +51,29 @@ internal class WorkflowDeclarationAnalyzer : CSharpSyntaxWalker
 
         var typeSymbol = semanticModel.GetDeclaredSymbol(classDeclarationSyntax)!;
 
-        _declarationName = classDeclarationSyntax.Identifier.ValueText ?? throw new InvalidOperationException("No DeclarationName");
-        _nameSpace = typeSymbol.ContainingNamespace.ToDisplayString() ?? throw new InvalidOperationException("No NameSpace");
+        _declarationName = classDeclarationSyntax.Identifier.ValueText;
+        _nameSpace = typeSymbol.ContainingNamespace.ToDisplayString();
     }
 
     #endregion Public 构造函数
+
+    #region 工具方法
+
+    public static bool TryGetWorkflowDeclaration(ClassDeclarationSyntax classDeclarationSyntax, SemanticModel semanticModel, out WorkflowDeclaration workflowDeclaration)
+    {
+        var workflowDeclarationAnalyzer = new WorkflowDeclarationAnalyzer(classDeclarationSyntax, semanticModel);
+        workflowDeclarationAnalyzer.Visit(classDeclarationSyntax);
+
+        if (workflowDeclarationAnalyzer._workflowName is not null)
+        {
+            workflowDeclaration = workflowDeclarationAnalyzer.WorkflowDeclaration;
+            return true;
+        }
+        workflowDeclaration = default;
+        return false;
+    }
+
+    #endregion 工具方法
 
     #region Public 方法
 

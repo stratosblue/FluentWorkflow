@@ -19,10 +19,17 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
     {
         InitializePreCodes(context);
 
+        //声明提供器
         var declarationsProvider = context.SyntaxProvider.CreateSyntaxProvider(FilterWorkflowDeclarationSyntaxNode, TransformWorkflowDeclarationSyntaxNode)
                                                          .Collect()
                                                          .SelectMany((items, _) => items.Distinct());
 
+        //生成定义提供器
+        var generationsProvider = context.SyntaxProvider.CreateSyntaxProvider(FilterGenerationDeclarationSyntaxNode, TransformGenerationDeclarationSyntaxNode)
+                                                 .Collect()
+                                                 .SelectMany((items, _) => items.Distinct());
+
+        //编译属性提供器
         var compilationPropertiesProvider = context.AnalyzerConfigOptionsProvider.Select((configOptions, token) =>
         {
             var generatorAdditionals = new HashSet<GeneratorAdditional>();
@@ -45,6 +52,7 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
                                              GeneratorAdditionals: generatorAdditionals.ToList());
         });
 
+        //生成声明信息
         context.RegisterSourceOutput(declarationsProvider,
                                      (context, input) =>
                                      {
@@ -54,48 +62,74 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
                                          context.AddSource(new DeclarationSourceProvider(workflowDeclaration));
                                      });
 
-        //context.RegisterSourceOutput(declarationsProvider.Combine(compilationPropertiesProvider),
-        //                             (context, input) =>
-        //                             {
-        //                                 var workflowDescriptor = input.Left;
-        //                                 var properties = input.Right;
+        //生成定义信息
+        context.RegisterSourceOutput(generationsProvider.Combine(compilationPropertiesProvider),
+                                     (context, input) =>
+                                     {
+                                         var workflowGenerationDescriptors = input.Left;
+                                         var properties = input.Right;
 
-        //                                 var generateContext = new GenerateContext(workflowDescriptor);
+                                         foreach (var descriptor in workflowGenerationDescriptors)
+                                         {
+                                             var (workflowDeclaration, generationMode) = descriptor;
 
-        //                                 context.AddSource(new BaseSourceProvider(generateContext));
-        //                                 context.AddSource(new BuilderSourceProvider(generateContext));
-        //                                 context.AddSource(new ContextSourceProvider(generateContext));
-        //                                 context.AddSource(new DIExtensionsSourceProvider(generateContext));
-        //                                 context.AddSource(new DIExtensionsConfigurationSourceProvider(generateContext));
-        //                                 context.AddSource(new DIExtensionsStageHandlerSourceProvider(generateContext));
-        //                                 context.AddSource(new MessagesSourceProvider(generateContext));
-        //                                 context.AddSource(new ResultObserverSourceProvider(generateContext));
-        //                                 context.AddSource(new SchedulerSourceProvider(generateContext));
-        //                                 context.AddSource(new StageBuilderSourceProvider(generateContext));
-        //                                 context.AddSource(new StageContinuatorsSourceProvider(generateContext));
-        //                                 context.AddSource(new StageHandlerSourceProvider(generateContext));
-        //                                 context.AddSource(new StagesSourceProvider(generateContext));
-        //                                 context.AddSource(new StartRequestHandlerSourceProvider(generateContext));
-        //                                 context.AddSource(new StateMachineSourceProvider(generateContext));
-        //                                 context.AddSource(new StateMachineDriverSourceProvider(generateContext));
+                                             if (generationMode == WorkflowSourceGenerationMode.Default)
+                                             {
+                                                 generationMode = WorkflowSourceGenerationMode.All;
+                                             }
 
-        //                                 if (properties.GeneratorAdditionals.Contains(GeneratorAdditional.AbpFoundation))
-        //                                 {
-        //                                     context.AddSource(new AbpMessagesSourceProvider(generateContext));
-        //                                     context.AddSource(new AbpResultObserverSourceProvider(generateContext));
-        //                                     context.AddSource(new AbpStageHandlersSourceProvider(generateContext));
-        //                                     context.AddSource(new AbpStartRequestHandlerSourceProvider(generateContext));
-        //                                     context.AddSource(new AbpStateMachineDriverSourceProvider(generateContext));
-        //                                 }
+                                             var generateContext = new GenerateContext(workflowDeclaration);
 
-        //                                 if (properties.GeneratorAdditionals.Contains(GeneratorAdditional.CAPFoundation))
-        //                                 {
-        //                                     context.AddSource(new CapResultObserverSourceProvider(generateContext));
-        //                                     context.AddSource(new CapStageHandlersSourceProvider(generateContext));
-        //                                     context.AddSource(new CapStartRequestHandlerSourceProvider(generateContext));
-        //                                     context.AddSource(new CapStateMachineDriverSourceProvider(generateContext));
-        //                                 }
-        //                             });
+                                             if (generationMode.HasFlag(WorkflowSourceGenerationMode.Workflow))
+                                             {
+                                                 context.AddSource(new BaseSourceProvider(generateContext));
+                                                 context.AddSource(new BuilderSourceProvider(generateContext));
+                                                 context.AddSource(new ContextSourceProvider(generateContext));
+                                                 context.AddSource(new DIExtensionsSourceProvider(generateContext));
+                                                 context.AddSource(new DIExtensionsConfigurationSourceProvider(generateContext));
+                                             }
+
+                                             if (generationMode.HasFlag(WorkflowSourceGenerationMode.Messages))
+                                             {
+                                                 context.AddSource(new MessagesSourceProvider(generateContext));
+                                             }
+
+                                             if (generationMode.HasFlag(WorkflowSourceGenerationMode.MessageHandlers))
+                                             {
+                                                 context.AddSource(new ResultObserverSourceProvider(generateContext));
+                                                 context.AddSource(new StageContinuatorsSourceProvider(generateContext));
+                                                 context.AddSource(new StageHandlerSourceProvider(generateContext));
+                                                 context.AddSource(new StagesSourceProvider(generateContext));
+
+                                                 context.AddSource(new DIExtensionsStageHandlerSourceProvider(generateContext));
+                                             }
+
+                                             if (generationMode.HasFlag(WorkflowSourceGenerationMode.Scheduler))
+                                             {
+                                                 context.AddSource(new SchedulerSourceProvider(generateContext));
+                                                 context.AddSource(new StartRequestHandlerSourceProvider(generateContext));
+                                                 context.AddSource(new StateMachineSourceProvider(generateContext));
+                                                 context.AddSource(new StateMachineDriverSourceProvider(generateContext));
+                                             }
+
+                                             if (properties.GeneratorAdditionals.Contains(GeneratorAdditional.AbpFoundation))
+                                             {
+                                                 context.AddSource(new AbpMessagesSourceProvider(generateContext));
+                                                 context.AddSource(new AbpResultObserverSourceProvider(generateContext));
+                                                 context.AddSource(new AbpStageHandlersSourceProvider(generateContext));
+                                                 context.AddSource(new AbpStartRequestHandlerSourceProvider(generateContext));
+                                                 context.AddSource(new AbpStateMachineDriverSourceProvider(generateContext));
+                                             }
+
+                                             if (properties.GeneratorAdditionals.Contains(GeneratorAdditional.CAPFoundation))
+                                             {
+                                                 context.AddSource(new CapResultObserverSourceProvider(generateContext));
+                                                 context.AddSource(new CapStageHandlersSourceProvider(generateContext));
+                                                 context.AddSource(new CapStartRequestHandlerSourceProvider(generateContext));
+                                                 context.AddSource(new CapStateMachineDriverSourceProvider(generateContext));
+                                             }
+                                         }
+                                     });
 
         context.RegisterSourceOutput(compilationPropertiesProvider,
                                      (context, properties) =>
@@ -159,6 +193,65 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
 
         return workflowDeclarationAnalyzer.WorkflowDeclaration;
     }
+
+    #region generation
+
+    private bool FilterGenerationDeclarationSyntaxNode(SyntaxNode node, CancellationToken token)
+    {
+        if (node is AttributeListSyntax attributeListSyntax
+            && attributeListSyntax.Attributes is { Count: > 0 } attributes
+            && string.Equals("assembly", attributeListSyntax.Target?.Identifier.ValueText, StringComparison.Ordinal)
+            && attributes.Any(m => m.Name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1 && string.Equals("GenerateWorkflowCodes", genericNameSyntax.Identifier.ValueText)))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private HashSet<WorkflowGenerationDescriptor> TransformGenerationDeclarationSyntaxNode(GeneratorSyntaxContext syntaxContext, CancellationToken token)
+    {
+        var semanticModel = syntaxContext.SemanticModel;
+        var attributeListSyntax = (AttributeListSyntax)syntaxContext.Node;
+        var attributes = attributeListSyntax.Attributes;
+        HashSet<WorkflowGenerationDescriptor> generationDescriptors = [];
+
+        foreach (var attribute in attributes.Where(m => m.Name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1 && string.Equals("GenerateWorkflowCodes", genericNameSyntax.Identifier.ValueText)))
+        {
+            var genericNameSyntax = (GenericNameSyntax)attribute.Name;
+            var typeSyntax = genericNameSyntax.TypeArgumentList.Arguments[0];
+
+            var generationMode = WorkflowSourceGenerationMode.Default;
+
+            //获取生成模式
+            if (attribute.ArgumentList is { } argumentList
+                && argumentList.Arguments.Count > 0)
+            {
+                var modeValue = argumentList.Arguments[0].Expression.ToFullString().Split('.').LastOrDefault();
+                Enum.TryParse(modeValue, out generationMode);
+            }
+
+            var typeInfo = syntaxContext.SemanticModel.GetTypeInfo(typeSyntax);
+            if (typeInfo.Type?.DeclaringSyntaxReferences.Length > 0)    //项目内定义，使用语法树解析
+            {
+                foreach (var syntaxReference in typeInfo.Type.DeclaringSyntaxReferences)
+                {
+                    if (syntaxReference.GetSyntax() is ClassDeclarationSyntax classDeclarationSyntax
+                        && WorkflowDeclarationAnalyzer.TryGetWorkflowDeclaration(classDeclarationSyntax, semanticModel, out var workflowDeclaration))
+                    {
+                        generationDescriptors.Add(new(workflowDeclaration, generationMode));
+                        break;
+                    }
+                }
+            }
+            else    //项目外定义，使用反射
+            {
+            }
+        }
+
+        return generationDescriptors;
+    }
+
+    #endregion generation
 
     #endregion filter
 

@@ -25,9 +25,9 @@ internal class StagesSourceProvider : WorkflowSourceProvider
 namespace {NameSpace};
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 的阶段定义
+/// <see cref=""{WorkflowClassName}""/> 的阶段定义
 /// </summary>
-public static class {WorkflowName}Stages
+public static class {WorkflowClassName}Stages
 {{
     /// <summary>
     /// 有序的阶段名称列表
@@ -55,24 +55,24 @@ public static class {WorkflowName}Stages
     /// <summary>
     /// 阶段 {stage.Name}
     /// </summary>
-    public const string {stage.Name} = ""{WorkflowName}.Stage.{stage.Name}"";
+    public const string {stage.Name} = ""{WorkflowClassName}.Stage.{stage.Name}"";
 ");
         }
 
         builder.AppendLine($@"/// <summary>
     /// 阶段 Completion
     /// </summary>
-    public const string Completion = ""{WorkflowName}.Stage.Completion"";
+    public const string Completion = ""{WorkflowClassName}.Stage.Completion"";
 
     /// <summary>
     /// 阶段 Failure
     /// </summary>
-    public const string Failure = ""{WorkflowName}.Stage.Failure"";
+    public const string Failure = ""{WorkflowClassName}.Stage.Failure"";
 ");
 
         builder.AppendLine($@"
-    /// <inheritdoc cref=""{WorkflowName}Stages""/>
-    static {WorkflowName}Stages()
+    /// <inheritdoc cref=""{WorkflowClassName}Stages""/>
+    static {WorkflowClassName}Stages()
     {{");
         builder.AppendLine($"OrderedStageIds = ImmutableArray.Create({string.Join(", ", Context.Stages.Select(m => m.Name))});");
         builder.AppendLine($"OrderedStages = ImmutableArray.Create({string.Join(", ", Context.Stages.Select(m => $"nameof({m.Name})"))});");
@@ -84,21 +84,21 @@ public static class {WorkflowName}Stages
 }}
 
 /// <summary>
-/// 标记接口 - 标记属于工作流程 <see cref=""{WorkflowName}""/>
+/// 标记接口 - 标记属于工作流程 <see cref=""{WorkflowClassName}""/>
 /// </summary>
-public interface I{WorkflowName} {{ }}
+public interface I{WorkflowClassName} {{ }}
 
 ");
 
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"/// <summary>
-/// 标记接口 - 标记属于工作流程 <see cref=""{WorkflowName}""/> 的阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/>
+/// 标记接口 - 标记属于工作流程 <see cref=""{WorkflowClassName}""/> 的阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/>
 /// </summary>
-public interface I{WorkflowName}{stage.Name}Stage : IWorkflowStage, I{WorkflowName} {{ }}");
+public interface I{WorkflowClassName}{stage.Name}Stage : IWorkflowStage, I{WorkflowClassName} {{ }}");
         }
 
-        yield return new($"{WorkflowName}.Stages.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.Stages.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

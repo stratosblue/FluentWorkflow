@@ -2,30 +2,30 @@
 
 namespace FluentWorkflow.SimpleSample;
 
-public partial class SampleWorkflowContext
+public partial class SampleWorkflowTestInfo
 {
     #region Public 属性
 
-    public string? ChildWorkflowStartStage { get => InnerGet(); set => InnerSet(value); }
+    public string? ChildWorkflowStartStage { get; set; }
 
-    public int Depth { get => InnerGetValue<int>(); set => InnerSetValue(value); }
+    public int Depth { get; set; }
 
-    public int ExceptionDepth { get => InnerGetValue<int>(); set => InnerSetValue(value); }
+    public int ExceptionDepth { get; set; }
 
-    public int ExceptionStep { get => InnerGetValue<int>(); set => InnerSetValue(value); }
+    public int ExceptionStep { get; set; }
 
-    public int MaxStageDelay { get => InnerGetValue<int>(); set => InnerSetValue(value); }
+    public int MaxStageDelay { get; set; }
 
-    public int MaxSubWorkflow { get => InnerGetValue<int>(); set => InnerSetValue(value); }
+    public int MaxSubWorkflow { get; set; }
 
-    public int Step { get => InnerGetValue<int>(); set => InnerSetValue(value); }
+    public int Step { get; set; }
 
-    public int StepBase { get => InnerGetValue<int>(); set => InnerSetValue(value); }
+    public int StepBase { get; set; }
 
     /// <summary>
     /// 通过 resume 工作，在每个阶段先挂起再恢复
     /// </summary>
-    public bool WorkWithResume { get => InnerGetBoolean() ?? false; set => InnerSetBoolean(value); }
+    public bool WorkWithResume { get; set; }
 
     #endregion Public 属性
 }

@@ -26,15 +26,17 @@ internal class GenerateNames
 
     public string BuildStagesMethod { get; }
 
-    public string NameSpace => WorkflowDescriptor.NameSpace;
+    public string NameSpace => WorkflowDeclaration.NameSpace;
 
     public string StageBuilder { get; }
 
     public string StartRequestMessage { get; }
 
-    public WorkflowDescriptor WorkflowDescriptor { get; }
+    public string WorkflowClassName => WorkflowDeclaration.WorkflowClassName;
 
-    public string WorkflowName => WorkflowDescriptor.Name;
+    public WorkflowDeclaration WorkflowDeclaration { get; }
+
+    public string WorkflowName => WorkflowDeclaration.WorkflowName;
 
     public string WorkflowNameStagesClass { get; }
 
@@ -44,24 +46,24 @@ internal class GenerateNames
 
     #region Public 构造函数
 
-    public GenerateNames(WorkflowDescriptor workflowDescriptor)
+    public GenerateNames(WorkflowDeclaration workflowDeclaration)
     {
-        WorkflowDescriptor = workflowDescriptor;
+        WorkflowDeclaration = workflowDeclaration;
 
-        StageBuilder = $"I{WorkflowName}StageBuilder";
+        StageBuilder = $"I{WorkflowClassName}StageBuilder";
         BuildStagesMethod = "BuildStages";
-        WorkflowNameStagesClass = $"{WorkflowName}Stages";
+        WorkflowNameStagesClass = $"{WorkflowClassName}Stages";
 
-        WorkflowStateMachineDriver = $"{WorkflowName}StateMachineDriver";
+        WorkflowStateMachineDriver = $"{WorkflowClassName}StateMachineDriver";
 
-        StartRequestMessage = $"{WorkflowName}StartRequestMessage";
+        StartRequestMessage = $"{WorkflowClassName}StartRequestMessage";
 
         #region context base
 
-        WorkflowContext = $"{WorkflowName}Context";
-        StageCompletedMessageInterface = $"I{WorkflowName}StageCompletedMessage";
-        FailureMessageInterface = $"I{WorkflowName}FailureMessage";
-        FailureMessage = $"{WorkflowName}FailureMessage";
+        WorkflowContext = $"{WorkflowClassName}Context";
+        StageCompletedMessageInterface = $"I{WorkflowClassName}StageCompletedMessage";
+        FailureMessageInterface = $"I{WorkflowClassName}FailureMessage";
+        FailureMessage = $"{WorkflowClassName}FailureMessage";
 
         #endregion context base
     }

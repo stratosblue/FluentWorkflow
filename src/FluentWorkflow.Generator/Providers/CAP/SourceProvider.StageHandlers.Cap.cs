@@ -31,16 +31,16 @@ namespace {NameSpace}.Handler;
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"
-partial class {WorkflowName}{stage.Name}StageHandlerBase : ICapSubscribe
+partial class {WorkflowClassName}{stage.Name}StageHandlerBase : ICapSubscribe
 {{
     /// <summary>
-    /// 处理消息 <inheritdoc cref=""{WorkflowName}{stage.Name}StageMessage.EventName""/>
+    /// 处理消息 <inheritdoc cref=""{WorkflowClassName}{stage.Name}StageMessage.EventName""/>
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
-    [CapSubscribe({WorkflowName}{stage.Name}StageMessage.EventName)]
-    public virtual Task HandleMessageAsync({WorkflowName}{stage.Name}StageMessage message, CancellationToken cancellationToken)
+    [CapSubscribe({WorkflowClassName}{stage.Name}StageMessage.EventName)]
+    public virtual Task HandleMessageAsync({WorkflowClassName}{stage.Name}StageMessage message, CancellationToken cancellationToken)
     {{
         return HandleAsync(message, cancellationToken);
     }}
@@ -48,7 +48,7 @@ partial class {WorkflowName}{stage.Name}StageHandlerBase : ICapSubscribe
 ");
         }
 
-        yield return new($"{WorkflowName}.StageHandlers.Cap.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.StageHandlers.Cap.g.cs", builder.ToString());
 
         #endregion Handlers
     }

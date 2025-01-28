@@ -26,16 +26,16 @@ using DotNetCore.CAP;
 
 namespace {NameSpace}.Internal;
 
-partial class {WorkflowName}StateMachineDriverBase : ICapSubscribe
+partial class {WorkflowClassName}StateMachineDriverBase : ICapSubscribe
 {{
     /// <summary>
-    /// 处理消息 <inheritdoc cref=""{WorkflowName}FailureMessage.EventName""/>
+    /// 处理消息 <inheritdoc cref=""{WorkflowClassName}FailureMessage.EventName""/>
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
-    [CapSubscribe({WorkflowName}FailureMessage.EventName)]
-    public virtual Task HandleMessageAsync({WorkflowName}FailureMessage message, CancellationToken cancellationToken)
+    [CapSubscribe({WorkflowClassName}FailureMessage.EventName)]
+    public virtual Task HandleMessageAsync({WorkflowClassName}FailureMessage message, CancellationToken cancellationToken)
     {{
         return HandleAsync(message, cancellationToken);
     }}
@@ -44,13 +44,13 @@ partial class {WorkflowName}StateMachineDriverBase : ICapSubscribe
         {
             builder.AppendLine($@"
     /// <summary>
-    /// 处理消息 <inheritdoc cref=""{WorkflowName}{stage.Name}StageCompletedMessage.EventName""/>
+    /// 处理消息 <inheritdoc cref=""{WorkflowClassName}{stage.Name}StageCompletedMessage.EventName""/>
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
-    [CapSubscribe({WorkflowName}{stage.Name}StageCompletedMessage.EventName)]
-    public virtual Task HandleMessageAsync({WorkflowName}{stage.Name}StageCompletedMessage message, CancellationToken cancellationToken)
+    [CapSubscribe({WorkflowClassName}{stage.Name}StageCompletedMessage.EventName)]
+    public virtual Task HandleMessageAsync({WorkflowClassName}{stage.Name}StageCompletedMessage message, CancellationToken cancellationToken)
     {{
         return HandleAsync(message, cancellationToken);
     }}
@@ -59,7 +59,7 @@ partial class {WorkflowName}StateMachineDriverBase : ICapSubscribe
 
         builder.Append("}");
 
-        yield return new($"{WorkflowName}.StateMachineDriver.Cap.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.StateMachineDriver.Cap.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

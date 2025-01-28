@@ -8,11 +8,16 @@
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
 		<IsRoslynComponent>true</IsRoslynComponent>
+    <DefineConstants>$(DefineConstants);GENERATOR</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <Compile Remove="Codes\IWorkflowDeclaration.cs" />
 	  <Compile Remove="Codes\WorkflowDeclarations.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="..\FluentWorkflow.Core\WorkflowSourceGenerationMode.cs" Link="WorkflowSourceGenerationMode.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

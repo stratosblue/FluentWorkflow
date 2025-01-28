@@ -25,18 +25,18 @@ internal class StateMachineDriverSourceProvider : WorkflowSourceProvider
 namespace {NameSpace}.Internal;
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 的状态机驱动器基类
+/// <see cref=""{WorkflowClassName}""/> 的状态机驱动器基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract partial class {WorkflowName}StateMachineDriverBase
-    : WorkflowStateMachineDriver<{WorkflowName}, {WorkflowName}Context, {WorkflowName}StateMachine, {WorkflowName}StageCompletedMessageBase, {WorkflowName}FailureMessage, I{WorkflowName}>
-    , IWorkflowMessageHandler<{WorkflowName}StageCompletedMessageBase>
-    , IWorkflowMessageHandler<{WorkflowName}FailureMessage>
-    , IWorkflowResumer<{WorkflowName}>
-    , I{WorkflowName}
+public abstract partial class {WorkflowClassName}StateMachineDriverBase
+    : WorkflowStateMachineDriver<{WorkflowClassName}, {WorkflowClassName}Context, {WorkflowClassName}StateMachine, {WorkflowClassName}StageCompletedMessageBase, {WorkflowClassName}FailureMessage, I{WorkflowClassName}>
+    , IWorkflowMessageHandler<{WorkflowClassName}StageCompletedMessageBase>
+    , IWorkflowMessageHandler<{WorkflowClassName}FailureMessage>
+    , IWorkflowResumer<{WorkflowClassName}>
+    , I{WorkflowClassName}
 {{
-    /// <inheritdoc cref=""{WorkflowName}StateMachineDriverBase""/>
-    protected {WorkflowName}StateMachineDriverBase(IWorkflowBuilder<{WorkflowName}> workflowBuilder, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}StateMachineDriverBase""/>
+    protected {WorkflowClassName}StateMachineDriverBase(IWorkflowBuilder<{WorkflowClassName}> workflowBuilder, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider)
         : base(workflowBuilder, messageDispatcher, serviceProvider)
     {{
     }}
@@ -44,9 +44,9 @@ public abstract partial class {WorkflowName}StateMachineDriverBase
     /// <inheritdoc/>
     public virtual async Task ResumeAsync(IWorkflowContext context, CancellationToken cancellationToken = default)
     {{
-        if (context is not {WorkflowName}Context {{ }} typedContext)
+        if (context is not {WorkflowClassName}Context {{ }} typedContext)
         {{
-            throw new WorkflowInvalidOperationException($""The context must be a instance of \""{{typeof({WorkflowName}Context)}}\""."");
+            throw new WorkflowInvalidOperationException($""The context must be a instance of \""{{typeof({WorkflowClassName}Context)}}\""."");
         }}
 
         ThrowIfContextInvalid(context);
@@ -93,7 +93,7 @@ public abstract partial class {WorkflowName}StateMachineDriverBase
             case WorkflowStageState.Finished:
                 {{
                     var currentStage = context.Stage;
-                    {WorkflowName}StageCompletedMessageBase stageCompletedMessage = currentStage switch
+                    {WorkflowClassName}StageCompletedMessageBase stageCompletedMessage = currentStage switch
                     {{
 ");
         foreach (var stage in Context.Stages)
@@ -115,7 +115,7 @@ public abstract partial class {WorkflowName}StateMachineDriverBase
     }}
 
     /// <inheritdoc/>
-    protected override async Task DoInputAsync({WorkflowName}StageCompletedMessageBase message, CancellationToken cancellationToken)
+    protected override async Task DoInputAsync({WorkflowClassName}StageCompletedMessageBase message, CancellationToken cancellationToken)
     {{
         var stateMachine = await RestoreStateMachineAsync(message.Context, cancellationToken);
 
@@ -126,7 +126,7 @@ public abstract partial class {WorkflowName}StateMachineDriverBase
     }}
 
     /// <inheritdoc/>
-    protected override async Task DoInputAsync({WorkflowName}FailureMessage message, CancellationToken cancellationToken)
+    protected override async Task DoInputAsync({WorkflowClassName}FailureMessage message, CancellationToken cancellationToken)
     {{
         var stateMachine = await RestoreStateMachineAsync(message.Context, cancellationToken);
 
@@ -137,23 +137,23 @@ public abstract partial class {WorkflowName}StateMachineDriverBase
     }}
 
     /// <inheritdoc/>
-    protected override bool ValidationContext(IWorkflowContext context) => {WorkflowName}Stages.StageIds.Contains(context.Stage);
+    protected override bool ValidationContext(IWorkflowContext context) => {WorkflowClassName}Stages.StageIds.Contains(context.Stage);
 }}
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 状态机驱动器
+/// <see cref=""{WorkflowClassName}""/> 状态机驱动器
 /// </summary>
-public sealed partial class {WorkflowName}StateMachineDriver : {WorkflowName}StateMachineDriverBase
+public sealed partial class {WorkflowClassName}StateMachineDriver : {WorkflowClassName}StateMachineDriverBase
 {{
-    /// <inheritdoc cref=""{WorkflowName}StateMachineDriver""/>
-    public {WorkflowName}StateMachineDriver(IWorkflowBuilder<{WorkflowName}> workflowBuilder, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}StateMachineDriver""/>
+    public {WorkflowClassName}StateMachineDriver(IWorkflowBuilder<{WorkflowClassName}> workflowBuilder, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider)
         : base(workflowBuilder, messageDispatcher, serviceProvider)
     {{
     }}
 }}
 ");
 
-        yield return new($"{WorkflowName}.StateMachineDriver.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.StateMachineDriver.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

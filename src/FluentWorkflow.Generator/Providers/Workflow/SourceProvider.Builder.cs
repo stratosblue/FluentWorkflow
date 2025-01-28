@@ -25,41 +25,41 @@ internal class BuilderSourceProvider : WorkflowSourceProvider
 namespace {NameSpace};
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 构造器基类
+/// <see cref=""{WorkflowClassName}""/> 构造器基类
 /// </summary>
-/// <typeparam name=""TWorkflow""><see cref=""{WorkflowName}""/> 或其派生类型</typeparam>
+/// <typeparam name=""TWorkflow""><see cref=""{WorkflowClassName}""/> 或其派生类型</typeparam>
 [EditorBrowsable(EditorBrowsableState.Never)]
-internal abstract partial class {WorkflowName}BuilderBase<TWorkflow>
-    : SimpleWorkflowBuilder<TWorkflow, {WorkflowName}Context, I{WorkflowName}>
-    where TWorkflow : {WorkflowName}
+internal abstract partial class {WorkflowClassName}BuilderBase<TWorkflow>
+    : SimpleWorkflowBuilder<TWorkflow, {WorkflowClassName}Context, I{WorkflowClassName}>
+    where TWorkflow : {WorkflowClassName}
 {{
-    /// <inheritdoc cref=""{WorkflowName}BuilderBase{{TWorkflow}}""/>
-    protected {WorkflowName}BuilderBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}BuilderBase{{TWorkflow}}""/>
+    protected {WorkflowClassName}BuilderBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {{
     }}
 
     /// <inheritdoc/>
-    protected override {WorkflowName}Context BuildContext(IEnumerable<KeyValuePair<string, string>> context)
+    protected override {WorkflowClassName}Context BuildContext(IEnumerable<KeyValuePair<string, string>> context)
     {{
-        return new {WorkflowName}Context(context);
+        return new {WorkflowClassName}Context(context);
     }}
 }}
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 构造器
+/// <see cref=""{WorkflowClassName}""/> 构造器
 /// </summary>
-/// <typeparam name=""TWorkflow""><see cref=""{WorkflowName}""/> 或其派生类型</typeparam>
-internal partial class {WorkflowName}Builder<TWorkflow>
-    : {WorkflowName}BuilderBase<TWorkflow>
-    where TWorkflow : {WorkflowName}
+/// <typeparam name=""TWorkflow""><see cref=""{WorkflowClassName}""/> 或其派生类型</typeparam>
+internal partial class {WorkflowClassName}Builder<TWorkflow>
+    : {WorkflowClassName}BuilderBase<TWorkflow>
+    where TWorkflow : {WorkflowClassName}
 {{
-    /// <inheritdoc cref=""{WorkflowName}Builder{{TWorkflow}}""/>
-    public {WorkflowName}Builder(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}Builder{{TWorkflow}}""/>
+    public {WorkflowClassName}Builder(IServiceProvider serviceProvider) : base(serviceProvider)
     {{
     }}
 }}
 ");
-        yield return new($"{WorkflowName}.Builder.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.Builder.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

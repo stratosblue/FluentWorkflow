@@ -27,20 +27,20 @@ using Volo.Abp.Threading;
 
 namespace {NameSpace}.Handler;
 
-partial class {WorkflowName}StartRequestHandler<TWorkflow> : IDistributedEventHandler<{WorkflowName}StartRequestMessage>
+partial class {WorkflowClassName}StartRequestHandler<TWorkflow> : IDistributedEventHandler<{WorkflowClassName}StartRequestMessage>
 {{
     /// <summary>
-    /// 处理消息 - <see cref=""{WorkflowName}StartRequestMessage""/>
+    /// 处理消息 - <see cref=""{WorkflowClassName}StartRequestMessage""/>
     /// </summary>
     /// <param name=""eventData""></param>
     /// <returns></returns>
-    public Task HandleEventAsync({WorkflowName}StartRequestMessage eventData)
+    public Task HandleEventAsync({WorkflowClassName}StartRequestMessage eventData)
     {{
         return HandleAsync(eventData, ServiceProvider.GetService<ICancellationTokenProvider>()?.Token ?? default);
     }}
 }}
 ");
-        yield return new($"{WorkflowName}.StartRequestHandler.Abp.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.StartRequestHandler.Abp.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

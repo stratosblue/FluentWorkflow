@@ -29,8 +29,8 @@ namespace {NameSpace}.Handler;
 /// 阶段完成器
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public interface I{WorkflowName}StageFinalizer
-    : IWorkflowStageFinalizer, I{WorkflowName}
+public interface I{WorkflowClassName}StageFinalizer
+    : IWorkflowStageFinalizer, I{WorkflowClassName}
 {{
 }}
 ");
@@ -40,7 +40,7 @@ public interface I{WorkflowName}StageFinalizer
 /// 阶段 {stage.Name} 完成器
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public interface I{WorkflowName}{stage.Name}StageFinalizer : I{WorkflowName}StageFinalizer
+public interface I{WorkflowClassName}{stage.Name}StageFinalizer : I{WorkflowClassName}StageFinalizer
 {{
 }}");
         }
@@ -52,18 +52,18 @@ public interface I{WorkflowName}{stage.Name}StageFinalizer : I{WorkflowName}Stag
 /// <typeparam name=""TStageMessage""></typeparam>
 /// <typeparam name=""TStageCompletedMessage""></typeparam>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, TStageCompletedMessage>
-    : WorkflowStageHandler<TStage, {WorkflowName}Context, TStageMessage, TStageCompletedMessage, I{WorkflowName}>
-    , I{WorkflowName}
+public abstract partial class {WorkflowClassName}StageHandler<TStage, TStageMessage, TStageCompletedMessage>
+    : WorkflowStageHandler<TStage, {WorkflowClassName}Context, TStageMessage, TStageCompletedMessage, I{WorkflowClassName}>
+    , I{WorkflowClassName}
     , IWorkflowStageHandler<TStageMessage>
-    , I{WorkflowName}StageFinalizer
+    , I{WorkflowClassName}StageFinalizer
     , ICurrentStage
-    where TStage : I{WorkflowName}
-    where TStageMessage : {WorkflowName}StageMessageBase, TStage, IEventNameDeclaration
-    where TStageCompletedMessage : {WorkflowName}StageCompletedMessageBase, TStage, IEventNameDeclaration
+    where TStage : I{WorkflowClassName}
+    where TStageMessage : {WorkflowClassName}StageMessageBase, TStage, IEventNameDeclaration
+    where TStageCompletedMessage : {WorkflowClassName}StageCompletedMessageBase, TStage, IEventNameDeclaration
 {{
-    /// <inheritdoc cref=""{WorkflowName}StageHandler{{TStage, TStageMessage, TStageCompletedMessage}}""/>
-    public {WorkflowName}StageHandler(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}StageHandler{{TStage, TStageMessage, TStageCompletedMessage}}""/>
+    public {WorkflowClassName}StageHandler(IServiceProvider serviceProvider) : base(serviceProvider)
     {{
     }}
 
@@ -83,7 +83,7 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
     /// <param name=""childWorkflowContexts""></param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
-    protected virtual Task OnAwaitFinishedAsync({WorkflowName}Context context, IReadOnlyDictionary<string, IWorkflowContext?> childWorkflowContexts, CancellationToken cancellationToken)
+    protected virtual Task OnAwaitFinishedAsync({WorkflowClassName}Context context, IReadOnlyDictionary<string, IWorkflowContext?> childWorkflowContexts, CancellationToken cancellationToken)
     {{
         return Task.CompletedTask;
     }}
@@ -93,7 +93,7 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
     /// <inheritdoc/>
     async Task IWorkflowStageFinalizer.AwaitFinishedAsync(IWorkflowContext context, IReadOnlyDictionary<string, IWorkflowContext?> childWorkflowContexts, CancellationToken cancellationToken)
     {{
-        var typedContext = new {WorkflowName}Context(context.GetSnapshot());
+        var typedContext = new {WorkflowClassName}Context(context.GetSnapshot());
 
         try
         {{
@@ -112,7 +112,7 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
     {{
         ThrowIfStageNotMatch(context);
 
-        var typedContext = new {WorkflowName}Context(context.GetSnapshot());
+        var typedContext = new {WorkflowClassName}Context(context.GetSnapshot());
 
         await OnProcessSuccessAsync(typedContext, cancellationToken);
         var stageCompletedMessage = CreateCompletedMessage(typedContext);
@@ -124,50 +124,50 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
     {{
         ThrowIfStageNotMatch(context);
 
-        var typedContext = new {WorkflowName}Context(context.GetSnapshot());
+        var typedContext = new {WorkflowClassName}Context(context.GetSnapshot());
 
         await OnProcessFailedAsync(typedContext, cancellationToken);
 
         var failureMessage = context.TryGetFailureMessage(out var failureMessageValue) ? failureMessageValue : ""Unknown error"";
         var failureStackTrace = context.TryGetFailureStackTrace(out var failureStackTraceValue) ? failureStackTraceValue : null;
 
-        var workflowFailureMessage = new {WorkflowName}FailureMessage(typedContext, failureMessage, failureStackTrace);
+        var workflowFailureMessage = new {WorkflowClassName}FailureMessage(typedContext, failureMessage, failureStackTrace);
         await MessageDispatcher.PublishAsync(workflowFailureMessage, cancellationToken);
     }}
 
     #endregion IWorkflowStageFinalizer
 }}
 ");
-        var allStageflowDesc = string.Join(" -><br/> ", Context.Stages.Select(m => $"<see cref=\"{WorkflowName}Stages.{m.Name}\"/>"));
+        var allStageflowDesc = string.Join(" -><br/> ", Context.Stages.Select(m => $"<see cref=\"{WorkflowClassName}Stages.{m.Name}\"/>"));
 
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"/// <summary>
-/// 阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 处理器基类<br/>
+/// 阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/> 处理器基类<br/>
 /// 工作流程阶段顺序：<br/>{allStageflowDesc}
 /// </summary>
-public abstract partial class {WorkflowName}{stage.Name}StageHandlerBase
-    : {WorkflowName}StageHandler<I{WorkflowName}{stage.Name}Stage, {WorkflowName}{stage.Name}StageMessage, {WorkflowName}{stage.Name}StageCompletedMessage>
-    , I{WorkflowName}{stage.Name}StageFinalizer
+public abstract partial class {WorkflowClassName}{stage.Name}StageHandlerBase
+    : {WorkflowClassName}StageHandler<I{WorkflowClassName}{stage.Name}Stage, {WorkflowClassName}{stage.Name}StageMessage, {WorkflowClassName}{stage.Name}StageCompletedMessage>
+    , I{WorkflowClassName}{stage.Name}StageFinalizer
 {{
     /// <inheritdoc/>
-    public sealed override string Stage {{ get; }} = {WorkflowName}Stages.{stage.Name};
+    public sealed override string Stage {{ get; }} = {WorkflowClassName}Stages.{stage.Name};
 
-    /// <inheritdoc cref=""{WorkflowName}{stage.Name}StageHandlerBase""/>
-    public {WorkflowName}{stage.Name}StageHandlerBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}{stage.Name}StageHandlerBase""/>
+    public {WorkflowClassName}{stage.Name}StageHandlerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {{
     }}
 
     /// <inheritdoc/>
-    protected override {WorkflowName}{stage.Name}StageCompletedMessage CreateCompletedMessage({WorkflowName}Context context)
+    protected override {WorkflowClassName}{stage.Name}StageCompletedMessage CreateCompletedMessage({WorkflowClassName}Context context)
     {{
-        return new {WorkflowName}{stage.Name}StageCompletedMessage(context);
+        return new {WorkflowClassName}{stage.Name}StageCompletedMessage(context);
     }}
 }}
 ");
         }
 
-        yield return new($"{WorkflowName}.StageHandlers.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.StageHandlers.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

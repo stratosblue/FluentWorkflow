@@ -25,34 +25,34 @@ internal class ResultObserverSourceProvider : WorkflowSourceProvider
 namespace {NameSpace}.Handler;
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 的 <inheritdoc cref=""WorkflowResultObserver{{TWorkflow, TWorkflowFinishedMessage, TWorkflowBoundary}}""/> 基类
+/// <see cref=""{WorkflowClassName}""/> 的 <inheritdoc cref=""WorkflowResultObserver{{TWorkflow, TWorkflowFinishedMessage, TWorkflowBoundary}}""/> 基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract partial class {WorkflowName}ResultObserverBase
-    : WorkflowResultObserver<{WorkflowName}, {WorkflowName}FinishedMessage, I{WorkflowName}>
-    , I{WorkflowName}
+public abstract partial class {WorkflowClassName}ResultObserverBase
+    : WorkflowResultObserver<{WorkflowClassName}, {WorkflowClassName}FinishedMessage, I{WorkflowClassName}>
+    , I{WorkflowClassName}
 {{
-    /// <inheritdoc cref=""{WorkflowName}ResultObserverBase""/>
-    protected {WorkflowName}ResultObserverBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}ResultObserverBase""/>
+    protected {WorkflowClassName}ResultObserverBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {{
     }}
 
     /// <inheritdoc/>
-    protected override Task OnFinishedAsync({WorkflowName}FinishedMessage finishedMessage, CancellationToken cancellationToken) => Task.CompletedTask;
+    protected override Task OnFinishedAsync({WorkflowClassName}FinishedMessage finishedMessage, CancellationToken cancellationToken) => Task.CompletedTask;
 }}
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 的 <inheritdoc cref=""WorkflowResultObserver{{TWorkflow, TWorkflowFinishedMessage, TWorkflowBoundary}}""/>
+/// <see cref=""{WorkflowClassName}""/> 的 <inheritdoc cref=""WorkflowResultObserver{{TWorkflow, TWorkflowFinishedMessage, TWorkflowBoundary}}""/>
 /// </summary>
-public partial class {WorkflowName}ResultObserver : {WorkflowName}ResultObserverBase
+public partial class {WorkflowClassName}ResultObserver : {WorkflowClassName}ResultObserverBase
 {{
-    /// <inheritdoc cref=""{WorkflowName}ResultObserverBase""/>
-    public {WorkflowName}ResultObserver(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}ResultObserverBase""/>
+    public {WorkflowClassName}ResultObserver(IServiceProvider serviceProvider) : base(serviceProvider)
     {{
     }}
 }}
 ");
-        yield return new($"{WorkflowName}.ResultObserver.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.ResultObserver.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

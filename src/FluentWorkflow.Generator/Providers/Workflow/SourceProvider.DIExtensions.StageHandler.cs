@@ -29,46 +29,46 @@ namespace Microsoft.Extensions.DependencyInjection;
 ///
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public static class {WorkflowName}StageHandlerDIExtensions
+public static class {WorkflowClassName}StageHandlerDIExtensions
 {{
 ");
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"
     /// <summary>
-    /// 添加对工作流程 <see cref=""{WorkflowName}""/> 的阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 的处理器
+    /// 添加对工作流程 <see cref=""{WorkflowClassName}""/> 的阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/> 的处理器
     /// </summary>
-    /// <typeparam name=""THandler"">基于 <see cref=""{WorkflowName}{stage.Name}StageHandlerBase""/> 实现的处理器类型</typeparam>
+    /// <typeparam name=""THandler"">基于 <see cref=""{WorkflowClassName}{stage.Name}StageHandlerBase""/> 实现的处理器类型</typeparam>
     /// <param name=""configuration""></param>
     /// <param name=""serviceLifetime""></param>
     /// <returns></returns>
-    public static {WorkflowName}Configuration Add{stage.Name}StageHandler<THandler>(this {WorkflowName}Configuration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where THandler : {WorkflowName}{stage.Name}StageHandlerBase
+    public static {WorkflowClassName}Configuration Add{stage.Name}StageHandler<THandler>(this {WorkflowClassName}Configuration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where THandler : {WorkflowClassName}{stage.Name}StageHandlerBase
     {{
-        return configuration.Add{stage.Name}StageHandler<THandler, {WorkflowName}{stage.Name}Continuator>(serviceLifetime);
+        return configuration.Add{stage.Name}StageHandler<THandler, {WorkflowClassName}{stage.Name}Continuator>(serviceLifetime);
     }}
 
     /// <summary>
-    /// 添加对工作流程 <see cref=""{WorkflowName}""/> 的阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 的处理器
+    /// 添加对工作流程 <see cref=""{WorkflowClassName}""/> 的阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/> 的处理器
     /// </summary>
-    /// <typeparam name=""THandler"">基于 <see cref=""{WorkflowName}{stage.Name}StageHandlerBase""/> 实现的处理器类型</typeparam>
-    /// <typeparam name=""TContinuator"">基于 <see cref=""{WorkflowName}{stage.Name}ContinuatorBase""/> 实现的流程延续器类型</typeparam>
+    /// <typeparam name=""THandler"">基于 <see cref=""{WorkflowClassName}{stage.Name}StageHandlerBase""/> 实现的处理器类型</typeparam>
+    /// <typeparam name=""TContinuator"">基于 <see cref=""{WorkflowClassName}{stage.Name}ContinuatorBase""/> 实现的流程延续器类型</typeparam>
     /// <param name=""configuration""></param>
     /// <param name=""serviceLifetime""></param>
     /// <returns></returns>
-    public static {WorkflowName}Configuration Add{stage.Name}StageHandler<THandler, TContinuator>(this {WorkflowName}Configuration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where THandler : {WorkflowName}{stage.Name}StageHandlerBase
-        where TContinuator : {WorkflowName}{stage.Name}ContinuatorBase
+    public static {WorkflowClassName}Configuration Add{stage.Name}StageHandler<THandler, TContinuator>(this {WorkflowClassName}Configuration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where THandler : {WorkflowClassName}{stage.Name}StageHandlerBase
+        where TContinuator : {WorkflowClassName}{stage.Name}ContinuatorBase
     {{
         var builder = configuration.Builder;
 
         ServiceCollectionUniqueAddHelper.RegisterContinuator<TContinuator>(builder.Services, serviceLifetime);
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowName}, THandler, {WorkflowName}{stage.Name}StageMessage, I{WorkflowName}>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, THandler, {WorkflowClassName}{stage.Name}StageMessage, I{WorkflowClassName}>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(THandler), typeof(THandler), serviceLifetime));
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(I{WorkflowName}{stage.Name}StageFinalizer), typeof(THandler), serviceLifetime));
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowStageHandler<{WorkflowName}{stage.Name}StageMessage>), typeof(THandler), serviceLifetime));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(I{WorkflowClassName}{stage.Name}StageFinalizer), typeof(THandler), serviceLifetime));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowStageHandler<{WorkflowClassName}{stage.Name}StageMessage>), typeof(THandler), serviceLifetime));
 
         return configuration;
     }}
@@ -76,7 +76,7 @@ public static class {WorkflowName}StageHandlerDIExtensions
         }
 
         builder.AppendLine("}");
-        yield return new($"{WorkflowName}.DIExtensions.StageHandler.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.DIExtensions.StageHandler.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

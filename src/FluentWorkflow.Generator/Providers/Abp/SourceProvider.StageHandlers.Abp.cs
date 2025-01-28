@@ -32,7 +32,7 @@ namespace {NameSpace}.Handler;
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"
-partial class {WorkflowName}{stage.Name}StageHandlerBase : IDistributedEventHandler<{WorkflowName}{stage.Name}StageMessage>
+partial class {WorkflowClassName}{stage.Name}StageHandlerBase : IDistributedEventHandler<{WorkflowClassName}{stage.Name}StageMessage>
 {{
     /// <summary>
     /// Abp 的 <see cref=""ICancellationTokenProvider""/>
@@ -40,11 +40,11 @@ partial class {WorkflowName}{stage.Name}StageHandlerBase : IDistributedEventHand
     protected ICancellationTokenProvider? CancellationTokenProvider => ServiceProvider.GetService<ICancellationTokenProvider>();
 
     /// <summary>
-    /// 处理消息 - <see cref=""{WorkflowName}{stage.Name}StageMessage""/>
+    /// 处理消息 - <see cref=""{WorkflowClassName}{stage.Name}StageMessage""/>
     /// </summary>
     /// <param name=""eventData""></param>
     /// <returns></returns>
-    public virtual Task HandleEventAsync({WorkflowName}{stage.Name}StageMessage eventData)
+    public virtual Task HandleEventAsync({WorkflowClassName}{stage.Name}StageMessage eventData)
     {{
         return HandleAsync(eventData, CancellationTokenProvider?.Token ?? default);
     }}
@@ -52,7 +52,7 @@ partial class {WorkflowName}{stage.Name}StageHandlerBase : IDistributedEventHand
 ");
         }
 
-        yield return new($"{WorkflowName}.StageHandlers.Abp.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.StageHandlers.Abp.g.cs", builder.ToString());
 
         #endregion Handlers
     }

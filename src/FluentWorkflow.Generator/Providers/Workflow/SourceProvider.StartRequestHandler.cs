@@ -25,27 +25,27 @@ internal class StartRequestHandlerSourceProvider : WorkflowSourceProvider
 namespace {NameSpace}.Handler;
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 的启动请求处理器
+/// <see cref=""{WorkflowClassName}""/> 的启动请求处理器
 /// </summary>
-/// <typeparam name=""TWorkflow"">用以启动的工作流程具体实现（<see cref=""{WorkflowName}""/> 或其派生类型）</typeparam>
+/// <typeparam name=""TWorkflow"">用以启动的工作流程具体实现（<see cref=""{WorkflowClassName}""/> 或其派生类型）</typeparam>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public partial class {WorkflowName}StartRequestHandler<TWorkflow>
-    : WorkflowStartRequestHandler<TWorkflow, {WorkflowName}Context, {WorkflowName}StartRequestMessage, I{WorkflowName}>
-    , I{WorkflowName}
-    where TWorkflow : {WorkflowName}
+public partial class {WorkflowClassName}StartRequestHandler<TWorkflow>
+    : WorkflowStartRequestHandler<TWorkflow, {WorkflowClassName}Context, {WorkflowClassName}StartRequestMessage, I{WorkflowClassName}>
+    , I{WorkflowClassName}
+    where TWorkflow : {WorkflowClassName}
 {{
     /// <inheritdoc cref=""IServiceProvider""/>
     public IServiceProvider ServiceProvider {{ get; }}
 
-    /// <inheritdoc cref=""{WorkflowName}StartRequestHandler{{TWorkflow}}""/>
-    public {WorkflowName}StartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider) : base(workflowBuilder, workflowScheduler)
+    /// <inheritdoc cref=""{WorkflowClassName}StartRequestHandler{{TWorkflow}}""/>
+    public {WorkflowClassName}StartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider) : base(workflowBuilder, workflowScheduler)
     {{
         ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }}
 }}
 ");
 
-        yield return new($"{WorkflowName}.StartRequestHandler.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.StartRequestHandler.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

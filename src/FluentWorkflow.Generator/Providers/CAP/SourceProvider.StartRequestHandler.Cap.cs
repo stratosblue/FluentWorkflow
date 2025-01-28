@@ -26,22 +26,22 @@ using DotNetCore.CAP;
 
 namespace {NameSpace}.Handler;
 
-partial class {WorkflowName}StartRequestHandler<TWorkflow> : ICapSubscribe
+partial class {WorkflowClassName}StartRequestHandler<TWorkflow> : ICapSubscribe
 {{
     /// <summary>
-    /// 处理消息 <inheritdoc cref=""{WorkflowName}StartRequestMessage.EventName""/>
+    /// 处理消息 <inheritdoc cref=""{WorkflowClassName}StartRequestMessage.EventName""/>
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
-    [CapSubscribe({WorkflowName}StartRequestMessage.EventName)]
-    public Task HandleMessageAsync({WorkflowName}StartRequestMessage message, CancellationToken cancellationToken)
+    [CapSubscribe({WorkflowClassName}StartRequestMessage.EventName)]
+    public Task HandleMessageAsync({WorkflowClassName}StartRequestMessage message, CancellationToken cancellationToken)
     {{
         return HandleAsync(message, cancellationToken);
     }}
 }}
 ");
-        yield return new($"{WorkflowName}.StartRequestHandler.Cap.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.StartRequestHandler.Cap.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

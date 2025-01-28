@@ -27,14 +27,14 @@ using System.Text.Json.Serialization;
 namespace {NameSpace};
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 的上下文基类
+/// <see cref=""{WorkflowClassName}""/> 的上下文基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public abstract partial class {WorkflowContextName}Base
-    : WorkflowContext, I{WorkflowName}
+    : WorkflowContext, I{WorkflowClassName}
 {{
     /// <inheritdoc/>
-    protected sealed override string WorkflowName => {WorkflowName}.WorkflowName;
+    protected sealed override string WorkflowName => {WorkflowClassName}.WorkflowName;
 
     /// <inheritdoc cref=""{WorkflowContextName}Base""/>
     protected {WorkflowContextName}Base(string id) : base(id)
@@ -63,7 +63,7 @@ public abstract partial class {WorkflowContextName}Base
 }}
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 的上下文
+/// <see cref=""{WorkflowClassName}""/> 的上下文
 /// </summary>
 [JsonConverter(typeof(KeyValuesConvertableJsonConverter<{WorkflowContextName}>))]
 public sealed partial class {WorkflowContextName}
@@ -103,7 +103,7 @@ public sealed partial class {WorkflowContextName}
     }}
 }}
 ");
-        yield return new($"{WorkflowName}.Context.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.Context.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

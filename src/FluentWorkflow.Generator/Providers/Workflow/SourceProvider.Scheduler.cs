@@ -25,36 +25,36 @@ internal class SchedulerSourceProvider : WorkflowSourceProvider
 namespace {NameSpace};
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 调度器基类
+/// <see cref=""{WorkflowClassName}""/> 调度器基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-internal abstract partial class {WorkflowName}SchedulerBase
-    : WorkflowScheduler<{WorkflowName}, {WorkflowName}StateMachine, I{WorkflowName}>
+internal abstract partial class {WorkflowClassName}SchedulerBase
+    : WorkflowScheduler<{WorkflowClassName}, {WorkflowClassName}StateMachine, I{WorkflowClassName}>
 {{
-    /// <inheritdoc cref=""{WorkflowName}SchedulerBase""/>
-    protected {WorkflowName}SchedulerBase(IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider) : base(messageDispatcher, serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}SchedulerBase""/>
+    protected {WorkflowClassName}SchedulerBase(IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider) : base(messageDispatcher, serviceProvider)
     {{
     }}
 
     /// <inheritdoc/>
-    protected override {WorkflowName}StateMachine CreateStateMachine({WorkflowName} workflow)
+    protected override {WorkflowClassName}StateMachine CreateStateMachine({WorkflowClassName} workflow)
     {{
-        return new {WorkflowName}StateMachine(workflow, MessageDispatcher, ServiceProvider);
+        return new {WorkflowClassName}StateMachine(workflow, MessageDispatcher, ServiceProvider);
     }}
 }}
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 调度器
+/// <see cref=""{WorkflowClassName}""/> 调度器
 /// </summary>
-internal partial class {WorkflowName}Scheduler : {WorkflowName}SchedulerBase
+internal partial class {WorkflowClassName}Scheduler : {WorkflowClassName}SchedulerBase
 {{
-    /// <inheritdoc cref=""{WorkflowName}Scheduler""/>
-    public {WorkflowName}Scheduler(IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider) : base(messageDispatcher, serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}Scheduler""/>
+    public {WorkflowClassName}Scheduler(IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider) : base(messageDispatcher, serviceProvider)
     {{
     }}
 }}
 ");
-        yield return new($"{WorkflowName}.Scheduler.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.Scheduler.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

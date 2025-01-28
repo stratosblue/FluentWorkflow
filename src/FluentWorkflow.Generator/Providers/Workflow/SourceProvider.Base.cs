@@ -25,17 +25,17 @@ internal class BaseSourceProvider : WorkflowSourceProvider
 namespace {NameSpace};
 
 /// <summary>
-/// <see cref=""{WorkflowName}""/> 基类
+/// <see cref=""{WorkflowClassName}""/> 基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract partial class {WorkflowName}Base
+public abstract partial class {WorkflowClassName}Base
     : IWorkflow
-    , I{WorkflowName}
+    , I{WorkflowClassName}
     , IWorkflowNameDeclaration
     , IWorkflowContextCarrier<{WorkflowContextName}>
 {{
     /// <summary>
-    /// 工作流程名称 - {WorkflowName}
+    /// 工作流程名称 - {WorkflowClassName}
     /// </summary>
     public const string WorkflowName = ""{WorkflowName}"";
 
@@ -56,19 +56,13 @@ public abstract partial class {WorkflowName}Base
 
     IWorkflowContext IWorkflowContextCarrier<IWorkflowContext>.Context => Context;
 
-    /// <inheritdoc cref=""{WorkflowName}Base""/>
-    protected {WorkflowName}Base({WorkflowContextName} context, IServiceProvider serviceProvider)
+    /// <inheritdoc cref=""{WorkflowClassName}Base""/>
+    protected {WorkflowClassName}Base({WorkflowContextName} context, IServiceProvider serviceProvider)
     {{
         Context = context ?? throw new ArgumentNullException(nameof(context));
         ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         Id = context.Id;
     }}
-
-    /// <summary>
-    /// 声明 <see cref=""{WorkflowName}""/> 的步骤
-    /// </summary>
-    /// <param name=""stageBuilder""></param>
-    protected abstract void BuildStages({Names.StageBuilder} stageBuilder);
 
     /// <summary>
     /// 在工作流程启动时
@@ -85,7 +79,7 @@ public abstract partial class {WorkflowName}Base
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"    /// <summary>
-    /// 在阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 发起前
+    /// 在阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/> 发起前
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""fireMessage"">执行消息后续处理的委托 (分发消息)</param>
@@ -97,7 +91,7 @@ public abstract partial class {WorkflowName}Base
     }}
 
     /// <summary>
-    /// 在阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 完成时
+    /// 在阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/> 完成时
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""fireMessage"">执行消息后续处理的委托 (更新上下文状态，并分发下阶段消息)</param>
@@ -111,7 +105,7 @@ public abstract partial class {WorkflowName}Base
 
         builder.AppendLine($@"
     /// <summary>
-    /// 在 <see cref=""{WorkflowName}""/> 失败时
+    /// 在 <see cref=""{WorkflowClassName}""/> 失败时
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""fireMessage"">执行消息后续处理的委托 (更新上下文状态，并分发消息)</param>
@@ -123,7 +117,7 @@ public abstract partial class {WorkflowName}Base
     }}
 
     /// <summary>
-    /// 在 <see cref=""{WorkflowName}""/> 完成时
+    /// 在 <see cref=""{WorkflowClassName}""/> 完成时
     /// </summary>
     /// <param name=""context""></param>
     /// <param name=""cancellationToken""></param>
@@ -134,8 +128,8 @@ public abstract partial class {WorkflowName}Base
     }}
 }}
 
-partial class {WorkflowName}
-    : {WorkflowName}Base
+partial class {WorkflowClassName}
+    : {WorkflowClassName}Base
     , IWorkflowStarter
 {{
     #region WorkflowStarter
@@ -148,7 +142,7 @@ partial class {WorkflowName}
     {{
         var logger = ServiceProvider.GetService<ILoggerFactory>()?.CreateLogger(""FluentWorkflow"");
 
-        var workflowScheduler = ServiceProvider.GetService<IWorkflowScheduler<{WorkflowName}>>();
+        var workflowScheduler = ServiceProvider.GetService<IWorkflowScheduler<{WorkflowClassName}>>();
         if (workflowScheduler is not null)
         {{
             logger?.LogInformation(""Start workflow [{{Workflow}}] - {{WorkflowId}} by scheduler."", GetType(), Id);
@@ -173,13 +167,13 @@ partial class {WorkflowName}
     /// <inheritdoc cref=""WorkflowSerializeResumeUtil.ResumeAsync{{TWorkflow, TWorkflowContext}}(byte[], IServiceProvider, CancellationToken)""/>
     public static Task ResumeAsync(byte[] serializedContext, IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {{
-        return WorkflowSerializeResumeUtil.ResumeAsync<{WorkflowName}, {WorkflowContextName}>(serializedContext, serviceProvider, cancellationToken);
+        return WorkflowSerializeResumeUtil.ResumeAsync<{WorkflowClassName}, {WorkflowContextName}>(serializedContext, serviceProvider, cancellationToken);
     }}
 
     #endregion Serialize & Resume
 }}
 ");
-        yield return new($"{WorkflowName}.Base.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.Base.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

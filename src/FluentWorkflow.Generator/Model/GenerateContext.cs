@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
+using System.Xml.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace FluentWorkflow.Generator.Model;
@@ -12,7 +13,7 @@ internal class GenerateContext
 
     public ImmutableArray<StageName> Stages { get; }
 
-    public WorkflowDescriptor WorkflowDescriptor { get; }
+    public WorkflowDeclaration WorkflowDeclaration { get; }
 
     public string Usings { get; }
 
@@ -20,18 +21,14 @@ internal class GenerateContext
 
     #region Public 构造函数
 
-    public GenerateContext(WorkflowDescriptor workflowDescriptor)
+    public GenerateContext(WorkflowDeclaration workflowDeclaration)
     {
-        WorkflowDescriptor = workflowDescriptor;
-        GenerateNames = new GenerateNames(workflowDescriptor);
-
-        var stagesAnalyzer = new WorkflowStagesAnalyzer(GenerateNames);
-        workflowDescriptor.DeclarationSyntax.Accept(stagesAnalyzer);
-
-        Stages = stagesAnalyzer.Stages;
+        WorkflowDeclaration = workflowDeclaration;
+        GenerateNames = new GenerateNames(workflowDeclaration);
+        Stages = workflowDeclaration.Stages.Select(name => new StageName(name, $"{GenerateNames.WorkflowDeclaration.WorkflowClassName}{name}Stage")).ToImmutableArray();
 
         var usingBuilder = new StringBuilder(512);
-        foreach (var usingItem in WorkflowDescriptor.DeclarationSyntax.SyntaxTree.GetCompilationUnitRoot().Usings)
+        foreach (var usingItem in WorkflowDeclaration.DeclarationSyntax.SyntaxTree.GetCompilationUnitRoot().Usings)
         {
             usingBuilder.AppendLine(usingItem.ToString());
         }

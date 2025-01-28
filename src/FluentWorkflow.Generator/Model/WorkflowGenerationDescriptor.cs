@@ -1,0 +1,3 @@
+﻿namespace FluentWorkflow.Generator.Model;
+
+internal record struct WorkflowGenerationDescriptor(WorkflowDeclaration WorkflowDeclaration, WorkflowSourceGenerationMode GenerationMode);

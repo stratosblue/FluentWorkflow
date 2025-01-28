@@ -28,12 +28,12 @@ using Volo.Abp.Threading;
 
 namespace {NameSpace}.Internal;
 
-partial class {WorkflowName}StateMachineDriverBase
-   : IDistributedEventHandler<{WorkflowName}FailureMessage>
+partial class {WorkflowClassName}StateMachineDriverBase
+   : IDistributedEventHandler<{WorkflowClassName}FailureMessage>
 ");
         foreach (var stage in Context.Stages)
         {
-            builder.AppendLine($@"   , IDistributedEventHandler<{WorkflowName}{stage.Name}StageCompletedMessage>");
+            builder.AppendLine($@"   , IDistributedEventHandler<{WorkflowClassName}{stage.Name}StageCompletedMessage>");
         }
 
         builder.AppendLine($@"
@@ -44,11 +44,11 @@ partial class {WorkflowName}StateMachineDriverBase
 
         builder.AppendLine($@"
     /// <summary>
-    /// 处理消息 - <see cref=""{WorkflowName}FailureMessage""/>
+    /// 处理消息 - <see cref=""{WorkflowClassName}FailureMessage""/>
     /// </summary>
     /// <param name=""eventData""></param>
     /// <returns></returns>
-    public virtual Task HandleEventAsync({WorkflowName}FailureMessage eventData)
+    public virtual Task HandleEventAsync({WorkflowClassName}FailureMessage eventData)
     {{
         var cancellationToken = CancellationTokenProvider.Token;
         return HandleAsync(eventData, cancellationToken);
@@ -59,11 +59,11 @@ partial class {WorkflowName}StateMachineDriverBase
         {
             builder.AppendLine($@"
     /// <summary>
-    /// 处理消息 - <see cref=""{WorkflowName}{stage.Name}StageCompletedMessage""/>
+    /// 处理消息 - <see cref=""{WorkflowClassName}{stage.Name}StageCompletedMessage""/>
     /// </summary>
     /// <param name=""eventData""></param>
     /// <returns></returns>
-    public virtual Task HandleEventAsync({WorkflowName}{stage.Name}StageCompletedMessage eventData)
+    public virtual Task HandleEventAsync({WorkflowClassName}{stage.Name}StageCompletedMessage eventData)
     {{
         var cancellationToken = CancellationTokenProvider.Token;
         return HandleAsync(eventData, cancellationToken);
@@ -73,7 +73,7 @@ partial class {WorkflowName}StateMachineDriverBase
 
         builder.Append("}");
 
-        yield return new($"{WorkflowName}.StateMachineDriver.Abp.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.StateMachineDriver.Abp.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

@@ -1,11 +1,12 @@
 ﻿using FluentWorkflow.Generator.Model;
+
 namespace FluentWorkflow.Generator.Providers;
 
 internal abstract class WorkflowSourceProvider : SourceProvider
 {
     #region Protected 字段
 
-    protected readonly WorkflowDescriptor WorkflowDescriptor;
+    protected readonly WorkflowDeclaration WorkflowDeclaration;
 
     #endregion Protected 字段
 
@@ -15,11 +16,13 @@ internal abstract class WorkflowSourceProvider : SourceProvider
 
     protected GenerateNames Names => Context.GenerateNames;
 
-    protected string NameSpace => WorkflowDescriptor.NameSpace;
+    protected string NameSpace => WorkflowDeclaration.NameSpace;
+
+    protected string WorkflowClassName => WorkflowDeclaration.WorkflowClassName;
 
     protected string WorkflowContextName => Names.WorkflowContext!;
 
-    protected string WorkflowName => WorkflowDescriptor.Name;
+    protected string WorkflowName => WorkflowDeclaration.WorkflowName;
 
     #endregion Protected 属性
 
@@ -28,7 +31,7 @@ internal abstract class WorkflowSourceProvider : SourceProvider
     public WorkflowSourceProvider(GenerateContext context)
     {
         Context = context;
-        WorkflowDescriptor = context.WorkflowDescriptor;
+        WorkflowDeclaration = context.WorkflowDeclaration;
     }
 
     #endregion Public 构造函数

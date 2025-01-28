@@ -27,26 +27,26 @@ using Volo.Abp.EventBus;
 namespace {NameSpace}.Message;
 
 [EventName(EventName)]
-partial class {WorkflowName}StartRequestMessage {{ }}
+partial class {WorkflowClassName}StartRequestMessage {{ }}
 
 [EventName(EventName)]
-partial class {WorkflowName}FinishedMessage {{ }}
+partial class {WorkflowClassName}FinishedMessage {{ }}
 
 [EventName(EventName)]
-partial class {WorkflowName}FailureMessage {{ }}
+partial class {WorkflowClassName}FailureMessage {{ }}
 ");
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"
 [EventName(EventName)]
-partial class {WorkflowName}{stage.Name}StageMessage {{ }}
+partial class {WorkflowClassName}{stage.Name}StageMessage {{ }}
 
 [EventName(EventName)]
-partial class {WorkflowName}{stage.Name}StageCompletedMessage {{ }}
+partial class {WorkflowClassName}{stage.Name}StageCompletedMessage {{ }}
 ");
         }
 
-        yield return new($"{WorkflowName}.Messages.Abp.g.cs", builder.ToString());
+        yield return new($"{WorkflowClassName}.Messages.Abp.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

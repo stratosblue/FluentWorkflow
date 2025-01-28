@@ -1,7 +1,10 @@
 ﻿#pragma warning disable CS1591
 
+using FluentWorkflow;
 using FluentWorkflow.Interface;
+using FluentWorkflow.SimpleSample;
 
+[assembly: GenerateWorkflowCodes<SingleStageWorkflowDeclaration>]
 namespace FluentWorkflow.SimpleSample;
 
 public partial class SingleStageWorkflow : IWorkflow
@@ -9,11 +12,19 @@ public partial class SingleStageWorkflow : IWorkflow
     public SingleStageWorkflow(SingleStageWorkflowContext context, IServiceProvider serviceProvider) : base(context, serviceProvider)
     {
     }
+}
 
-    protected override void BuildStages(ISingleStageWorkflowStageBuilder stageBuilder)
+public partial class SingleStageWorkflowDeclaration : IWorkflowDeclaration
+{
+    internal override void DeclareContext(IWorkflowContextDeclarator declarator)
     {
-        stageBuilder.Begin()
-                    .Then("SampleStage5")
-                    .Completion();
+    }
+
+    internal override void DeclareWorkflow(IWorkflowDeclarator declarator)
+    {
+        declarator.Name("SingleStage")
+                  .Begin()
+                  .Then("SampleStage5")
+                  .Completion();
     }
 }

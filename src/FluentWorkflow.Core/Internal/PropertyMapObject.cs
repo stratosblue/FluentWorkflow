@@ -43,7 +43,7 @@ public class PropertyMapObject
     /// 获取对象时使用的对象序列化器
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    protected internal IObjectSerializer ObjectSerializer
+    protected internal virtual IObjectSerializer ObjectSerializer
     {
         get => _objectSerializer;
         set
