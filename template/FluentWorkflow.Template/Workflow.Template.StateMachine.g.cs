@@ -3,6 +3,7 @@ using System.ComponentModel;
 using FluentWorkflow;
 using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
+using TemplateNamespace.Template;
 using TemplateNamespace.Template.Message;
 
 namespace TemplateNamespace
@@ -13,7 +14,7 @@ namespace TemplateNamespace
         /// <see cref="TemplateWorkflow"/> 状态机基类
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public abstract partial class TemplateWorkflowStateMachineBase
+        public abstract partial class StateMachineBase
             : WorkflowStateMachine<ITemplateWorkflow>
             , ITemplateWorkflow
         {
@@ -27,8 +28,8 @@ namespace TemplateNamespace
             /// </summary>
             protected readonly TemplateWorkflow Workflow;
 
-            /// <inheritdoc cref="TemplateWorkflowStateMachineBase"/>
-            public TemplateWorkflowStateMachineBase(TemplateWorkflow workflow, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider)
+            /// <inheritdoc cref="StateMachineBase"/>
+            public StateMachineBase(TemplateWorkflow workflow, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider)
                 : base(workflow.Context, messageDispatcher, serviceProvider)
             {
                 Workflow = workflow ?? throw new ArgumentNullException(nameof(workflow));
@@ -42,7 +43,7 @@ namespace TemplateNamespace
                 var currentStage = Context.Stage;
                 if (string.IsNullOrWhiteSpace(currentStage))
                 {
-                    currentStage = TemplateWorkflowStages.Stage1CAUK;
+                    currentStage = TemplateStages.Stage1CAUK;
                     Context.SetCurrentStage(currentStage);
                     if (!await Workflow.OnStartingAsync(TypedContext, cancellationToken))
                     {
@@ -54,35 +55,35 @@ namespace TemplateNamespace
 
                 switch (currentStage)
                 {
-                    case TemplateWorkflowStages.Stage1CAUK:
+                    case TemplateStages.Stage1CAUK:
                         {
-                            var stageMessage = new TemplateWorkflowStage1CAUKStageMessage(TypedContext);
+                            var stageMessage = new StageStage1CAUKMessage(TypedContext);
                             stageMessage.Context.SetCurrentStageState(WorkflowStageState.Created);
                             await Workflow.OnStage1CAUKAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                             return;
                         }
-                    case TemplateWorkflowStages.Stage2BPTG:
+                    case TemplateStages.Stage2BPTG:
                         {
-                            var stageMessage = new TemplateWorkflowStage2BPTGStageMessage(TypedContext);
+                            var stageMessage = new StageStage2BPTGMessage(TypedContext);
                             stageMessage.Context.SetCurrentStageState(WorkflowStageState.Created);
                             await Workflow.OnStage2BPTGAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                             return;
                         }
-                    case TemplateWorkflowStages.Stage3AWBN:
+                    case TemplateStages.Stage3AWBN:
                         {
-                            var stageMessage = new TemplateWorkflowStage3AWBNStageMessage(TypedContext);
+                            var stageMessage = new StageStage3AWBNMessage(TypedContext);
                             stageMessage.Context.SetCurrentStageState(WorkflowStageState.Created);
                             await Workflow.OnStage3AWBNAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                             return;
                         }
-                    case TemplateWorkflowStages.Failure:
+                    case TemplateStages.Failure:
                         {
                             Context.TryGetFailureMessage(out var failureMessage);
-                            var finishedMessage = new TemplateWorkflowFinishedMessage(TypedContext, false, failureMessage ?? "Unknown error");
+                            var finishedMessage = new TemplateFinishedMessage(TypedContext, false, failureMessage ?? "Unknown error");
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }
-                    case TemplateWorkflowStages.Completion:
+                    case TemplateStages.Completion:
                         {
                             TypedContext.SetCurrentStageState(WorkflowStageState.Created);
                             await Workflow.OnCompletionAsync(TypedContext, cancellationToken);
@@ -90,7 +91,7 @@ namespace TemplateNamespace
                             if (Context.Flag.HasFlag(WorkflowFlag.IsBeenAwaited)
                                 || !Context.Flag.HasFlag(WorkflowFlag.NotNotifyOnFinish))
                             {
-                                var finishedMessage = new TemplateWorkflowFinishedMessage(TypedContext, true, "SUCCESS");
+                                var finishedMessage = new TemplateFinishedMessage(TypedContext, true, "SUCCESS");
                                 await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             }
                             return;
@@ -103,7 +104,7 @@ namespace TemplateNamespace
             public override Task<bool> IsCompletedAsync(CancellationToken cancellationToken)
             {
                 var currentStage = Context.Stage;
-                var result = string.Equals(TemplateWorkflowStages.Completion, currentStage);
+                var result = string.Equals(TemplateStages.Completion, currentStage);
 
                 return Task.FromResult(result);
             }
@@ -115,7 +116,7 @@ namespace TemplateNamespace
             /// <param name="cancellationToken"></param>
             /// <returns>是否执行后续代码</returns>
             /// <exception cref="WorkflowInvalidOperationException"></exception>
-            internal virtual async Task<bool> SetStageCompletedAsync(ITemplateWorkflowStageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
+            internal virtual async Task<bool> SetStageCompletedAsync(ITemplateStageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
             {
                 //设置上下文阶段状态，以使 OnStageCompletedAsync 中获取到的上下文当前阶段状态为已结束
                 //如果在 OnStageCompletedAsync 中挂起上下文，在恢复流程时使用此值确定应当再次调用 SetStageCompletedAsync 而不是 MoveNextAsync
@@ -125,9 +126,9 @@ namespace TemplateNamespace
 
                 var stageCompletedTask = stageCompletedMessage switch
                 {
-                    TemplateWorkflowStage1CAUKStageCompletedMessage stage1CA5CStageCompletedMessage => Workflow.OnStage1CAUKCompletedAsync(stage1CA5CStageCompletedMessage, singleCaller.OnStageCompletedAsync, cancellationToken),
-                    TemplateWorkflowStage2BPTGStageCompletedMessage stage2B74EStageCompletedMessage => Workflow.OnStage2BPTGCompletedAsync(stage2B74EStageCompletedMessage, singleCaller.OnStageCompletedAsync, cancellationToken),
-                    TemplateWorkflowStage3AWBNStageCompletedMessage stage3A2B4StageCompletedMessage => Workflow.OnStage3AWBNCompletedAsync(stage3A2B4StageCompletedMessage, singleCaller.OnStageCompletedAsync, cancellationToken),
+                    StageStage1CAUKCompletedMessage stage1CA5CStageCompletedMessage => Workflow.OnStage1CAUKCompletedAsync(stage1CA5CStageCompletedMessage, singleCaller.OnStageCompletedAsync, cancellationToken),
+                    StageStage2BPTGCompletedMessage stage2B74EStageCompletedMessage => Workflow.OnStage2BPTGCompletedAsync(stage2B74EStageCompletedMessage, singleCaller.OnStageCompletedAsync, cancellationToken),
+                    StageStage3AWBNCompletedMessage stage3A2B4StageCompletedMessage => Workflow.OnStage3AWBNCompletedAsync(stage3A2B4StageCompletedMessage, singleCaller.OnStageCompletedAsync, cancellationToken),
                     _ => throw new WorkflowInvalidOperationException($"未知的阶段完成消息：{stageCompletedMessage}"),
                 };
 
@@ -144,9 +145,9 @@ namespace TemplateNamespace
                 {
                     var nextStage = stageCompletedMessage.Stage switch
                     {
-                        TemplateWorkflowStages.Stage1CAUK => TemplateWorkflowStages.Stage2BPTG,
-                        TemplateWorkflowStages.Stage2BPTG => TemplateWorkflowStages.Stage3AWBN,
-                        TemplateWorkflowStages.Stage3AWBN => TemplateWorkflowStages.Completion,
+                        TemplateStages.Stage1CAUK => TemplateStages.Stage2BPTG,
+                        TemplateStages.Stage2BPTG => TemplateStages.Stage3AWBN,
+                        TemplateStages.Stage3AWBN => TemplateStages.Completion,
                         _ => throw new WorkflowInvalidOperationException($"未知的阶段完成消息：{stageCompletedMessage}"),
                     };
 
@@ -161,9 +162,9 @@ namespace TemplateNamespace
             /// <param name="cancellationToken"></param>
             /// <returns>是否执行后续代码</returns>
             /// <exception cref="WorkflowInvalidOperationException"></exception>
-            internal virtual async Task<bool> SetFailedAsync(ITemplateWorkflowFailureMessage failureMessage, CancellationToken cancellationToken)
+            internal virtual async Task<bool> SetFailedAsync(ITemplateFailureMessage failureMessage, CancellationToken cancellationToken)
             {
-                if (failureMessage is not TemplateWorkflowFailureMessage typedFailureMessage)
+                if (failureMessage is not TemplateFailureMessage typedFailureMessage)
                 {
                     throw new WorkflowInvalidOperationException($"未知的失败消息：{failureMessage}");
                 }
@@ -180,7 +181,7 @@ namespace TemplateNamespace
             {
                 await base.OnFailedAsync(failureMessage, cancellationToken);
 
-                Context.SetCurrentStage(TemplateWorkflowStages.Failure);
+                Context.SetCurrentStage(TemplateStages.Failure);
             }
         }
     }
@@ -192,7 +193,7 @@ namespace TemplateNamespace.Template.Internal
     /// <see cref="TemplateWorkflow"/> 的状态机
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public sealed partial class TemplateWorkflowStateMachine : TemplateWorkflow.TemplateWorkflowStateMachineBase
+    public sealed partial class TemplateWorkflowStateMachine : TemplateWorkflow.StateMachineBase
     {
         /// <inheritdoc/>
         public TemplateWorkflowStateMachine(TemplateWorkflow workflow, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider) : base(workflow, messageDispatcher, serviceProvider)

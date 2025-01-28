@@ -4,6 +4,7 @@ using FluentWorkflow;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TemplateNamespace;
+using TemplateNamespace.Template;
 using TemplateNamespace.Template.Continuator;
 using TemplateNamespace.Template.Handler;
 using TemplateNamespace.Template.Message;
@@ -17,115 +18,115 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class TemplateWorkflowStageHandlerDIExtensions
 {
     /// <summary>
-    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage1CAUK"/> 的处理器
+    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage1CAUK"/> 的处理器
     /// </summary>
-    /// <typeparam name="THandler">基于 <see cref="TemplateWorkflowStage1CAUKStageHandlerBase"/> 实现的处理器类型</typeparam>
+    /// <typeparam name="THandler">基于 <see cref="StageStage1CAUKHandlerBase"/> 实现的处理器类型</typeparam>
     /// <param name="configuration"></param>
     /// <param name="serviceLifetime"></param>
     /// <returns></returns>
-    public static TemplateWorkflowConfiguration AddStage1CAUKStageHandler<THandler>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where THandler : TemplateWorkflowStage1CAUKStageHandlerBase
+    public static TemplateWorkflowConfiguration AddStageStage1CAUKHandler<THandler>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where THandler : StageStage1CAUKHandlerBase
     {
-        return configuration.AddStage1CAUKStageHandler<THandler, TemplateWorkflowStage1CAUKContinuator>(serviceLifetime);
+        return configuration.AddStageStage1CAUKHandler<THandler, StageStage1CAUKContinuator>(serviceLifetime);
     }
 
     /// <summary>
-    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage1CAUK"/> 的处理器
+    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage1CAUK"/> 的处理器
     /// </summary>
-    /// <typeparam name="THandler">基于 <see cref="TemplateWorkflowStage1CAUKStageHandlerBase"/> 实现的处理器类型</typeparam>
-    /// <typeparam name="TContinuator">基于 <see cref="TemplateWorkflowStage1CAUKContinuatorBase"/> 实现的流程延续器类型</typeparam>
+    /// <typeparam name="THandler">基于 <see cref="StageStage1CAUKHandlerBase"/> 实现的处理器类型</typeparam>
+    /// <typeparam name="TContinuator">基于 <see cref="StageStage1CAUKContinuatorBase"/> 实现的流程延续器类型</typeparam>
     /// <param name="configuration"></param>
     /// <param name="serviceLifetime"></param>
     /// <returns></returns>
-    public static TemplateWorkflowConfiguration AddStage1CAUKStageHandler<THandler, TContinuator>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where THandler : TemplateWorkflowStage1CAUKStageHandlerBase
-        where TContinuator : TemplateWorkflowStage1CAUKContinuatorBase
+    public static TemplateWorkflowConfiguration AddStageStage1CAUKHandler<THandler, TContinuator>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where THandler : StageStage1CAUKHandlerBase
+        where TContinuator : StageStage1CAUKContinuatorBase
     {
         var builder = configuration.Builder;
 
         ServiceCollectionUniqueAddHelper.RegisterContinuator<TContinuator>(builder.Services, serviceLifetime);
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, THandler, TemplateWorkflowStage1CAUKStageMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, THandler, StageStage1CAUKMessage, ITemplateWorkflow>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(THandler), typeof(THandler), serviceLifetime));
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(ITemplateWorkflowStage1CAUKStageFinalizer), typeof(THandler), serviceLifetime));
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowStageHandler<TemplateWorkflowStage1CAUKStageMessage>), typeof(THandler), serviceLifetime));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IStageStage1CAUKFinalizer), typeof(THandler), serviceLifetime));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowStageHandler<StageStage1CAUKMessage>), typeof(THandler), serviceLifetime));
 
         return configuration;
     }
 
     /// <summary>
-    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage2BPTG"/> 的处理器
+    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage2BPTG"/> 的处理器
     /// </summary>
-    /// <typeparam name="THandler">基于 <see cref="TemplateWorkflowStage2BPTGStageHandlerBase"/> 实现的处理器类型</typeparam>
+    /// <typeparam name="THandler">基于 <see cref="StageStage2BPTGHandlerBase"/> 实现的处理器类型</typeparam>
     /// <param name="configuration"></param>
     /// <param name="serviceLifetime"></param>
     /// <returns></returns>
-    public static TemplateWorkflowConfiguration AddStage2BPTGStageHandler<THandler>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where THandler : TemplateWorkflowStage2BPTGStageHandlerBase
+    public static TemplateWorkflowConfiguration AddStageStage2BPTGHandler<THandler>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where THandler : StageStage2BPTGHandlerBase
     {
-        return configuration.AddStage2BPTGStageHandler<THandler, TemplateWorkflowStage2BPTGContinuator>(serviceLifetime);
+        return configuration.AddStageStage2BPTGHandler<THandler, StageStage2BPTGContinuator>(serviceLifetime);
     }
 
     /// <summary>
-    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage2BPTG"/> 的处理器
+    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage2BPTG"/> 的处理器
     /// </summary>
-    /// <typeparam name="THandler">基于 <see cref="TemplateWorkflowStage2BPTGStageHandlerBase"/> 实现的处理器类型</typeparam>
-    /// <typeparam name="TContinuator">基于 <see cref="TemplateWorkflowStage2BPTGContinuatorBase"/> 实现的流程延续器类型</typeparam>
+    /// <typeparam name="THandler">基于 <see cref="StageStage2BPTGHandlerBase"/> 实现的处理器类型</typeparam>
+    /// <typeparam name="TContinuator">基于 <see cref="StageStage2BPTGContinuatorBase"/> 实现的流程延续器类型</typeparam>
     /// <param name="configuration"></param>
     /// <param name="serviceLifetime"></param>
     /// <returns></returns>
-    public static TemplateWorkflowConfiguration AddStage2BPTGStageHandler<THandler, TContinuator>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where THandler : TemplateWorkflowStage2BPTGStageHandlerBase
-        where TContinuator : TemplateWorkflowStage2BPTGContinuatorBase
+    public static TemplateWorkflowConfiguration AddStageStage2BPTGHandler<THandler, TContinuator>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where THandler : StageStage2BPTGHandlerBase
+        where TContinuator : StageStage2BPTGContinuatorBase
     {
         var builder = configuration.Builder;
 
         ServiceCollectionUniqueAddHelper.RegisterContinuator<TContinuator>(builder.Services, serviceLifetime);
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, THandler, TemplateWorkflowStage2BPTGStageMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, THandler, StageStage2BPTGMessage, ITemplateWorkflow>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(THandler), typeof(THandler), serviceLifetime));
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(ITemplateWorkflowStage2BPTGStageFinalizer), typeof(THandler), serviceLifetime));
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowStageHandler<TemplateWorkflowStage2BPTGStageMessage>), typeof(THandler), serviceLifetime));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IStageStage2BPTGFinalizer), typeof(THandler), serviceLifetime));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowStageHandler<StageStage2BPTGMessage>), typeof(THandler), serviceLifetime));
 
         return configuration;
     }
 
     /// <summary>
-    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage3AWBN"/> 的处理器
+    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage3AWBN"/> 的处理器
     /// </summary>
-    /// <typeparam name="THandler">基于 <see cref="TemplateWorkflowStage3AWBNStageHandlerBase"/> 实现的处理器类型</typeparam>
+    /// <typeparam name="THandler">基于 <see cref="StageStage3AWBNHandlerBase"/> 实现的处理器类型</typeparam>
     /// <param name="configuration"></param>
     /// <param name="serviceLifetime"></param>
     /// <returns></returns>
-    public static TemplateWorkflowConfiguration AddStage3AWBNStageHandler<THandler>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where THandler : TemplateWorkflowStage3AWBNStageHandlerBase
+    public static TemplateWorkflowConfiguration AddStageStage3AWBNHandler<THandler>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where THandler : StageStage3AWBNHandlerBase
     {
-        return configuration.AddStage3AWBNStageHandler<THandler, TemplateWorkflowStage3AWBNContinuator>(serviceLifetime);
+        return configuration.AddStageStage3AWBNHandler<THandler, StageStage3AWBNContinuator>(serviceLifetime);
     }
 
     /// <summary>
-    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage3AWBN"/> 的处理器
+    /// 添加对工作流程 <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage3AWBN"/> 的处理器
     /// </summary>
-    /// <typeparam name="THandler">基于 <see cref="TemplateWorkflowStage3AWBNStageHandlerBase"/> 实现的处理器类型</typeparam>
-    /// <typeparam name="TContinuator">基于 <see cref="TemplateWorkflowStage3AWBNContinuatorBase"/> 实现的流程延续器类型</typeparam>
+    /// <typeparam name="THandler">基于 <see cref="StageStage3AWBNHandlerBase"/> 实现的处理器类型</typeparam>
+    /// <typeparam name="TContinuator">基于 <see cref="StageStage3AWBNContinuatorBase"/> 实现的流程延续器类型</typeparam>
     /// <param name="configuration"></param>
     /// <param name="serviceLifetime"></param>
     /// <returns></returns>
-    public static TemplateWorkflowConfiguration AddStage3AWBNStageHandler<THandler, TContinuator>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
-        where THandler : TemplateWorkflowStage3AWBNStageHandlerBase
-        where TContinuator : TemplateWorkflowStage3AWBNContinuatorBase
+    public static TemplateWorkflowConfiguration AddStageStage3AWBNHandler<THandler, TContinuator>(this TemplateWorkflowConfiguration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+        where THandler : StageStage3AWBNHandlerBase
+        where TContinuator : StageStage3AWBNContinuatorBase
     {
         var builder = configuration.Builder;
 
         ServiceCollectionUniqueAddHelper.RegisterContinuator<TContinuator>(builder.Services, serviceLifetime);
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, THandler, TemplateWorkflowStage3AWBNStageMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, THandler, StageStage3AWBNMessage, ITemplateWorkflow>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(THandler), typeof(THandler), serviceLifetime));
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(ITemplateWorkflowStage3AWBNStageFinalizer), typeof(THandler), serviceLifetime));
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowStageHandler<TemplateWorkflowStage3AWBNStageMessage>), typeof(THandler), serviceLifetime));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IStageStage3AWBNFinalizer), typeof(THandler), serviceLifetime));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowStageHandler<StageStage3AWBNMessage>), typeof(THandler), serviceLifetime));
 
         return configuration;
     }

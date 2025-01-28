@@ -13,9 +13,9 @@ namespace TemplateNamespace.Template.Internal;
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public abstract partial class TemplateWorkflowStateMachineDriverBase
-    : WorkflowStateMachineDriver<TemplateWorkflow, TemplateWorkflowContext, TemplateWorkflowStateMachine, TemplateWorkflowStageCompletedMessageBase, TemplateWorkflowFailureMessage, ITemplateWorkflow>
-    , IWorkflowMessageHandler<TemplateWorkflowStageCompletedMessageBase>
-    , IWorkflowMessageHandler<TemplateWorkflowFailureMessage>
+    : WorkflowStateMachineDriver<TemplateWorkflow, TemplateWorkflowContext, TemplateWorkflowStateMachine, TemplateStageCompletedMessageBase, TemplateFailureMessage, ITemplateWorkflow>
+    , IWorkflowMessageHandler<TemplateStageCompletedMessageBase>
+    , IWorkflowMessageHandler<TemplateFailureMessage>
     , IWorkflowResumer<TemplateWorkflow>
     , ITemplateWorkflow
 {
@@ -55,21 +55,21 @@ public abstract partial class TemplateWorkflowStateMachineDriverBase
                     var currentStage = context.Stage;
                     switch (currentStage)
                     {
-                        case TemplateWorkflowStages.Stage1CAUK:
+                        case TemplateStages.Stage1CAUK:
                             {
-                                var stageMessage = new TemplateWorkflowStage1CAUKStageMessage(typedContext);
+                                var stageMessage = new StageStage1CAUKMessage(typedContext);
                                 await MessageDispatcher.PublishAsync(stageMessage, cancellationToken);
                                 break;
                             }
-                        case TemplateWorkflowStages.Stage2BPTG:
+                        case TemplateStages.Stage2BPTG:
                             {
-                                var stageMessage = new TemplateWorkflowStage2BPTGStageMessage(typedContext);
+                                var stageMessage = new StageStage2BPTGMessage(typedContext);
                                 await MessageDispatcher.PublishAsync(stageMessage, cancellationToken);
                                 break;
                             }
-                        case TemplateWorkflowStages.Stage3AWBN:
+                        case TemplateStages.Stage3AWBN:
                             {
-                                var stageMessage = new TemplateWorkflowStage3AWBNStageMessage(typedContext);
+                                var stageMessage = new StageStage3AWBNMessage(typedContext);
                                 await MessageDispatcher.PublishAsync(stageMessage, cancellationToken);
                                 break;
                             }
@@ -82,11 +82,11 @@ public abstract partial class TemplateWorkflowStateMachineDriverBase
             case WorkflowStageState.Finished:
                 {
                     var currentStage = context.Stage;
-                    TemplateWorkflowStageCompletedMessageBase stageCompletedMessage = currentStage switch
+                    TemplateStageCompletedMessageBase stageCompletedMessage = currentStage switch
                     {
-                        TemplateWorkflowStages.Stage1CAUK => new TemplateWorkflowStage1CAUKStageCompletedMessage(typedContext),
-                        TemplateWorkflowStages.Stage2BPTG => new TemplateWorkflowStage2BPTGStageCompletedMessage(typedContext),
-                        TemplateWorkflowStages.Stage3AWBN => new TemplateWorkflowStage3AWBNStageCompletedMessage(typedContext),
+                        TemplateStages.Stage1CAUK => new StageStage1CAUKCompletedMessage(typedContext),
+                        TemplateStages.Stage2BPTG => new StageStage2BPTGCompletedMessage(typedContext),
+                        TemplateStages.Stage3AWBN => new StageStage3AWBNCompletedMessage(typedContext),
                         _ => throw new WorkflowInvalidOperationException($"Unsupported finished stage：{currentStage}"),
                     };
 
@@ -100,7 +100,7 @@ public abstract partial class TemplateWorkflowStateMachineDriverBase
     }
 
     /// <inheritdoc/>
-    protected override async Task DoInputAsync(TemplateWorkflowStageCompletedMessageBase message, CancellationToken cancellationToken)
+    protected override async Task DoInputAsync(TemplateStageCompletedMessageBase message, CancellationToken cancellationToken)
     {
         var stateMachine = await RestoreStateMachineAsync(message.Context, cancellationToken);
 
@@ -111,7 +111,7 @@ public abstract partial class TemplateWorkflowStateMachineDriverBase
     }
 
     /// <inheritdoc/>
-    protected override async Task DoInputAsync(TemplateWorkflowFailureMessage message, CancellationToken cancellationToken)
+    protected override async Task DoInputAsync(TemplateFailureMessage message, CancellationToken cancellationToken)
     {
         var stateMachine = await RestoreStateMachineAsync(message.Context, cancellationToken);
 
@@ -122,7 +122,7 @@ public abstract partial class TemplateWorkflowStateMachineDriverBase
     }
 
     /// <inheritdoc/>
-    protected override bool ValidationContext(IWorkflowContext context) => TemplateWorkflowStages.StageIds.Contains(context.Stage);
+    protected override bool ValidationContext(IWorkflowContext context) => TemplateStages.StageIds.Contains(context.Stage);
 }
 
 /// <summary>

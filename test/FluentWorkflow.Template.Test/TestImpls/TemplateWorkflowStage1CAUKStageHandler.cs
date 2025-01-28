@@ -6,7 +6,7 @@ using TemplateNamespace.Template.Message;
 
 namespace FluentWorkflow;
 
-internal class TemplateWorkflowStage1CAUKStageHandler : TemplateWorkflowStage1CAUKStageHandlerBase
+internal class TemplateWorkflowStage1CAUKStageHandler : StageStage1CAUKHandlerBase
 {
     #region Public 构造函数
 
@@ -18,7 +18,7 @@ internal class TemplateWorkflowStage1CAUKStageHandler : TemplateWorkflowStage1CA
 
     #region Internal 方法
 
-    internal static async Task StandardTemplateWorkflowTestProcessAsync(ITemplateWorkflowStageMessage stageMessage, IServiceProvider serviceProvider, Action<TemplateWorkflow> onChildWorkflowCreated)
+    internal static async Task StandardTemplateWorkflowTestProcessAsync(ITemplateStageMessage stageMessage, IServiceProvider serviceProvider, Action<TemplateWorkflow> onChildWorkflowCreated)
     {
         serviceProvider.GetRequiredService<WorkflowExecuteLogger>().Step(stageMessage);
 
@@ -70,7 +70,7 @@ internal class TemplateWorkflowStage1CAUKStageHandler : TemplateWorkflowStage1CA
 
     #region Protected 方法
 
-    protected override async Task ProcessAsync(ProcessContext processContext, TemplateWorkflowStage1CAUKStageMessage stageMessage, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(ProcessContext processContext, StageStage1CAUKMessage stageMessage, CancellationToken cancellationToken)
     {
         await StandardTemplateWorkflowTestProcessAsync(stageMessage, ServiceProvider, processContext.AwaitChildWorkflow);
     }

@@ -11,7 +11,7 @@ namespace TemplateNamespace.Template.Message;
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public partial interface ITemplateWorkflowContextCarrier
+public partial interface ITemplateContextCarrier
     : IWorkflowContextCarrier<TemplateWorkflowContext>
     , ITemplateWorkflow
 {
@@ -22,7 +22,7 @@ public partial interface ITemplateWorkflowContextCarrier
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public partial interface ITemplateWorkflowStartRequestMessage : IWorkflowStartRequestMessage, ITemplateWorkflowContextCarrier
+public partial interface ITemplateStartRequestMessage : IWorkflowStartRequestMessage, ITemplateContextCarrier
 {
 }
 
@@ -31,7 +31,7 @@ public partial interface ITemplateWorkflowStartRequestMessage : IWorkflowStartRe
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public partial interface ITemplateWorkflowFinishedMessage : IWorkflowFinishedMessage, ITemplateWorkflowContextCarrier
+public partial interface ITemplateFinishedMessage : IWorkflowFinishedMessage, ITemplateContextCarrier
 {
 }
 
@@ -40,7 +40,7 @@ public partial interface ITemplateWorkflowFinishedMessage : IWorkflowFinishedMes
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public partial interface ITemplateWorkflowStageMessage : IWorkflowStageMessage, ITemplateWorkflowContextCarrier
+public partial interface ITemplateStageMessage : IWorkflowStageMessage, ITemplateContextCarrier
 {
 }
 
@@ -49,7 +49,7 @@ public partial interface ITemplateWorkflowStageMessage : IWorkflowStageMessage, 
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public partial interface ITemplateWorkflowStageCompletedMessage : IWorkflowStageCompletedMessage, ITemplateWorkflowContextCarrier
+public partial interface ITemplateStageCompletedMessage : IWorkflowStageCompletedMessage, ITemplateContextCarrier
 {
 }
 
@@ -58,7 +58,7 @@ public partial interface ITemplateWorkflowStageCompletedMessage : IWorkflowStage
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public partial interface ITemplateWorkflowFailureMessage : IWorkflowFailureMessage, ITemplateWorkflowContextCarrier
+public partial interface ITemplateFailureMessage : IWorkflowFailureMessage, ITemplateContextCarrier
 {
 }
 
@@ -67,7 +67,7 @@ public partial interface ITemplateWorkflowFailureMessage : IWorkflowFailureMessa
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public abstract partial class TemplateWorkflowStageMessageBase : ITemplateWorkflowStageMessage
+public abstract partial class TemplateStageMessageBase : ITemplateStageMessage
 {
     /// <inheritdoc/>
     public string Id => Context.Id;
@@ -78,8 +78,8 @@ public abstract partial class TemplateWorkflowStageMessageBase : ITemplateWorkfl
     /// <inheritdoc/>
     public TemplateWorkflowContext Context { get; }
 
-    /// <inheritdoc cref="TemplateWorkflowStageMessageBase"/>
-    protected TemplateWorkflowStageMessageBase(TemplateWorkflowContext context)
+    /// <inheritdoc cref="TemplateStageMessageBase"/>
+    protected TemplateStageMessageBase(TemplateWorkflowContext context)
     {
         Context = context ?? throw new ArgumentNullException(nameof(context));
     }
@@ -90,7 +90,7 @@ public abstract partial class TemplateWorkflowStageMessageBase : ITemplateWorkfl
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public abstract partial class TemplateWorkflowStageCompletedMessageBase : ITemplateWorkflowStageCompletedMessage
+public abstract partial class TemplateStageCompletedMessageBase : ITemplateStageCompletedMessage
 {
     /// <inheritdoc/>
     public string Id => Context.Id;
@@ -101,8 +101,8 @@ public abstract partial class TemplateWorkflowStageCompletedMessageBase : ITempl
     /// <inheritdoc/>
     public TemplateWorkflowContext Context { get; }
 
-    /// <inheritdoc cref="TemplateWorkflowStageCompletedMessageBase"/>
-    protected TemplateWorkflowStageCompletedMessageBase(TemplateWorkflowContext context)
+    /// <inheritdoc cref="TemplateStageCompletedMessageBase"/>
+    protected TemplateStageCompletedMessageBase(TemplateWorkflowContext context)
     {
         Context = context ?? throw new ArgumentNullException(nameof(context));
     }
@@ -112,15 +112,15 @@ public abstract partial class TemplateWorkflowStageCompletedMessageBase : ITempl
 /// <see cref="TemplateWorkflow"/> 启动请求消息
 /// </summary>
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public sealed partial class TemplateWorkflowStartRequestMessage : ITemplateWorkflowStartRequestMessage
+public sealed partial class TemplateStartRequestMessage : ITemplateStartRequestMessage
 {
     /// <inheritdoc cref="TemplateWorkflowBase.WorkflowName"/>
     public static string WorkflowName => TemplateWorkflow.WorkflowName;
 
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - TemplateWorkflow.StartRequest
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.StartRequest
     /// </summary>
-    public const string EventName = "TemplateWorkflow.StartRequest";
+    public const string EventName = "Template.StartRequest";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
@@ -134,15 +134,15 @@ public sealed partial class TemplateWorkflowStartRequestMessage : ITemplateWorkf
     /// <inheritdoc/>
     IWorkflowContext IWorkflowContextCarrier<IWorkflowContext>.Context => Context;
 
-    /// <inheritdoc cref="TemplateWorkflowStartRequestMessage"/>
-    public TemplateWorkflowStartRequestMessage(IEnumerable<KeyValuePair<string, string>> context)
+    /// <inheritdoc cref="TemplateStartRequestMessage"/>
+    public TemplateStartRequestMessage(IEnumerable<KeyValuePair<string, string>> context)
         : this(new TemplateWorkflowContext(context))
     {
     }
 
-    /// <inheritdoc cref="TemplateWorkflowStartRequestMessage"/>
+    /// <inheritdoc cref="TemplateStartRequestMessage"/>
     [System.Text.Json.Serialization.JsonConstructor]
-    public TemplateWorkflowStartRequestMessage(TemplateWorkflowContext context)
+    public TemplateStartRequestMessage(TemplateWorkflowContext context)
     {
         Context = context ?? throw new ArgumentNullException(nameof(context));
     }
@@ -152,15 +152,15 @@ public sealed partial class TemplateWorkflowStartRequestMessage : ITemplateWorkf
 /// <see cref="TemplateWorkflow"/> 流程结束消息
 /// </summary>
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public sealed partial class TemplateWorkflowFinishedMessage : ITemplateWorkflowFinishedMessage
+public sealed partial class TemplateFinishedMessage : ITemplateFinishedMessage
 {
     /// <inheritdoc cref="TemplateWorkflowBase.WorkflowName"/>
     public static string WorkflowName => TemplateWorkflow.WorkflowName;
 
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - TemplateWorkflow.Finished
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Finished
     /// </summary>
-    public const string EventName = "TemplateWorkflow.Finished";
+    public const string EventName = "Template.Finished";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
@@ -180,8 +180,8 @@ public sealed partial class TemplateWorkflowFinishedMessage : ITemplateWorkflowF
     /// <inheritdoc/>
     public string? Message { get; }
 
-    /// <inheritdoc cref="TemplateWorkflowFinishedMessage"/>
-    public TemplateWorkflowFinishedMessage(TemplateWorkflowContext context, bool isSuccess, string? message = null)
+    /// <inheritdoc cref="TemplateFinishedMessage"/>
+    public TemplateFinishedMessage(TemplateWorkflowContext context, bool isSuccess, string? message = null)
     {
         Context = context ?? throw new ArgumentNullException(nameof(context));
         IsSuccess = isSuccess;
@@ -192,15 +192,14 @@ public sealed partial class TemplateWorkflowFinishedMessage : ITemplateWorkflowF
 /// <summary>
 /// <see cref="TemplateWorkflow"/> 流程失败消息
 /// </summary>
-[EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-[WorkflowStage(TemplateWorkflowStages.Failure)]
-public sealed partial class TemplateWorkflowFailureMessage : ITemplateWorkflowFailureMessage, ITemplateWorkflowContextCarrier, IEventNameDeclaration
+[WorkflowStage(TemplateStages.Failure)]
+public sealed partial class TemplateFailureMessage : ITemplateFailureMessage, ITemplateContextCarrier, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - TemplateWorkflow.Failure
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Failure
     /// </summary>
-    public const string EventName = "TemplateWorkflow.Failure";
+    public const string EventName = "Template.Failure";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
@@ -220,8 +219,8 @@ public sealed partial class TemplateWorkflowFailureMessage : ITemplateWorkflowFa
     /// <inheritdoc/>
     public TemplateWorkflowContext Context { get; }
 
-    /// <inheritdoc cref="TemplateWorkflowFailureMessage"/>
-    public TemplateWorkflowFailureMessage(TemplateWorkflowContext context, string message, string? remoteStackTrace)
+    /// <inheritdoc cref="TemplateFailureMessage"/>
+    public TemplateFailureMessage(TemplateWorkflowContext context, string message, string? remoteStackTrace)
     {
         WorkflowException.ThrowIfNullOrWhiteSpace(message);
 
@@ -232,133 +231,127 @@ public sealed partial class TemplateWorkflowFailureMessage : ITemplateWorkflowFa
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage1CAUK"/> 的消息
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage1CAUK"/> 的消息
 /// </summary>
-[EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-[WorkflowStage(TemplateWorkflowStages.Stage1CAUK)]
-public sealed partial class TemplateWorkflowStage1CAUKStageMessage : TemplateWorkflowStageMessageBase, ITemplateWorkflowStage1CAUKStage, IEventNameDeclaration
+[WorkflowStage(TemplateStages.Stage1CAUK)]
+public sealed partial class StageStage1CAUKMessage : TemplateStageMessageBase, IStageStage1CAUK, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - TemplateWorkflow.Stage1CAUK
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage1CAUK
     /// </summary>
-    public const string EventName = "TemplateWorkflow.Stage1CAUK";
+    public const string EventName = "Template.Stage1CAUK";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
 
-    /// <inheritdoc cref="TemplateWorkflowStage1CAUKStageMessage"/>
-    public TemplateWorkflowStage1CAUKStageMessage(TemplateWorkflowContext context) : base(context)
+    /// <inheritdoc cref="StageStage1CAUKMessage"/>
+    public StageStage1CAUKMessage(TemplateWorkflowContext context) : base(context)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage1CAUK"/> 的完成消息
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage1CAUK"/> 的完成消息
 /// </summary>
-[EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-[WorkflowStage(TemplateWorkflowStages.Stage1CAUK)]
-public sealed partial class TemplateWorkflowStage1CAUKStageCompletedMessage : TemplateWorkflowStageCompletedMessageBase, ITemplateWorkflowStage1CAUKStage, IEventNameDeclaration
+[WorkflowStage(TemplateStages.Stage1CAUK)]
+public sealed partial class StageStage1CAUKCompletedMessage : TemplateStageCompletedMessageBase, IStageStage1CAUK, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - TemplateWorkflow.Stage1CAUK.Completed
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage1CAUK.Completed
     /// </summary>
-    public const string EventName = "TemplateWorkflow.Stage1CAUK.Completed";
+    public const string EventName = "Template.Stage1CAUK.Completed";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
 
-    /// <inheritdoc cref="TemplateWorkflowStage1CAUKStageCompletedMessage"/>
-    public TemplateWorkflowStage1CAUKStageCompletedMessage(TemplateWorkflowContext context) : base(context)
+    /// <inheritdoc cref="StageStage1CAUKCompletedMessage"/>
+    public StageStage1CAUKCompletedMessage(TemplateWorkflowContext context) : base(context)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage2BPTG"/> 的消息
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage2BPTG"/> 的消息
 /// </summary>
-[EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-[WorkflowStage(TemplateWorkflowStages.Stage2BPTG)]
-public sealed partial class TemplateWorkflowStage2BPTGStageMessage : TemplateWorkflowStageMessageBase, ITemplateWorkflowStage2BPTGStage, IEventNameDeclaration
+[WorkflowStage(TemplateStages.Stage2BPTG)]
+public sealed partial class StageStage2BPTGMessage : TemplateStageMessageBase, IStageStage2BPTG, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - TemplateWorkflow.Stage2BPTG
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage2BPTG
     /// </summary>
-    public const string EventName = "TemplateWorkflow.Stage2BPTG";
+    public const string EventName = "Template.Stage2BPTG";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
 
-    /// <inheritdoc cref="TemplateWorkflowStage2BPTGStageMessage"/>
-    public TemplateWorkflowStage2BPTGStageMessage(TemplateWorkflowContext context) : base(context)
+    /// <inheritdoc cref="StageStage2BPTGMessage"/>
+    public StageStage2BPTGMessage(TemplateWorkflowContext context) : base(context)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage2BPTG"/> 的完成消息
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage2BPTG"/> 的完成消息
 /// </summary>
-[EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-[WorkflowStage(TemplateWorkflowStages.Stage2BPTG)]
-public sealed partial class TemplateWorkflowStage2BPTGStageCompletedMessage : TemplateWorkflowStageCompletedMessageBase, ITemplateWorkflowStage2BPTGStage, IEventNameDeclaration
+[WorkflowStage(TemplateStages.Stage2BPTG)]
+public sealed partial class StageStage2BPTGCompletedMessage : TemplateStageCompletedMessageBase, IStageStage2BPTG, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - TemplateWorkflow.Stage2BPTG.Completed
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage2BPTG.Completed
     /// </summary>
-    public const string EventName = "TemplateWorkflow.Stage2BPTG.Completed";
+    public const string EventName = "Template.Stage2BPTG.Completed";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
 
-    /// <inheritdoc cref="TemplateWorkflowStage2BPTGStageCompletedMessage"/>
-    public TemplateWorkflowStage2BPTGStageCompletedMessage(TemplateWorkflowContext context) : base(context)
+    /// <inheritdoc cref="StageStage2BPTGCompletedMessage"/>
+    public StageStage2BPTGCompletedMessage(TemplateWorkflowContext context) : base(context)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage3AWBN"/> 的消息
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage3AWBN"/> 的消息
 /// </summary>
-[EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-[WorkflowStage(TemplateWorkflowStages.Stage3AWBN)]
-public sealed partial class TemplateWorkflowStage3AWBNStageMessage : TemplateWorkflowStageMessageBase, ITemplateWorkflowStage3AWBNStage, IEventNameDeclaration
+[WorkflowStage(TemplateStages.Stage3AWBN)]
+public sealed partial class StageStage3AWBNMessage : TemplateStageMessageBase, IStageStage3AWBN, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - TemplateWorkflow.Stage3AWBN
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage3AWBN
     /// </summary>
-    public const string EventName = "TemplateWorkflow.Stage3AWBN";
+    public const string EventName = "Template.Stage3AWBN";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
 
-    /// <inheritdoc cref="TemplateWorkflowStage3AWBNStageMessage"/>
-    public TemplateWorkflowStage3AWBNStageMessage(TemplateWorkflowContext context) : base(context)
+    /// <inheritdoc cref="StageStage3AWBNMessage"/>
+    public StageStage3AWBNMessage(TemplateWorkflowContext context) : base(context)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage3AWBN"/> 的完成消息
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage3AWBN"/> 的完成消息
 /// </summary>
-[EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-[WorkflowStage(TemplateWorkflowStages.Stage3AWBN)]
-public sealed partial class TemplateWorkflowStage3AWBNStageCompletedMessage : TemplateWorkflowStageCompletedMessageBase, ITemplateWorkflowStage3AWBNStage, IEventNameDeclaration
+[WorkflowStage(TemplateStages.Stage3AWBN)]
+public sealed partial class StageStage3AWBNCompletedMessage : TemplateStageCompletedMessageBase, IStageStage3AWBN, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - TemplateWorkflow.Stage3AWBN.Completed
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage3AWBN.Completed
     /// </summary>
-    public const string EventName = "TemplateWorkflow.Stage3AWBN.Completed";
+    public const string EventName = "Template.Stage3AWBN.Completed";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
 
-    /// <inheritdoc cref="TemplateWorkflowStage3AWBNStageCompletedMessage"/>
-    public TemplateWorkflowStage3AWBNStageCompletedMessage(TemplateWorkflowContext context) : base(context)
+    /// <inheritdoc cref="StageStage3AWBNCompletedMessage"/>
+    public StageStage3AWBNCompletedMessage(TemplateWorkflowContext context) : base(context)
     {
     }
 }

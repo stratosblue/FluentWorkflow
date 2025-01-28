@@ -3,9 +3,8 @@
 using System.ComponentModel;
 using FluentWorkflow;
 using FluentWorkflow.Interface;
-using TemplateNamespace.Template.Internal;
 
-namespace TemplateNamespace.Template;
+namespace TemplateNamespace.Template.Internal;
 
 /// <summary>
 /// <see cref="TemplateWorkflow"/> 调度器基类

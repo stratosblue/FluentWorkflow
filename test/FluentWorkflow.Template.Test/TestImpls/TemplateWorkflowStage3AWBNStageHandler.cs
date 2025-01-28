@@ -3,7 +3,7 @@ using TemplateNamespace.Template.Message;
 
 namespace FluentWorkflow;
 
-internal class TemplateWorkflowStage3AWBNStageHandler : TemplateWorkflowStage3AWBNStageHandlerBase
+internal class TemplateWorkflowStage3AWBNStageHandler : StageStage3AWBNHandlerBase
 {
     #region Public 构造函数
 
@@ -15,7 +15,7 @@ internal class TemplateWorkflowStage3AWBNStageHandler : TemplateWorkflowStage3AW
 
     #region Protected 方法
 
-    protected override async Task ProcessAsync(ProcessContext processContext, TemplateWorkflowStage3AWBNStageMessage stageMessage, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(ProcessContext processContext, StageStage3AWBNMessage stageMessage, CancellationToken cancellationToken)
     {
         await TemplateWorkflowStage1CAUKStageHandler.StandardTemplateWorkflowTestProcessAsync(stageMessage, ServiceProvider, processContext.AwaitChildWorkflow);
     }

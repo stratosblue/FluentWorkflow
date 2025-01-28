@@ -1,6 +1,7 @@
 ﻿using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using TemplateNamespace;
+using TemplateNamespace.Template;
 
 namespace FluentWorkflow;
 
@@ -116,7 +117,7 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
         await Assert.ThrowsExceptionAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
 
         //TODO 确认异常时位置正确？
-        //Assert.AreEqual(TemplateWorkflowStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages.Count);
+        //Assert.AreEqual(TemplateStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages.Count);
     }
 
     [DataRow(3, 2)]
@@ -155,7 +156,7 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         await FinishWaiterContainer[id].WaitAsync();
 
-        Assert.AreEqual(TemplateWorkflowStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages.Count);
+        Assert.AreEqual(TemplateStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages.Count);
     }
 
     [DataRow(9)]
@@ -198,9 +199,9 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
                 {
                     configuration.AddScheduler()
                                  .AddResultObserver()
-                                 .AddStage1CAUKStageHandler<TemplateWorkflowStage1CAUKStageHandler>()
-                                 .AddStage2BPTGStageHandler<TemplateWorkflowStage2BPTGStageHandler>()
-                                 .AddStage3AWBNStageHandler<TemplateWorkflowStage3AWBNStageHandler>();
+                                 .AddStageStage1CAUKHandler<TemplateWorkflowStage1CAUKStageHandler>()
+                                 .AddStageStage2BPTGHandler<TemplateWorkflowStage2BPTGStageHandler>()
+                                 .AddStageStage3AWBNHandler<TemplateWorkflowStage3AWBNStageHandler>();
                 });
 
         services.AddSingleton<WorkflowExecuteLogger>();

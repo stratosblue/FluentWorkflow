@@ -30,13 +30,13 @@ internal class TemplateWorkflowImpl : TemplateWorkflow
         return base.OnCompletionAsync(context, cancellationToken);
     }
 
-    protected override Task OnFailedAsync(TemplateWorkflowFailureMessage message, MessageFireDelegate<TemplateWorkflowFailureMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnFailedAsync(TemplateFailureMessage message, MessageFireDelegate<TemplateFailureMessage> fireMessage, CancellationToken cancellationToken)
     {
         ServiceProvider.GetRequiredService<InMemoryWorkflowFinishWaiterContainer>()[Id].SetException(new WorkflowFailureException(Id, message.Stage, message.Message, message.RemoteStackTrace, message.Context));
         return base.OnFailedAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnStage1CAUKAsync(TemplateWorkflowStage1CAUKStageMessage message, MessageFireDelegate<TemplateWorkflowStage1CAUKStageMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnStage1CAUKAsync(StageStage1CAUKMessage message, MessageFireDelegate<StageStage1CAUKMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -46,7 +46,7 @@ internal class TemplateWorkflowImpl : TemplateWorkflow
         return base.OnStage1CAUKAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnStage1CAUKCompletedAsync(TemplateWorkflowStage1CAUKStageCompletedMessage message, MessageFireDelegate<TemplateWorkflowStage1CAUKStageCompletedMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnStage1CAUKCompletedAsync(StageStage1CAUKCompletedMessage message, MessageFireDelegate<StageStage1CAUKCompletedMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -56,7 +56,7 @@ internal class TemplateWorkflowImpl : TemplateWorkflow
         return base.OnStage1CAUKCompletedAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnStage2BPTGAsync(TemplateWorkflowStage2BPTGStageMessage message, MessageFireDelegate<TemplateWorkflowStage2BPTGStageMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnStage2BPTGAsync(StageStage2BPTGMessage message, MessageFireDelegate<StageStage2BPTGMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -66,7 +66,7 @@ internal class TemplateWorkflowImpl : TemplateWorkflow
         return base.OnStage2BPTGAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnStage2BPTGCompletedAsync(TemplateWorkflowStage2BPTGStageCompletedMessage message, MessageFireDelegate<TemplateWorkflowStage2BPTGStageCompletedMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnStage2BPTGCompletedAsync(StageStage2BPTGCompletedMessage message, MessageFireDelegate<StageStage2BPTGCompletedMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -76,7 +76,7 @@ internal class TemplateWorkflowImpl : TemplateWorkflow
         return base.OnStage2BPTGCompletedAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnStage3AWBNAsync(TemplateWorkflowStage3AWBNStageMessage message, MessageFireDelegate<TemplateWorkflowStage3AWBNStageMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnStage3AWBNAsync(StageStage3AWBNMessage message, MessageFireDelegate<StageStage3AWBNMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -86,7 +86,7 @@ internal class TemplateWorkflowImpl : TemplateWorkflow
         return base.OnStage3AWBNAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnStage3AWBNCompletedAsync(TemplateWorkflowStage3AWBNStageCompletedMessage message, MessageFireDelegate<TemplateWorkflowStage3AWBNStageCompletedMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnStage3AWBNCompletedAsync(StageStage3AWBNCompletedMessage message, MessageFireDelegate<StageStage3AWBNCompletedMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {

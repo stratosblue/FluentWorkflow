@@ -69,19 +69,19 @@ internal sealed class TemplateWorkflowConfiguration<TWorkflow>
 
         #region StartRequestHandler
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateWorkflowStartRequestHandler<TWorkflow>, TemplateWorkflowStartRequestMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateStartRequestHandler<TWorkflow>, TemplateStartRequestMessage, ITemplateWorkflow>();
 
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TemplateWorkflowStartRequestHandler<TWorkflow>), typeof(TemplateWorkflowStartRequestHandler<TWorkflow>), ServiceLifetime.Scoped));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TemplateStartRequestHandler<TWorkflow>), typeof(TemplateStartRequestHandler<TWorkflow>), ServiceLifetime.Scoped));
 
         #endregion StartRequestHandler
 
         #region StateMachineDriver
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateWorkflowStateMachineDriver, TemplateWorkflowStage1CAUKStageCompletedMessage, ITemplateWorkflow>();
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateWorkflowStateMachineDriver, TemplateWorkflowStage2BPTGStageCompletedMessage, ITemplateWorkflow>();
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateWorkflowStateMachineDriver, TemplateWorkflowStage3AWBNStageCompletedMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateWorkflowStateMachineDriver, StageStage1CAUKCompletedMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateWorkflowStateMachineDriver, StageStage2BPTGCompletedMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateWorkflowStateMachineDriver, StageStage3AWBNCompletedMessage, ITemplateWorkflow>();
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateWorkflowStateMachineDriver, TemplateWorkflowFailureMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TemplateWorkflowStateMachineDriver, TemplateFailureMessage, ITemplateWorkflow>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TemplateWorkflowStateMachineDriver), typeof(TemplateWorkflowStateMachineDriver), ServiceLifetime.Scoped));
 

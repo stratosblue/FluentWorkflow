@@ -5,16 +5,16 @@ using TemplateNamespace.Template.Message;
 
 namespace TemplateNamespace.Template.Handler;
 
-partial class TemplateWorkflowResultObserver : ICapSubscribe
+partial class TemplateResultObserver : ICapSubscribe
 {
     /// <summary>
-    /// 处理消息 <inheritdoc cref="TemplateWorkflowFinishedMessage.EventName"/>
+    /// 处理消息 <inheritdoc cref="TemplateFinishedMessage.EventName"/>
     /// </summary>
     /// <param name="message"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    [CapSubscribe(TemplateWorkflowFinishedMessage.EventName)]
-    public virtual Task HandleMessageAsync(TemplateWorkflowFinishedMessage message, CancellationToken cancellationToken)
+    [CapSubscribe(TemplateFinishedMessage.EventName)]
+    public virtual Task HandleMessageAsync(TemplateFinishedMessage message, CancellationToken cancellationToken)
     {
         return HandleAsync(message, cancellationToken);
     }

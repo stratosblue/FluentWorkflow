@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Text.Json.Serialization;
 using FluentWorkflow;
 using FluentWorkflow.Interface;
+using TemplateNamespace.Template;
 
 namespace TemplateNamespace;
 
@@ -59,7 +60,7 @@ public abstract partial class TemplateWorkflowContextBase
     /// <inheritdoc/>
     protected sealed override string CheckBeforeSetCurrentStage(string stage)
     {
-        if (TemplateWorkflowStages.StageIds.Contains(stage))
+        if (TemplateStages.StageIds.Contains(stage))
         {
             return stage;
         }
@@ -76,7 +77,7 @@ public sealed partial class TemplateWorkflowContext
     , IKeyValuesConvertable<TemplateWorkflowContext>
 {
     /// <inheritdoc cref="TemplateWorkflowContext"/>
-    public TemplateWorkflowContext() : this(Guid.NewGuid().ToString())
+    public TemplateWorkflowContext() : this(Guid.NewGuid().ToString("N"))
     {
     }
 

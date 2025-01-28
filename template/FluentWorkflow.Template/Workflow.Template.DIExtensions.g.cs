@@ -4,8 +4,10 @@ using FluentWorkflow;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TemplateNamespace;
+using TemplateNamespace.Template;
 using TemplateNamespace.Template.Handler;
 using TemplateNamespace.Template.Message;
+using TemplateNamespace.Template.Internal;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -47,23 +49,23 @@ public static class TemplateWorkflowDIExtensions
     }
 
     /// <summary>
-    /// 添加 <see cref="TemplateWorkflow"/> 的结果观察器 <see cref="TemplateWorkflowResultObserver"/>
+    /// 添加 <see cref="TemplateWorkflow"/> 的结果观察器 <see cref="TemplateResultObserver"/>
     /// </summary>
     /// <param name="configuration"></param>
     /// <returns></returns>
-    public static TemplateWorkflowConfiguration AddResultObserver(this TemplateWorkflowConfiguration configuration) => configuration.AddResultObserver<TemplateWorkflowResultObserver>();
+    public static TemplateWorkflowConfiguration AddResultObserver(this TemplateWorkflowConfiguration configuration) => configuration.AddResultObserver<TemplateResultObserver>();
 
     /// <summary>
-    /// 添加 <see cref="TemplateWorkflow"/> 的结果观察器，使用 <typeparamref name="TWorkflowResultObserver"/> 替代默认的 <see cref="TemplateWorkflowResultObserver"/>
+    /// 添加 <see cref="TemplateWorkflow"/> 的结果观察器，使用 <typeparamref name="TWorkflowResultObserver"/> 替代默认的 <see cref="TemplateResultObserver"/>
     /// </summary>
     /// <param name="configuration"></param>
     /// <returns></returns>
     public static TemplateWorkflowConfiguration AddResultObserver<TWorkflowResultObserver>(this TemplateWorkflowConfiguration configuration)
-        where TWorkflowResultObserver : TemplateWorkflowResultObserverBase
+        where TWorkflowResultObserver : TemplateResultObserverBase
     {
         var builder = configuration.Builder;
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TWorkflowResultObserver, TemplateWorkflowFinishedMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TWorkflowResultObserver, TemplateFinishedMessage, ITemplateWorkflow>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowResultObserver<TemplateWorkflow>), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TWorkflowResultObserver), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));

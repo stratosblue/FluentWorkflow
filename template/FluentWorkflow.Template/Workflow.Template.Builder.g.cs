@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using FluentWorkflow;
 
-namespace TemplateNamespace;
+namespace TemplateNamespace.Template.Internal;
 
 /// <summary>
 /// <see cref="TemplateWorkflow"/> 构造器基类

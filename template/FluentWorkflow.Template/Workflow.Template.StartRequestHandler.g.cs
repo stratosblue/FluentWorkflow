@@ -12,16 +12,16 @@ namespace TemplateNamespace.Template.Handler;
 /// </summary>
 /// <typeparam name="TWorkflow">用以启动的工作流程具体实现（<see cref="TemplateWorkflow"/> 或其派生类型）</typeparam>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public partial class TemplateWorkflowStartRequestHandler<TWorkflow>
-    : WorkflowStartRequestHandler<TWorkflow, TemplateWorkflowContext, TemplateWorkflowStartRequestMessage, ITemplateWorkflow>
+public partial class TemplateStartRequestHandler<TWorkflow>
+    : WorkflowStartRequestHandler<TWorkflow, TemplateWorkflowContext, TemplateStartRequestMessage, ITemplateWorkflow>
     , ITemplateWorkflow
     where TWorkflow : TemplateWorkflow
 {
     /// <inheritdoc cref="IServiceProvider"/>
     public IServiceProvider ServiceProvider { get; }
 
-    /// <inheritdoc cref="TemplateWorkflowStartRequestHandler{TWorkflow}"/>
-    public TemplateWorkflowStartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider) : base(workflowBuilder, workflowScheduler)
+    /// <inheritdoc cref="TemplateStartRequestHandler{TWorkflow}"/>
+    public TemplateStartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider) : base(workflowBuilder, workflowScheduler)
     {
         ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }

@@ -1,6 +1,7 @@
 ﻿using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using TemplateNamespace;
+using TemplateNamespace.Template;
 
 namespace FluentWorkflow;
 
@@ -53,11 +54,11 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
 
         await FinishWaiterContainer[id].WaitAsync();
 
-        Assert.AreEqual(TemplateWorkflowStages.OrderedStageIds.Length, executeLogger.Stages.Count);
+        Assert.AreEqual(TemplateStages.OrderedStageIds.Length, executeLogger.Stages.Count);
 
         for (int i = 0; i < executeLogger.Stages.Count; i++)
         {
-            Assert.AreEqual(TemplateWorkflowStages.OrderedStageIds[i], executeLogger.Stages[i].Stage);
+            Assert.AreEqual(TemplateStages.OrderedStageIds[i], executeLogger.Stages[i].Stage);
         }
     }
 
@@ -72,9 +73,9 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
                 {
                     configuration.AddScheduler()
                                  .AddResultObserver()
-                                 .AddStage1CAUKStageHandler<TemplateWorkflowStage1CAUKStageHandler>()
-                                 .AddStage2BPTGStageHandler<TemplateWorkflowStage2BPTGStageHandler>()
-                                 .AddStage3AWBNStageHandler<TemplateWorkflowStage3AWBNStageHandler>();
+                                 .AddStageStage1CAUKHandler<TemplateWorkflowStage1CAUKStageHandler>()
+                                 .AddStageStage2BPTGHandler<TemplateWorkflowStage2BPTGStageHandler>()
+                                 .AddStageStage3AWBNHandler<TemplateWorkflowStage3AWBNStageHandler>();
                 });
 
         services.AddSingleton<WorkflowExecuteLogger>();

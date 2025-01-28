@@ -13,17 +13,17 @@ namespace TemplateNamespace.Template.Continuator;
 /// </summary>
 /// <typeparam name="TStageFinalizer">阶段完成器类型</typeparam>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract partial class TemplateWorkflowContinuator<TStageFinalizer>
+public abstract partial class TemplateContinuator<TStageFinalizer>
     : WorkflowContinuator<TStageFinalizer, ITemplateWorkflow>
-    where TStageFinalizer : ITemplateWorkflowStageFinalizer, ITemplateWorkflow
+    where TStageFinalizer : ITemplateStageFinalizer, ITemplateWorkflow
 {
     /// <summary>
     /// 阶段完成器
     /// </summary>
     protected readonly TStageFinalizer StageFinalizer;
 
-    /// <inheritdoc cref="TemplateWorkflowContinuator{TStageFinalizer}"/>
-    public TemplateWorkflowContinuator(TStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider) : base(workflowAwaitProcessor, logger, serviceProvider)
+    /// <inheritdoc cref="TemplateContinuator{TStageFinalizer}"/>
+    public TemplateContinuator(TStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider) : base(workflowAwaitProcessor, logger, serviceProvider)
     {
         StageFinalizer = stageFinalizer ?? throw new ArgumentNullException(nameof(stageFinalizer));
     }
@@ -36,99 +36,99 @@ public abstract partial class TemplateWorkflowContinuator<TStageFinalizer>
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage1CAUK"/> 的流程延续器基类
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage1CAUK"/> 的流程延续器基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract partial class TemplateWorkflowStage1CAUKContinuatorBase
-    : TemplateWorkflowContinuator<ITemplateWorkflowStage1CAUKStageFinalizer>
+public abstract partial class StageStage1CAUKContinuatorBase
+    : TemplateContinuator<IStageStage1CAUKFinalizer>
     , IWorkflowNameDeclaration, IWorkflowStageNameDeclaration
 {
     /// <inheritdoc/>
     public static string WorkflowName => TemplateWorkflow.WorkflowName;
 
     /// <inheritdoc/>
-    public static string StageName => TemplateWorkflowStages.Stage1CAUK;
+    public static string StageName => TemplateStages.Stage1CAUK;
 
-    /// <inheritdoc cref="TemplateWorkflowStage1CAUKContinuatorBase"/>
-    protected TemplateWorkflowStage1CAUKContinuatorBase(ITemplateWorkflowStage1CAUKStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
+    /// <inheritdoc cref="StageStage1CAUKContinuatorBase"/>
+    protected StageStage1CAUKContinuatorBase(IStageStage1CAUKFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
         : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage2BPTG"/> 的流程延续器基类
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage2BPTG"/> 的流程延续器基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract partial class TemplateWorkflowStage2BPTGContinuatorBase
-    : TemplateWorkflowContinuator<ITemplateWorkflowStage2BPTGStageFinalizer>
+public abstract partial class StageStage2BPTGContinuatorBase
+    : TemplateContinuator<IStageStage2BPTGFinalizer>
     , IWorkflowNameDeclaration, IWorkflowStageNameDeclaration
 {
     /// <inheritdoc/>
     public static string WorkflowName => TemplateWorkflow.WorkflowName;
 
     /// <inheritdoc/>
-    public static string StageName => TemplateWorkflowStages.Stage2BPTG;
+    public static string StageName => TemplateStages.Stage2BPTG;
 
-    /// <inheritdoc cref="TemplateWorkflowStage2BPTGContinuatorBase"/>
-    protected TemplateWorkflowStage2BPTGContinuatorBase(ITemplateWorkflowStage2BPTGStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
+    /// <inheritdoc cref="StageStage2BPTGContinuatorBase"/>
+    protected StageStage2BPTGContinuatorBase(IStageStage2BPTGFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
         : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage3AWBN"/> 的流程延续器基类
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage3AWBN"/> 的流程延续器基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract partial class TemplateWorkflowStage3AWBNContinuatorBase
-    : TemplateWorkflowContinuator<ITemplateWorkflowStage3AWBNStageFinalizer>
+public abstract partial class StageStage3AWBNContinuatorBase
+    : TemplateContinuator<IStageStage3AWBNFinalizer>
     , IWorkflowNameDeclaration, IWorkflowStageNameDeclaration
 {
     /// <inheritdoc/>
     public static string WorkflowName => TemplateWorkflow.WorkflowName;
 
     /// <inheritdoc/>
-    public static string StageName => TemplateWorkflowStages.Stage3AWBN;
+    public static string StageName => TemplateStages.Stage3AWBN;
 
-    /// <inheritdoc cref="TemplateWorkflowStage3AWBNContinuatorBase"/>
-    protected TemplateWorkflowStage3AWBNContinuatorBase(ITemplateWorkflowStage3AWBNStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
+    /// <inheritdoc cref="StageStage3AWBNContinuatorBase"/>
+    protected StageStage3AWBNContinuatorBase(IStageStage3AWBNFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
         : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage1CAUK"/> 的流程延续器
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage1CAUK"/> 的流程延续器
 /// </summary>
-public partial class TemplateWorkflowStage1CAUKContinuator : TemplateWorkflowStage1CAUKContinuatorBase
+public partial class StageStage1CAUKContinuator : StageStage1CAUKContinuatorBase
 {
-    /// <inheritdoc cref="TemplateWorkflowStage1CAUKContinuator"/>
-    public TemplateWorkflowStage1CAUKContinuator(ITemplateWorkflowStage1CAUKStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<TemplateWorkflowStage1CAUKContinuator> logger, IServiceProvider serviceProvider)
+    /// <inheritdoc cref="StageStage1CAUKContinuator"/>
+    public StageStage1CAUKContinuator(IStageStage1CAUKFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<StageStage1CAUKContinuator> logger, IServiceProvider serviceProvider)
         : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage2BPTG"/> 的流程延续器
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage2BPTG"/> 的流程延续器
 /// </summary>
-public partial class TemplateWorkflowStage2BPTGContinuator : TemplateWorkflowStage2BPTGContinuatorBase
+public partial class StageStage2BPTGContinuator : StageStage2BPTGContinuatorBase
 {
-    /// <inheritdoc cref="TemplateWorkflowStage2BPTGContinuator"/>
-    public TemplateWorkflowStage2BPTGContinuator(ITemplateWorkflowStage2BPTGStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<TemplateWorkflowStage2BPTGContinuator> logger, IServiceProvider serviceProvider)
+    /// <inheritdoc cref="StageStage2BPTGContinuator"/>
+    public StageStage2BPTGContinuator(IStageStage2BPTGFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<StageStage2BPTGContinuator> logger, IServiceProvider serviceProvider)
         : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }
 }
 
 /// <summary>
-/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateWorkflowStages.Stage3AWBN"/> 的流程延续器
+/// <see cref="TemplateWorkflow"/> 的阶段 <see cref="TemplateStages.Stage3AWBN"/> 的流程延续器
 /// </summary>
-public partial class TemplateWorkflowStage3AWBNContinuator : TemplateWorkflowStage3AWBNContinuatorBase
+public partial class StageStage3AWBNContinuator : StageStage3AWBNContinuatorBase
 {
-    /// <inheritdoc cref="TemplateWorkflowStage3AWBNContinuator"/>
-    public TemplateWorkflowStage3AWBNContinuator(ITemplateWorkflowStage3AWBNStageFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<TemplateWorkflowStage3AWBNContinuator> logger, IServiceProvider serviceProvider)
+    /// <inheritdoc cref="StageStage3AWBNContinuator"/>
+    public StageStage3AWBNContinuator(IStageStage3AWBNFinalizer stageFinalizer, IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger<StageStage3AWBNContinuator> logger, IServiceProvider serviceProvider)
         : base(stageFinalizer, workflowAwaitProcessor, logger, serviceProvider)
     {
     }

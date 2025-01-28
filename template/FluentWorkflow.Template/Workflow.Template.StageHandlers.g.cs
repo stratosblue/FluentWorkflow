@@ -13,7 +13,7 @@ namespace TemplateNamespace.Template.Handler;
 /// 阶段完成器
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public interface ITemplateWorkflowStageFinalizer
+public interface ITemplateStageFinalizer
     : IWorkflowStageFinalizer, ITemplateWorkflow
 {
 }
@@ -22,7 +22,7 @@ public interface ITemplateWorkflowStageFinalizer
 /// 阶段 Stage1CAUK 完成器
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public interface ITemplateWorkflowStage1CAUKStageFinalizer : ITemplateWorkflowStageFinalizer
+public interface IStageStage1CAUKFinalizer : ITemplateStageFinalizer
 {
 }
 
@@ -30,7 +30,7 @@ public interface ITemplateWorkflowStage1CAUKStageFinalizer : ITemplateWorkflowSt
 /// 阶段 Stage2BPTG 完成器
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public interface ITemplateWorkflowStage2BPTGStageFinalizer : ITemplateWorkflowStageFinalizer
+public interface IStageStage2BPTGFinalizer : ITemplateStageFinalizer
 {
 }
 
@@ -38,7 +38,7 @@ public interface ITemplateWorkflowStage2BPTGStageFinalizer : ITemplateWorkflowSt
 /// 阶段 Stage3AWBN 完成器
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public interface ITemplateWorkflowStage3AWBNStageFinalizer : ITemplateWorkflowStageFinalizer
+public interface IStageStage3AWBNFinalizer : ITemplateStageFinalizer
 {
 }
 
@@ -49,18 +49,18 @@ public interface ITemplateWorkflowStage3AWBNStageFinalizer : ITemplateWorkflowSt
 /// <typeparam name="TStageMessage"></typeparam>
 /// <typeparam name="TStageCompletedMessage"></typeparam>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract partial class TemplateWorkflowStageHandler<TStage, TStageMessage, TStageCompletedMessage>
+public abstract partial class TemplateStageHandler<TStage, TStageMessage, TStageCompletedMessage>
     : WorkflowStageHandler<TStage, TemplateWorkflowContext, TStageMessage, TStageCompletedMessage, ITemplateWorkflow>
     , ITemplateWorkflow
     , IWorkflowStageHandler<TStageMessage>
-    , ITemplateWorkflowStageFinalizer
+    , ITemplateStageFinalizer
     , ICurrentStage
     where TStage : ITemplateWorkflow
-    where TStageMessage : TemplateWorkflowStageMessageBase, TStage, IEventNameDeclaration
-    where TStageCompletedMessage : TemplateWorkflowStageCompletedMessageBase, TStage, IEventNameDeclaration
+    where TStageMessage : TemplateStageMessageBase, TStage, IEventNameDeclaration
+    where TStageCompletedMessage : TemplateStageCompletedMessageBase, TStage, IEventNameDeclaration
 {
-    /// <inheritdoc cref="TemplateWorkflowStageHandler{TStage, TStageMessage, TStageCompletedMessage}"/>
-    public TemplateWorkflowStageHandler(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref="TemplateStageHandler{TStage, TStageMessage, TStageCompletedMessage}"/>
+    public TemplateStageHandler(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
@@ -129,7 +129,7 @@ public abstract partial class TemplateWorkflowStageHandler<TStage, TStageMessage
         var failureMessage = context.TryGetFailureMessage(out var failureMessageValue) ? failureMessageValue : "Unknown error";
         var failureStackTrace = context.TryGetFailureStackTrace(out var failureStackTraceValue) ? failureStackTraceValue : null;
 
-        var workflowFailureMessage = new TemplateWorkflowFailureMessage(typedContext, failureMessage, failureStackTrace);
+        var workflowFailureMessage = new TemplateFailureMessage(typedContext, failureMessage, failureStackTrace);
         await MessageDispatcher.PublishAsync(workflowFailureMessage, cancellationToken);
     }
 
@@ -137,70 +137,70 @@ public abstract partial class TemplateWorkflowStageHandler<TStage, TStageMessage
 }
 
 /// <summary>
-/// 阶段 <see cref="TemplateWorkflowStages.Stage1CAUK"/> 处理器基类<br/>
-/// 工作流程阶段顺序：<br/><see cref="TemplateWorkflowStages.Stage1CAUK"/> -><br/> <see cref="TemplateWorkflowStages.Stage2BPTG"/> -><br/> <see cref="TemplateWorkflowStages.Stage3AWBN"/>
+/// 阶段 <see cref="TemplateStages.Stage1CAUK"/> 处理器基类<br/>
+/// 工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
 /// </summary>
-public abstract partial class TemplateWorkflowStage1CAUKStageHandlerBase
-    : TemplateWorkflowStageHandler<ITemplateWorkflowStage1CAUKStage, TemplateWorkflowStage1CAUKStageMessage, TemplateWorkflowStage1CAUKStageCompletedMessage>
-    , ITemplateWorkflowStage1CAUKStageFinalizer
+public abstract partial class StageStage1CAUKHandlerBase
+    : TemplateStageHandler<IStageStage1CAUK, StageStage1CAUKMessage, StageStage1CAUKCompletedMessage>
+    , IStageStage1CAUKFinalizer
 {
     /// <inheritdoc/>
-    public sealed override string Stage { get; } = TemplateWorkflowStages.Stage1CAUK;
+    public sealed override string Stage { get; } = TemplateStages.Stage1CAUK;
 
-    /// <inheritdoc cref="TemplateWorkflowStage1CAUKStageHandlerBase"/>
-    public TemplateWorkflowStage1CAUKStageHandlerBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref="StageStage1CAUKHandlerBase"/>
+    public StageStage1CAUKHandlerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
     /// <inheritdoc/>
-    protected override TemplateWorkflowStage1CAUKStageCompletedMessage CreateCompletedMessage(TemplateWorkflowContext context)
+    protected override StageStage1CAUKCompletedMessage CreateCompletedMessage(TemplateWorkflowContext context)
     {
-        return new TemplateWorkflowStage1CAUKStageCompletedMessage(context);
+        return new StageStage1CAUKCompletedMessage(context);
     }
 }
 
 /// <summary>
-/// 阶段 <see cref="TemplateWorkflowStages.Stage2BPTG"/> 处理器基类<br/>
-/// 工作流程阶段顺序：<br/><see cref="TemplateWorkflowStages.Stage1CAUK"/> -><br/> <see cref="TemplateWorkflowStages.Stage2BPTG"/> -><br/> <see cref="TemplateWorkflowStages.Stage3AWBN"/>
+/// 阶段 <see cref="TemplateStages.Stage2BPTG"/> 处理器基类<br/>
+/// 工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
 /// </summary>
-public abstract partial class TemplateWorkflowStage2BPTGStageHandlerBase
-    : TemplateWorkflowStageHandler<ITemplateWorkflowStage2BPTGStage, TemplateWorkflowStage2BPTGStageMessage, TemplateWorkflowStage2BPTGStageCompletedMessage>
-    , ITemplateWorkflowStage2BPTGStageFinalizer
+public abstract partial class StageStage2BPTGHandlerBase
+    : TemplateStageHandler<IStageStage2BPTG, StageStage2BPTGMessage, StageStage2BPTGCompletedMessage>
+    , IStageStage2BPTGFinalizer
 {
     /// <inheritdoc/>
-    public sealed override string Stage { get; } = TemplateWorkflowStages.Stage2BPTG;
+    public sealed override string Stage { get; } = TemplateStages.Stage2BPTG;
 
-    /// <inheritdoc cref="TemplateWorkflowStage2BPTGStageHandlerBase"/>
-    public TemplateWorkflowStage2BPTGStageHandlerBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref="StageStage2BPTGHandlerBase"/>
+    public StageStage2BPTGHandlerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
     /// <inheritdoc/>
-    protected override TemplateWorkflowStage2BPTGStageCompletedMessage CreateCompletedMessage(TemplateWorkflowContext context)
+    protected override StageStage2BPTGCompletedMessage CreateCompletedMessage(TemplateWorkflowContext context)
     {
-        return new TemplateWorkflowStage2BPTGStageCompletedMessage(context);
+        return new StageStage2BPTGCompletedMessage(context);
     }
 }
 
 /// <summary>
-/// 阶段 <see cref="TemplateWorkflowStages.Stage3AWBN"/> 处理器基类<br/>
-/// 工作流程阶段顺序：<br/><see cref="TemplateWorkflowStages.Stage1CAUK"/> -><br/> <see cref="TemplateWorkflowStages.Stage2BPTG"/> -><br/> <see cref="TemplateWorkflowStages.Stage3AWBN"/>
+/// 阶段 <see cref="TemplateStages.Stage3AWBN"/> 处理器基类<br/>
+/// 工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
 /// </summary>
-public abstract partial class TemplateWorkflowStage3AWBNStageHandlerBase
-    : TemplateWorkflowStageHandler<ITemplateWorkflowStage3AWBNStage, TemplateWorkflowStage3AWBNStageMessage, TemplateWorkflowStage3AWBNStageCompletedMessage>
-    , ITemplateWorkflowStage3AWBNStageFinalizer
+public abstract partial class StageStage3AWBNHandlerBase
+    : TemplateStageHandler<IStageStage3AWBN, StageStage3AWBNMessage, StageStage3AWBNCompletedMessage>
+    , IStageStage3AWBNFinalizer
 {
     /// <inheritdoc/>
-    public sealed override string Stage { get; } = TemplateWorkflowStages.Stage3AWBN;
+    public sealed override string Stage { get; } = TemplateStages.Stage3AWBN;
 
-    /// <inheritdoc cref="TemplateWorkflowStage3AWBNStageHandlerBase"/>
-    public TemplateWorkflowStage3AWBNStageHandlerBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    /// <inheritdoc cref="StageStage3AWBNHandlerBase"/>
+    public StageStage3AWBNHandlerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
     /// <inheritdoc/>
-    protected override TemplateWorkflowStage3AWBNStageCompletedMessage CreateCompletedMessage(TemplateWorkflowContext context)
+    protected override StageStage3AWBNCompletedMessage CreateCompletedMessage(TemplateWorkflowContext context)
     {
-        return new TemplateWorkflowStage3AWBNStageCompletedMessage(context);
+        return new StageStage3AWBNCompletedMessage(context);
     }
 }

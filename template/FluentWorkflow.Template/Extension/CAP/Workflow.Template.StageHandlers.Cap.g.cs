@@ -4,46 +4,46 @@ using TemplateNamespace.Template.Message;
 
 namespace TemplateNamespace.Template.Handler;
 
-partial class TemplateWorkflowStage1CAUKStageHandlerBase : ICapSubscribe
+partial class StageStage1CAUKHandlerBase : ICapSubscribe
 {
     /// <summary>
-    /// 处理消息 <inheritdoc cref="TemplateWorkflowStage1CAUKStageMessage.EventName"/>
+    /// 处理消息 <inheritdoc cref="StageStage1CAUKMessage.EventName"/>
     /// </summary>
     /// <param name="message"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    [CapSubscribe(TemplateWorkflowStage1CAUKStageMessage.EventName)]
-    public virtual Task HandleMessageAsync(TemplateWorkflowStage1CAUKStageMessage message, CancellationToken cancellationToken)
+    [CapSubscribe(StageStage1CAUKMessage.EventName)]
+    public virtual Task HandleMessageAsync(StageStage1CAUKMessage message, CancellationToken cancellationToken)
     {
         return HandleAsync(message, cancellationToken);
     }
 }
 
-partial class TemplateWorkflowStage2BPTGStageHandlerBase : ICapSubscribe
+partial class StageStage2BPTGHandlerBase : ICapSubscribe
 {
     /// <summary>
-    /// 处理消息 <inheritdoc cref="TemplateWorkflowStage2BPTGStageMessage.EventName"/>
+    /// 处理消息 <inheritdoc cref="StageStage2BPTGMessage.EventName"/>
     /// </summary>
     /// <param name="message"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    [CapSubscribe(TemplateWorkflowStage2BPTGStageMessage.EventName)]
-    public virtual Task HandleMessageAsync(TemplateWorkflowStage2BPTGStageMessage message, CancellationToken cancellationToken)
+    [CapSubscribe(StageStage2BPTGMessage.EventName)]
+    public virtual Task HandleMessageAsync(StageStage2BPTGMessage message, CancellationToken cancellationToken)
     {
         return HandleAsync(message, cancellationToken);
     }
 }
 
-partial class TemplateWorkflowStage3AWBNStageHandlerBase : ICapSubscribe
+partial class StageStage3AWBNHandlerBase : ICapSubscribe
 {
     /// <summary>
-    /// 处理消息 <inheritdoc cref="TemplateWorkflowStage3AWBNStageMessage.EventName"/>
+    /// 处理消息 <inheritdoc cref="StageStage3AWBNMessage.EventName"/>
     /// </summary>
     /// <param name="message"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    [CapSubscribe(TemplateWorkflowStage3AWBNStageMessage.EventName)]
-    public virtual Task HandleMessageAsync(TemplateWorkflowStage3AWBNStageMessage message, CancellationToken cancellationToken)
+    [CapSubscribe(StageStage3AWBNMessage.EventName)]
+    public virtual Task HandleMessageAsync(StageStage3AWBNMessage message, CancellationToken cancellationToken)
     {
         return HandleAsync(message, cancellationToken);
     }
