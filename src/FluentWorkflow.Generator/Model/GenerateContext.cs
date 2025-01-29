@@ -28,10 +28,6 @@ internal class GenerateContext
         Stages = workflowDeclaration.Stages.Select(name => new StageName(name, $"{GenerateNames.WorkflowDeclaration.WorkflowClassName}{name}Stage")).ToImmutableArray();
 
         var usingBuilder = new StringBuilder(512);
-        foreach (var usingItem in WorkflowDeclaration.DeclarationSyntax.SyntaxTree.GetCompilationUnitRoot().Usings)
-        {
-            usingBuilder.AppendLine(usingItem.ToString());
-        }
 
         usingBuilder.AppendLine($"using {GenerateNames.NameSpace};");
         usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.{GenerateNames.WorkflowName};");

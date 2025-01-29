@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Collections.Immutable;
+using System.Reflection;
 using System.Text;
+using FluentWorkflow.Generator;
 using FluentWorkflow.Generator.Model;
 using FluentWorkflow.Generator.Providers;
 using FluentWorkflow.Generator.Providers.Workflow;
@@ -8,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace FluentWorkflow.Generator;
+namespace FluentWorkflow;
 
 [Generator(LanguageNames.CSharp)]
 public class FluentWorkflowSourceGenerator : IIncrementalGenerator
@@ -245,6 +247,40 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
             }
             else    //项目外定义，使用反射
             {
+                //TODO 错误提示
+                var declarationType = typeInfo.ConvertedType;
+                var attributeDatas = declarationType?.GetAttributes();
+                if (attributeDatas?.Length > 0
+                    && attributeDatas.Value.FirstOrDefault(m => m.AttributeClass?.Name == "WorkflowDefineAttribute") is { } defineAttributeData
+                    && defineAttributeData.ConstructorArguments is { } arguments
+                    && arguments.Length >= 3)
+                {
+                    var version = (int)arguments[0].Value!;
+                    if (version > (int)GeneratorVersion.Version2)
+                    {
+                        throw new InvalidOperationException($"Declaration version \"{version}\" not supported.");
+                    }
+                    var workflowName = (string)arguments[1].Value!;
+                    var stages = arguments[2].Values.Select(m => (string)m.Value!).ToImmutableArray();
+
+                    var contextPropertyAttributeDatas = attributeDatas.Value.Where(m => m.AttributeClass?.Name == "WorkflowContextTypedPropertyAttribute").ToList();
+                    var contextProperties = contextPropertyAttributeDatas.Select(m =>
+                                                                         {
+                                                                             var propertyType = m.AttributeClass!.TypeArguments[0];
+                                                                             var propertyName= (string)m.ConstructorArguments[0].Value!;
+                                                                             var propertyComment = m.ConstructorArguments[1].Value as string;
+                                                                             return new WorkflowContextProperty(propertyName, propertyType, propertyComment);
+                                                                         })
+                                                                         .ToImmutableArray();
+                    var workflowDeclaration = new WorkflowDeclaration(null,
+                                                                      declarationType!.ContainingNamespace.ToDisplayString(),
+                                                                      declarationType.Name,
+                                                                      workflowName,
+                                                                      stages,
+                                                                      contextProperties);
+
+                    generationDescriptors.Add(new(workflowDeclaration, generationMode));
+                }
             }
         }
 

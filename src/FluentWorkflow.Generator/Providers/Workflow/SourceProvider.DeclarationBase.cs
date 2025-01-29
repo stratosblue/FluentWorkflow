@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using FluentWorkflow.Generator.Model;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace FluentWorkflow.Generator.Providers.Workflow;
 
@@ -21,10 +20,6 @@ internal class DeclarationBaseSourceProvider : SourceProvider
         _declaration = declaration;
 
         var usingBuilder = new StringBuilder(512);
-        foreach (var usingItem in declaration.DeclarationSyntax.SyntaxTree.GetCompilationUnitRoot().Usings)
-        {
-            usingBuilder.AppendLine(usingItem.ToString());
-        }
 
         usingBuilder.AppendLine($"using System.ComponentModel;");
         usingBuilder.AppendLine($"using FluentWorkflow;");

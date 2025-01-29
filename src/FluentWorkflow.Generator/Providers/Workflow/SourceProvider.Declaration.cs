@@ -22,10 +22,6 @@ internal class DeclarationSourceProvider : SourceProvider
         _declaration = declaration;
 
         var usingBuilder = new StringBuilder(512);
-        foreach (var usingItem in declaration.DeclarationSyntax.SyntaxTree.GetCompilationUnitRoot().Usings)
-        {
-            usingBuilder.AppendLine(usingItem.ToString());
-        }
 
         usingBuilder.AppendLine($"using System.ComponentModel;");
         usingBuilder.AppendLine($"using FluentWorkflow;");

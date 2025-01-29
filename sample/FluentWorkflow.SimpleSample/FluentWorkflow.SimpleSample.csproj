@@ -15,10 +15,11 @@
   <ItemGroup>
     <CompilerVisibleProperty Include="FluentWorkflowGeneratorAdditional" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\FluentWorkflow.Core\FluentWorkflow.Core.csproj" />
     <ProjectReference Include="..\..\src\FluentWorkflow.Generator\FluentWorkflow.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <!--<ProjectReference Include="..\FluentWorkflow.SharedSample\FluentWorkflow.SharedSample.csproj" />-->
   </ItemGroup>
 
 </Project>
