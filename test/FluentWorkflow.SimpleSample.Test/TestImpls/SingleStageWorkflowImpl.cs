@@ -1,6 +1,6 @@
 ﻿using FluentWorkflow.Interface;
 using FluentWorkflow.SimpleSample;
-using FluentWorkflow.SimpleSample.Message;
+using FluentWorkflow.SimpleSample.SingleStage.Message;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
@@ -30,13 +30,13 @@ internal class SingleStageWorkflowImpl : SingleStageWorkflow
         return base.OnCompletionAsync(context, cancellationToken);
     }
 
-    protected override Task OnFailedAsync(SingleStageWorkflowFailureMessage message, MessageFireDelegate<SingleStageWorkflowFailureMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnFailedAsync(SingleStageFailureMessage message, MessageFireDelegate<SingleStageFailureMessage> fireMessage, CancellationToken cancellationToken)
     {
         ServiceProvider.GetRequiredService<InMemoryWorkflowFinishWaiterContainer>()[Id].SetException(new WorkflowFailureException(Id, message.Stage, message.Message, message.RemoteStackTrace, message.Context));
         return base.OnFailedAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnSampleStage5Async(SingleStageWorkflowSampleStage5StageMessage message, MessageFireDelegate<SingleStageWorkflowSampleStage5StageMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnSampleStage5Async(StageSampleStage5Message message, MessageFireDelegate<StageSampleStage5Message> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -46,7 +46,7 @@ internal class SingleStageWorkflowImpl : SingleStageWorkflow
         return base.OnSampleStage5Async(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnSampleStage5CompletedAsync(SingleStageWorkflowSampleStage5StageCompletedMessage message, MessageFireDelegate<SingleStageWorkflowSampleStage5StageCompletedMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnSampleStage5CompletedAsync(StageSampleStage5CompletedMessage message, MessageFireDelegate<StageSampleStage5CompletedMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -58,7 +58,7 @@ internal class SingleStageWorkflowImpl : SingleStageWorkflow
 
     protected Task RunWithResumeAsync(IWorkflowContextCarrier<SingleStageWorkflowContext> message)
     {
-        message.Context.SetBoolean("CurrentStageResumed", true);
+        message.Context.SetValue("CurrentStageResumed", true);
         var bytes = SerializeContext(message.Context);
 
         Task.Run(async () =>
@@ -72,13 +72,13 @@ internal class SingleStageWorkflowImpl : SingleStageWorkflow
 
     protected bool ShouldWorkWithResume(SingleStageWorkflowContext context)
     {
-        if (Context.WorkWithResume
-            && context.GetBoolean("CurrentStageResumed", false) == false)
+        if (Context.TestInfo?.WorkWithResume == true
+            && context.GetValue<bool>("CurrentStageResumed") == false)
         {
             return true;
         }
 
-        context.SetBoolean("CurrentStageResumed", false);
+        context.SetValue("CurrentStageResumed", false);
 
         return false;
     }

@@ -22,16 +22,16 @@ internal class StateMachineDriverSourceProvider : WorkflowSourceProvider
 
 {Context.Usings}
 
-namespace {NameSpace}.Internal;
+namespace {NameSpace}.{WorkflowName}.Internal;
 
 /// <summary>
 /// <see cref=""{WorkflowClassName}""/> 的状态机驱动器基类
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public abstract partial class {WorkflowClassName}StateMachineDriverBase
-    : WorkflowStateMachineDriver<{WorkflowClassName}, {WorkflowClassName}Context, {WorkflowClassName}StateMachine, {WorkflowClassName}StageCompletedMessageBase, {WorkflowClassName}FailureMessage, I{WorkflowClassName}>
-    , IWorkflowMessageHandler<{WorkflowClassName}StageCompletedMessageBase>
-    , IWorkflowMessageHandler<{WorkflowClassName}FailureMessage>
+    : WorkflowStateMachineDriver<{WorkflowClassName}, {WorkflowClassName}Context, {WorkflowClassName}StateMachine, {WorkflowName}StageCompletedMessageBase, {WorkflowName}FailureMessage, I{WorkflowClassName}>
+    , IWorkflowMessageHandler<{WorkflowName}StageCompletedMessageBase>
+    , IWorkflowMessageHandler<{WorkflowName}FailureMessage>
     , IWorkflowResumer<{WorkflowClassName}>
     , I{WorkflowClassName}
 {{
@@ -93,7 +93,7 @@ public abstract partial class {WorkflowClassName}StateMachineDriverBase
             case WorkflowStageState.Finished:
                 {{
                     var currentStage = context.Stage;
-                    {WorkflowClassName}StageCompletedMessageBase stageCompletedMessage = currentStage switch
+                    {WorkflowName}StageCompletedMessageBase stageCompletedMessage = currentStage switch
                     {{
 ");
         foreach (var stage in Context.Stages)
@@ -115,7 +115,7 @@ public abstract partial class {WorkflowClassName}StateMachineDriverBase
     }}
 
     /// <inheritdoc/>
-    protected override async Task DoInputAsync({WorkflowClassName}StageCompletedMessageBase message, CancellationToken cancellationToken)
+    protected override async Task DoInputAsync({WorkflowName}StageCompletedMessageBase message, CancellationToken cancellationToken)
     {{
         var stateMachine = await RestoreStateMachineAsync(message.Context, cancellationToken);
 
@@ -126,7 +126,7 @@ public abstract partial class {WorkflowClassName}StateMachineDriverBase
     }}
 
     /// <inheritdoc/>
-    protected override async Task DoInputAsync({WorkflowClassName}FailureMessage message, CancellationToken cancellationToken)
+    protected override async Task DoInputAsync({WorkflowName}FailureMessage message, CancellationToken cancellationToken)
     {{
         var stateMachine = await RestoreStateMachineAsync(message.Context, cancellationToken);
 
@@ -137,7 +137,7 @@ public abstract partial class {WorkflowClassName}StateMachineDriverBase
     }}
 
     /// <inheritdoc/>
-    protected override bool ValidationContext(IWorkflowContext context) => {WorkflowClassName}Stages.StageIds.Contains(context.Stage);
+    protected override bool ValidationContext(IWorkflowContext context) => {WorkflowName}Stages.StageIds.Contains(context.Stage);
 }}
 
 /// <summary>
@@ -153,7 +153,7 @@ public sealed partial class {WorkflowClassName}StateMachineDriver : {WorkflowCla
 }}
 ");
 
-        yield return new($"{WorkflowClassName}.StateMachineDriver.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.StateMachineDriver.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

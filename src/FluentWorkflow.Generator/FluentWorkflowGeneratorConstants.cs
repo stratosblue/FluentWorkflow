@@ -7,6 +7,7 @@ internal static class FluentWorkflowGeneratorConstants
 #nullable enable
 
 #pragma warning disable CS0105
+#pragma warning disable IDE0130
 
 using System;
 using System.Collections.Generic;

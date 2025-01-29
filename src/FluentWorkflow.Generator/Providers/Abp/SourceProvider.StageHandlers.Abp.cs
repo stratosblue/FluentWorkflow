@@ -27,12 +27,12 @@ internal class AbpStageHandlersSourceProvider : WorkflowSourceProvider
 using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.Threading;
 
-namespace {NameSpace}.Handler;
+namespace {NameSpace}.{WorkflowName}.Handler;
 ");
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"
-partial class {WorkflowClassName}{stage.Name}StageHandlerBase : IDistributedEventHandler<{WorkflowClassName}{stage.Name}StageMessage>
+partial class Stage{stage.Name}HandlerBase : IDistributedEventHandler<Stage{stage.Name}Message>
 {{
     /// <summary>
     /// Abp 的 <see cref=""ICancellationTokenProvider""/>
@@ -40,11 +40,11 @@ partial class {WorkflowClassName}{stage.Name}StageHandlerBase : IDistributedEven
     protected ICancellationTokenProvider? CancellationTokenProvider => ServiceProvider.GetService<ICancellationTokenProvider>();
 
     /// <summary>
-    /// 处理消息 - <see cref=""{WorkflowClassName}{stage.Name}StageMessage""/>
+    /// 处理消息 - <see cref=""Stage{stage.Name}Message""/>
     /// </summary>
     /// <param name=""eventData""></param>
     /// <returns></returns>
-    public virtual Task HandleEventAsync({WorkflowClassName}{stage.Name}StageMessage eventData)
+    public virtual Task HandleEventAsync(Stage{stage.Name}Message eventData)
     {{
         return HandleAsync(eventData, CancellationTokenProvider?.Token ?? default);
     }}
@@ -52,7 +52,7 @@ partial class {WorkflowClassName}{stage.Name}StageHandlerBase : IDistributedEven
 ");
         }
 
-        yield return new($"{WorkflowClassName}.StageHandlers.Abp.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.StageHandlers.Abp.g.cs", builder.ToString());
 
         #endregion Handlers
     }

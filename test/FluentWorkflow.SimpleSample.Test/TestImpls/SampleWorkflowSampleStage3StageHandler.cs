@@ -1,9 +1,9 @@
-﻿using FluentWorkflow.SimpleSample.Handler;
-using FluentWorkflow.SimpleSample.Message;
+﻿using FluentWorkflow.SimpleSample.Sample.Handler;
+using FluentWorkflow.SimpleSample.Sample.Message;
 
 namespace FluentWorkflow;
 
-internal class SampleWorkflowSampleStage3StageHandler : SampleWorkflowSampleStage3StageHandlerBase
+internal class SampleWorkflowSampleStage3StageHandler : StageSampleStage3HandlerBase
 {
     #region Public 构造函数
 
@@ -15,7 +15,7 @@ internal class SampleWorkflowSampleStage3StageHandler : SampleWorkflowSampleStag
 
     #region Protected 方法
 
-    protected override async Task ProcessAsync(ProcessContext processContext, SampleWorkflowSampleStage3StageMessage stageMessage, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(ProcessContext processContext, StageSampleStage3Message stageMessage, CancellationToken cancellationToken)
     {
         await SampleWorkflowSampleStage1StageHandler.StandardSampleWorkflowTestProcessAsync(stageMessage, ServiceProvider, processContext.AwaitChildWorkflow);
     }

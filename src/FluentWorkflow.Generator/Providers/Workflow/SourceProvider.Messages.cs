@@ -23,14 +23,14 @@ internal class MessagesSourceProvider : WorkflowSourceProvider
 
 {Context.Usings}
 
-namespace {NameSpace}.Message;
+namespace {NameSpace}.{WorkflowName}.Message;
 
 /// <summary>
 /// <see cref=""{WorkflowClassName}Context""/> 携带者接口
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public partial interface I{WorkflowClassName}ContextCarrier
+public partial interface I{WorkflowName}ContextCarrier
     : IWorkflowContextCarrier<{WorkflowClassName}Context>
     , I{WorkflowClassName}
 {{
@@ -41,7 +41,7 @@ public partial interface I{WorkflowClassName}ContextCarrier
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public partial interface I{WorkflowClassName}StartRequestMessage : IWorkflowStartRequestMessage, I{WorkflowClassName}ContextCarrier
+public partial interface I{WorkflowName}StartRequestMessage : IWorkflowStartRequestMessage, I{WorkflowName}ContextCarrier
 {{
 }}
 
@@ -50,7 +50,7 @@ public partial interface I{WorkflowClassName}StartRequestMessage : IWorkflowStar
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public partial interface I{WorkflowClassName}FinishedMessage : IWorkflowFinishedMessage, I{WorkflowClassName}ContextCarrier
+public partial interface I{WorkflowName}FinishedMessage : IWorkflowFinishedMessage, I{WorkflowName}ContextCarrier
 {{
 }}
 
@@ -59,7 +59,7 @@ public partial interface I{WorkflowClassName}FinishedMessage : IWorkflowFinished
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public partial interface I{WorkflowClassName}StageMessage : IWorkflowStageMessage, I{WorkflowClassName}ContextCarrier
+public partial interface I{WorkflowName}StageMessage : IWorkflowStageMessage, I{WorkflowName}ContextCarrier
 {{
 }}
 
@@ -68,7 +68,7 @@ public partial interface I{WorkflowClassName}StageMessage : IWorkflowStageMessag
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public partial interface I{WorkflowClassName}StageCompletedMessage : IWorkflowStageCompletedMessage, I{WorkflowClassName}ContextCarrier
+public partial interface I{WorkflowName}StageCompletedMessage : IWorkflowStageCompletedMessage, I{WorkflowName}ContextCarrier
 {{
 }}
 
@@ -77,7 +77,7 @@ public partial interface I{WorkflowClassName}StageCompletedMessage : IWorkflowSt
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public partial interface I{WorkflowClassName}FailureMessage : IWorkflowFailureMessage, I{WorkflowClassName}ContextCarrier
+public partial interface I{WorkflowName}FailureMessage : IWorkflowFailureMessage, I{WorkflowName}ContextCarrier
 {{
 }}
 
@@ -86,7 +86,7 @@ public partial interface I{WorkflowClassName}FailureMessage : IWorkflowFailureMe
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public abstract partial class {WorkflowClassName}StageMessageBase : I{WorkflowClassName}StageMessage
+public abstract partial class {WorkflowName}StageMessageBase : I{WorkflowName}StageMessage
 {{
     /// <inheritdoc/>
     public string Id => Context.Id;
@@ -97,8 +97,8 @@ public abstract partial class {WorkflowClassName}StageMessageBase : I{WorkflowCl
     /// <inheritdoc/>
     public {WorkflowClassName}Context Context {{ get; }}
 
-    /// <inheritdoc cref=""{WorkflowClassName}StageMessageBase""/>
-    protected {WorkflowClassName}StageMessageBase({WorkflowClassName}Context context)
+    /// <inheritdoc cref=""{WorkflowName}StageMessageBase""/>
+    protected {WorkflowName}StageMessageBase({WorkflowClassName}Context context)
     {{
         Context = context ?? throw new ArgumentNullException(nameof(context));
     }}
@@ -109,7 +109,7 @@ public abstract partial class {WorkflowClassName}StageMessageBase : I{WorkflowCl
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public abstract partial class {WorkflowClassName}StageCompletedMessageBase : I{WorkflowClassName}StageCompletedMessage
+public abstract partial class {WorkflowName}StageCompletedMessageBase : I{WorkflowName}StageCompletedMessage
 {{
     /// <inheritdoc/>
     public string Id => Context.Id;
@@ -120,8 +120,8 @@ public abstract partial class {WorkflowClassName}StageCompletedMessageBase : I{W
     /// <inheritdoc/>
     public {WorkflowClassName}Context Context {{ get; }}
 
-    /// <inheritdoc cref=""{WorkflowClassName}StageCompletedMessageBase""/>
-    protected {WorkflowClassName}StageCompletedMessageBase({WorkflowClassName}Context context)
+    /// <inheritdoc cref=""{WorkflowName}StageCompletedMessageBase""/>
+    protected {WorkflowName}StageCompletedMessageBase({WorkflowClassName}Context context)
     {{
         Context = context ?? throw new ArgumentNullException(nameof(context));
     }}
@@ -131,15 +131,15 @@ public abstract partial class {WorkflowClassName}StageCompletedMessageBase : I{W
 /// <see cref=""{WorkflowClassName}""/> 启动请求消息
 /// </summary>
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public sealed partial class {WorkflowClassName}StartRequestMessage : I{WorkflowClassName}StartRequestMessage
+public sealed partial class {WorkflowName}StartRequestMessage : I{WorkflowName}StartRequestMessage
 {{
     /// <inheritdoc cref=""{WorkflowClassName}Base.WorkflowName""/>
     public static string WorkflowName => {WorkflowClassName}.WorkflowName;
 
     /// <summary>
-    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowClassName}.StartRequest
+    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowName}.StartRequest
     /// </summary>
-    public const string EventName = ""{WorkflowClassName}.StartRequest"";
+    public const string EventName = ""{WorkflowName}.StartRequest"";
 
     /// <inheritdoc cref=""EventName""/>
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
@@ -153,15 +153,15 @@ public sealed partial class {WorkflowClassName}StartRequestMessage : I{WorkflowC
     /// <inheritdoc/>
     IWorkflowContext IWorkflowContextCarrier<IWorkflowContext>.Context => Context;
 
-    /// <inheritdoc cref=""{WorkflowClassName}StartRequestMessage""/>
-    public {WorkflowClassName}StartRequestMessage(IEnumerable<KeyValuePair<string, string>> context)
+    /// <inheritdoc cref=""{WorkflowName}StartRequestMessage""/>
+    public {WorkflowName}StartRequestMessage(IEnumerable<KeyValuePair<string, string>> context)
         : this(new {WorkflowClassName}Context(context))
     {{
     }}
 
-    /// <inheritdoc cref=""{WorkflowClassName}StartRequestMessage""/>
+    /// <inheritdoc cref=""{WorkflowName}StartRequestMessage""/>
     [System.Text.Json.Serialization.JsonConstructor]
-    public {WorkflowClassName}StartRequestMessage({WorkflowClassName}Context context)
+    public {WorkflowName}StartRequestMessage({WorkflowClassName}Context context)
     {{
         Context = context ?? throw new ArgumentNullException(nameof(context));
     }}
@@ -171,15 +171,15 @@ public sealed partial class {WorkflowClassName}StartRequestMessage : I{WorkflowC
 /// <see cref=""{WorkflowClassName}""/> 流程结束消息
 /// </summary>
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public sealed partial class {WorkflowClassName}FinishedMessage : I{WorkflowClassName}FinishedMessage
+public sealed partial class {WorkflowName}FinishedMessage : I{WorkflowName}FinishedMessage
 {{
     /// <inheritdoc cref=""{WorkflowClassName}Base.WorkflowName""/>
     public static string WorkflowName => {WorkflowClassName}.WorkflowName;
 
     /// <summary>
-    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowClassName}.Finished
+    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowName}.Finished
     /// </summary>
-    public const string EventName = ""{WorkflowClassName}.Finished"";
+    public const string EventName = ""{WorkflowName}.Finished"";
 
     /// <inheritdoc cref=""EventName""/>
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
@@ -199,8 +199,8 @@ public sealed partial class {WorkflowClassName}FinishedMessage : I{WorkflowClass
     /// <inheritdoc/>
     public string? Message {{ get; }}
 
-    /// <inheritdoc cref=""{WorkflowClassName}FinishedMessage""/>
-    public {WorkflowClassName}FinishedMessage({WorkflowClassName}Context context, bool isSuccess, string? message = null)
+    /// <inheritdoc cref=""{WorkflowName}FinishedMessage""/>
+    public {WorkflowName}FinishedMessage({WorkflowClassName}Context context, bool isSuccess, string? message = null)
     {{
         Context = context ?? throw new ArgumentNullException(nameof(context));
         IsSuccess = isSuccess;
@@ -213,13 +213,13 @@ public sealed partial class {WorkflowClassName}FinishedMessage : I{WorkflowClass
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-[WorkflowStage({WorkflowClassName}Stages.Failure)]
-public sealed partial class {WorkflowClassName}FailureMessage : I{WorkflowClassName}FailureMessage, I{WorkflowClassName}ContextCarrier, IEventNameDeclaration
+[WorkflowStage({WorkflowName}Stages.Failure)]
+public sealed partial class {WorkflowName}FailureMessage : I{WorkflowName}FailureMessage, I{WorkflowName}ContextCarrier, IEventNameDeclaration
 {{
     /// <summary>
-    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowClassName}.Failure
+    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowName}.Failure
     /// </summary>
-    public const string EventName = ""{WorkflowClassName}.Failure"";
+    public const string EventName = ""{WorkflowName}.Failure"";
 
     /// <inheritdoc cref=""EventName""/>
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
@@ -239,8 +239,8 @@ public sealed partial class {WorkflowClassName}FailureMessage : I{WorkflowClassN
     /// <inheritdoc/>
     public {WorkflowClassName}Context Context {{ get; }}
 
-    /// <inheritdoc cref=""{WorkflowClassName}FailureMessage""/>
-    public {WorkflowClassName}FailureMessage({WorkflowClassName}Context context, string message, string? remoteStackTrace)
+    /// <inheritdoc cref=""{WorkflowName}FailureMessage""/>
+    public {WorkflowName}FailureMessage({WorkflowClassName}Context context, string message, string? remoteStackTrace)
     {{
         WorkflowException.ThrowIfNullOrWhiteSpace(message);
 
@@ -253,52 +253,52 @@ public sealed partial class {WorkflowClassName}FailureMessage : I{WorkflowClassN
         {
             builder.AppendLine($@"
 /// <summary>
-/// <see cref=""{WorkflowClassName}""/> 的阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/> 的消息
+/// <see cref=""{WorkflowClassName}""/> 的阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 的消息
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-[WorkflowStage({WorkflowClassName}Stages.{stage.Name})]
-public sealed partial class {WorkflowClassName}{stage.Name}StageMessage : {WorkflowClassName}StageMessageBase, I{WorkflowClassName}{stage.Name}Stage, IEventNameDeclaration
+[WorkflowStage({WorkflowName}Stages.{stage.Name})]
+public sealed partial class Stage{stage.Name}Message : {WorkflowName}StageMessageBase, IStage{stage.Name}, IEventNameDeclaration
 {{
     /// <summary>
-    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowClassName}.{stage.Name}
+    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowName}.{stage.Name}
     /// </summary>
-    public const string EventName = ""{WorkflowClassName}.{stage.Name}"";
+    public const string EventName = ""{WorkflowName}.{stage.Name}"";
 
     /// <inheritdoc cref=""EventName""/>
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
 
-    /// <inheritdoc cref=""{WorkflowClassName}{stage.Name}StageMessage""/>
-    public {WorkflowClassName}{stage.Name}StageMessage({WorkflowClassName}Context context) : base(context)
+    /// <inheritdoc cref=""Stage{stage.Name}Message""/>
+    public Stage{stage.Name}Message({WorkflowClassName}Context context) : base(context)
     {{
     }}
 }}
 
 /// <summary>
-/// <see cref=""{WorkflowClassName}""/> 的阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/> 的完成消息
+/// <see cref=""{WorkflowClassName}""/> 的阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 的完成消息
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-[WorkflowStage({WorkflowClassName}Stages.{stage.Name})]
-public sealed partial class {WorkflowClassName}{stage.Name}StageCompletedMessage : {WorkflowClassName}StageCompletedMessageBase, I{WorkflowClassName}{stage.Name}Stage, IEventNameDeclaration
+[WorkflowStage({WorkflowName}Stages.{stage.Name})]
+public sealed partial class Stage{stage.Name}CompletedMessage : {WorkflowName}StageCompletedMessageBase, IStage{stage.Name}, IEventNameDeclaration
 {{
     /// <summary>
-    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowClassName}.{stage.Name}.Completed
+    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowName}.{stage.Name}.Completed
     /// </summary>
-    public const string EventName = ""{WorkflowClassName}.{stage.Name}.Completed"";
+    public const string EventName = ""{WorkflowName}.{stage.Name}.Completed"";
 
     /// <inheritdoc cref=""EventName""/>
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
 
-    /// <inheritdoc cref=""{WorkflowClassName}{stage.Name}StageCompletedMessage""/>
-    public {WorkflowClassName}{stage.Name}StageCompletedMessage({WorkflowClassName}Context context) : base(context)
+    /// <inheritdoc cref=""Stage{stage.Name}CompletedMessage""/>
+    public Stage{stage.Name}CompletedMessage({WorkflowClassName}Context context) : base(context)
     {{
     }}
 }}
 ");
         }
 
-        yield return new($"{WorkflowClassName}.Messages.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.Messages.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

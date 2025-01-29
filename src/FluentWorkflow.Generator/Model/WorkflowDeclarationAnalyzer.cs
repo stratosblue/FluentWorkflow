@@ -140,7 +140,11 @@ internal class WorkflowDeclarationAnalyzer : CSharpSyntaxWalker
                             var name = (arguments[0].Expression as LiteralExpressionSyntax)?.Token.ValueText;
                             var typeInfo = workflowDeclarationAnalyzer._semanticModel.GetTypeInfo(typeArguments[0]);
                             var comment = arguments.Count > 1 ? (arguments[1].Expression as LiteralExpressionSyntax)?.Token.ValueText : null;
-                            workflowDeclarationAnalyzer._properties.Add(new(name, typeInfo.Type, comment));
+                            if (name is not null
+                                && typeInfo.Type is not null)
+                            {
+                                workflowDeclarationAnalyzer._properties.Add(new(name, typeInfo.Type, comment));
+                            }
                         }
                     }
                     break;

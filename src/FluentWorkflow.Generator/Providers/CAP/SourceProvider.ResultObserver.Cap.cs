@@ -24,25 +24,25 @@ internal class CapResultObserverSourceProvider : WorkflowSourceProvider
 {Context.Usings}
 using DotNetCore.CAP;
 
-namespace {NameSpace}.Handler;
+namespace {NameSpace}.{WorkflowName}.Handler;
 
-partial class {WorkflowClassName}ResultObserver : ICapSubscribe
+partial class {WorkflowName}ResultObserver : ICapSubscribe
 {{
     /// <summary>
-    /// 处理消息 <inheritdoc cref=""{WorkflowClassName}FinishedMessage.EventName""/>
+    /// 处理消息 <inheritdoc cref=""{WorkflowName}FinishedMessage.EventName""/>
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
-    [CapSubscribe({WorkflowClassName}FinishedMessage.EventName)]
-    public virtual Task HandleMessageAsync({WorkflowClassName}FinishedMessage message, CancellationToken cancellationToken)
+    [CapSubscribe({WorkflowName}FinishedMessage.EventName)]
+    public virtual Task HandleMessageAsync({WorkflowName}FinishedMessage message, CancellationToken cancellationToken)
     {{
         return HandleAsync(message, cancellationToken);
     }}
 }}
 ");
 
-        yield return new($"{WorkflowClassName}.ResultObserver.Cap.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.ResultObserver.Cap.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

@@ -24,11 +24,7 @@ internal class GenerateNames
 
     #endregion Completion Failure Stage
 
-    public string BuildStagesMethod { get; }
-
     public string NameSpace => WorkflowDeclaration.NameSpace;
-
-    public string StageBuilder { get; }
 
     public string StartRequestMessage { get; }
 
@@ -50,20 +46,18 @@ internal class GenerateNames
     {
         WorkflowDeclaration = workflowDeclaration;
 
-        StageBuilder = $"I{WorkflowClassName}StageBuilder";
-        BuildStagesMethod = "BuildStages";
-        WorkflowNameStagesClass = $"{WorkflowClassName}Stages";
+        WorkflowNameStagesClass = $"{WorkflowName}Stages";
 
         WorkflowStateMachineDriver = $"{WorkflowClassName}StateMachineDriver";
 
-        StartRequestMessage = $"{WorkflowClassName}StartRequestMessage";
+        StartRequestMessage = $"{WorkflowName}StartRequestMessage";
 
         #region context base
 
         WorkflowContext = $"{WorkflowClassName}Context";
-        StageCompletedMessageInterface = $"I{WorkflowClassName}StageCompletedMessage";
-        FailureMessageInterface = $"I{WorkflowClassName}FailureMessage";
-        FailureMessage = $"{WorkflowClassName}FailureMessage";
+        StageCompletedMessageInterface = $"I{WorkflowName}StageCompletedMessage";
+        FailureMessageInterface = $"I{WorkflowName}FailureMessage";
+        FailureMessage = $"{WorkflowName}FailureMessage";
 
         #endregion context base
     }
@@ -74,9 +68,9 @@ internal class GenerateNames
 
     #region Name
 
-    public string CompletedMessageName(StageName stage) => $"{stage.FullName}CompletedMessage";
+    public string CompletedMessageName(StageName stage) => $"Stage{stage.Name}CompletedMessage";
 
-    public string MessageName(StageName stage) => $"{stage.FullName}Message";
+    public string MessageName(StageName stage) => $"Stage{stage.Name}Message";
 
     #endregion Name
 

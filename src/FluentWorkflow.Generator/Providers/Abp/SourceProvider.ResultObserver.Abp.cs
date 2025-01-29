@@ -25,9 +25,9 @@ internal class AbpResultObserverSourceProvider : WorkflowSourceProvider
 using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.Threading;
 
-namespace {NameSpace}.Handler;
+namespace {NameSpace}.{WorkflowName}.Handler;
 
-partial class {WorkflowClassName}ResultObserver : IDistributedEventHandler<{WorkflowClassName}FinishedMessage>
+partial class {WorkflowName}ResultObserver : IDistributedEventHandler<{WorkflowName}FinishedMessage>
 {{
     /// <summary>
     /// Abp 的 <see cref=""ICancellationTokenProvider""/>
@@ -35,17 +35,17 @@ partial class {WorkflowClassName}ResultObserver : IDistributedEventHandler<{Work
     protected ICancellationTokenProvider? CancellationTokenProvider => ServiceProvider.GetService<ICancellationTokenProvider>();
 
     /// <summary>
-    /// 处理消息 - <see cref=""{WorkflowClassName}FinishedMessage""/>
+    /// 处理消息 - <see cref=""{WorkflowName}FinishedMessage""/>
     /// </summary>
     /// <param name=""eventData""></param>
     /// <returns></returns>
-    public virtual Task HandleEventAsync({WorkflowClassName}FinishedMessage eventData)
+    public virtual Task HandleEventAsync({WorkflowName}FinishedMessage eventData)
     {{
         return HandleAsync(eventData, CancellationTokenProvider?.Token ?? default);
     }}
 }}");
 
-        yield return new($"{WorkflowClassName}.ResultObserver.Abp.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.ResultObserver.Abp.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

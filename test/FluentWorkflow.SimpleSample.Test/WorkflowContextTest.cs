@@ -56,7 +56,7 @@ public class WorkflowContextTest
 
         foreach (var kv in rawkvs)
         {
-            var rawValue = restoreContext.Get(kv.Key);
+            var rawValue = rawkvsn[kv.Key];
             Assert.AreEqual(kv.Value, rawValue);
         }
     }
@@ -65,9 +65,9 @@ public class WorkflowContextTest
     public void Should_Throw_For_Set_ProtectedKey()
     {
         var context = new SampleWorkflowContext(Guid.NewGuid().ToString());
-        Assert.ThrowsException<InvalidOperationException>(() => context.Set(FluentWorkflowConstants.ContextKeys.Id, "value"));
-        Assert.ThrowsException<InvalidOperationException>(() => context.Set(FluentWorkflowConstants.ContextKeys.Stage, "value"));
-        Assert.ThrowsException<InvalidOperationException>(() => context.Set(FluentWorkflowConstants.ContextKeys.WorkflowName, "value"));
+        Assert.ThrowsException<InvalidOperationException>(() => context.SetValue(FluentWorkflowConstants.ContextKeys.Id, "value"));
+        Assert.ThrowsException<InvalidOperationException>(() => context.SetValue(FluentWorkflowConstants.ContextKeys.Stage, "value"));
+        Assert.ThrowsException<InvalidOperationException>(() => context.SetValue(FluentWorkflowConstants.ContextKeys.WorkflowName, "value"));
     }
 
     #endregion Public 方法

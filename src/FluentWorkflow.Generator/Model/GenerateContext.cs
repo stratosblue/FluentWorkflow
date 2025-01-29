@@ -34,10 +34,11 @@ internal class GenerateContext
         }
 
         usingBuilder.AppendLine($"using {GenerateNames.NameSpace};");
-        usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.Continuator;");
-        usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.Message;");
-        usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.Internal;");
-        usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.Handler;");
+        usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.{GenerateNames.WorkflowName};");
+        usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.{GenerateNames.WorkflowName}.Continuator;");
+        usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.{GenerateNames.WorkflowName}.Message;");
+        usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.{GenerateNames.WorkflowName}.Internal;");
+        usingBuilder.AppendLine($"using {GenerateNames.NameSpace}.{GenerateNames.WorkflowName}.Handler;");
 
         Usings = usingBuilder.ToString();
     }

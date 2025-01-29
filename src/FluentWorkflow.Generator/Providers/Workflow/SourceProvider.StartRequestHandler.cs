@@ -22,30 +22,30 @@ internal class StartRequestHandlerSourceProvider : WorkflowSourceProvider
 
 {Context.Usings}
 
-namespace {NameSpace}.Handler;
+namespace {NameSpace}.{WorkflowName}.Handler;
 
 /// <summary>
 /// <see cref=""{WorkflowClassName}""/> 的启动请求处理器
 /// </summary>
 /// <typeparam name=""TWorkflow"">用以启动的工作流程具体实现（<see cref=""{WorkflowClassName}""/> 或其派生类型）</typeparam>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public partial class {WorkflowClassName}StartRequestHandler<TWorkflow>
-    : WorkflowStartRequestHandler<TWorkflow, {WorkflowClassName}Context, {WorkflowClassName}StartRequestMessage, I{WorkflowClassName}>
+public partial class {WorkflowName}StartRequestHandler<TWorkflow>
+    : WorkflowStartRequestHandler<TWorkflow, {WorkflowClassName}Context, {WorkflowName}StartRequestMessage, I{WorkflowClassName}>
     , I{WorkflowClassName}
     where TWorkflow : {WorkflowClassName}
 {{
     /// <inheritdoc cref=""IServiceProvider""/>
     public IServiceProvider ServiceProvider {{ get; }}
 
-    /// <inheritdoc cref=""{WorkflowClassName}StartRequestHandler{{TWorkflow}}""/>
-    public {WorkflowClassName}StartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider) : base(workflowBuilder, workflowScheduler)
+    /// <inheritdoc cref=""{WorkflowName}StartRequestHandler{{TWorkflow}}""/>
+    public {WorkflowName}StartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider) : base(workflowBuilder, workflowScheduler)
     {{
         ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }}
 }}
 ");
 
-        yield return new($"{WorkflowClassName}.StartRequestHandler.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.StartRequestHandler.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

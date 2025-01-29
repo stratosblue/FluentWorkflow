@@ -1,12 +1,12 @@
 ﻿using FluentWorkflow.Interface;
 using FluentWorkflow.SimpleSample;
-using FluentWorkflow.SimpleSample.Handler;
-using FluentWorkflow.SimpleSample.Message;
+using FluentWorkflow.SimpleSample.Sample.Handler;
+using FluentWorkflow.SimpleSample.Sample.Message;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
 
-internal class SampleWorkflowSampleStage1StageHandler : SampleWorkflowSampleStage1StageHandlerBase
+internal class SampleWorkflowSampleStage1StageHandler : StageSampleStage1HandlerBase
 {
     #region Public 构造函数
 
@@ -18,11 +18,11 @@ internal class SampleWorkflowSampleStage1StageHandler : SampleWorkflowSampleStag
 
     #region Internal 方法
 
-    internal static async Task StandardSampleWorkflowTestProcessAsync(ISampleWorkflowStageMessage stageMessage, IServiceProvider serviceProvider, Action<SampleWorkflow> onChildWorkflowCreated)
+    internal static async Task StandardSampleWorkflowTestProcessAsync(ISampleStageMessage stageMessage, IServiceProvider serviceProvider, Action<SampleWorkflow> onChildWorkflowCreated)
     {
         serviceProvider.GetRequiredService<WorkflowExecuteLogger>().Step(stageMessage);
 
-        var context = stageMessage.Context;
+        var context = stageMessage.Context.TestInfo!;
         if (context.Depth > 0
             && context.Step-- == 0)
         {
@@ -35,11 +35,14 @@ internal class SampleWorkflowSampleStage1StageHandler : SampleWorkflowSampleStag
             {
                 var subContext = new SampleWorkflowContext(Guid.NewGuid().ToString())
                 {
-                    Depth = context.Depth,
-                    StepBase = context.StepBase,
-                    Step = context.StepBase,
-                    ExceptionDepth = nextExceptionDepth,
-                    ExceptionStep = context.ExceptionStep,
+                    TestInfo = new()
+                    {
+                        Depth = context.Depth,
+                        StepBase = context.StepBase,
+                        Step = context.StepBase,
+                        ExceptionDepth = nextExceptionDepth,
+                        ExceptionStep = context.ExceptionStep,
+                    }
                 };
                 var subWorkflow = serviceProvider.GetRequiredService<IWorkflowBuilder<SampleWorkflow>>().Build(subContext);
                 onChildWorkflowCreated(subWorkflow);
@@ -67,7 +70,7 @@ internal class SampleWorkflowSampleStage1StageHandler : SampleWorkflowSampleStag
 
     #region Protected 方法
 
-    protected override async Task ProcessAsync(ProcessContext processContext, SampleWorkflowSampleStage1StageMessage stageMessage, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(ProcessContext processContext, StageSampleStage1Message stageMessage, CancellationToken cancellationToken)
     {
         await StandardSampleWorkflowTestProcessAsync(stageMessage, ServiceProvider, processContext.AwaitChildWorkflow);
     }

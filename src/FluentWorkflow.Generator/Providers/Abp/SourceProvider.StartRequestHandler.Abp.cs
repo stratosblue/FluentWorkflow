@@ -25,22 +25,22 @@ internal class AbpStartRequestHandlerSourceProvider : WorkflowSourceProvider
 using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.Threading;
 
-namespace {NameSpace}.Handler;
+namespace {NameSpace}.{WorkflowName}.Handler;
 
-partial class {WorkflowClassName}StartRequestHandler<TWorkflow> : IDistributedEventHandler<{WorkflowClassName}StartRequestMessage>
+partial class {WorkflowName}StartRequestHandler<TWorkflow> : IDistributedEventHandler<{WorkflowName}StartRequestMessage>
 {{
     /// <summary>
-    /// 处理消息 - <see cref=""{WorkflowClassName}StartRequestMessage""/>
+    /// 处理消息 - <see cref=""{WorkflowName}StartRequestMessage""/>
     /// </summary>
     /// <param name=""eventData""></param>
     /// <returns></returns>
-    public Task HandleEventAsync({WorkflowClassName}StartRequestMessage eventData)
+    public Task HandleEventAsync({WorkflowName}StartRequestMessage eventData)
     {{
         return HandleAsync(eventData, ServiceProvider.GetService<ICancellationTokenProvider>()?.Token ?? default);
     }}
 }}
 ");
-        yield return new($"{WorkflowClassName}.StartRequestHandler.Abp.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.StartRequestHandler.Abp.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

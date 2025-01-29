@@ -26,21 +26,21 @@ internal class CapStageHandlersSourceProvider : WorkflowSourceProvider
 {Context.Usings}
 using DotNetCore.CAP;
 
-namespace {NameSpace}.Handler;
+namespace {NameSpace}.{WorkflowName}.Handler;
 ");
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"
-partial class {WorkflowClassName}{stage.Name}StageHandlerBase : ICapSubscribe
+partial class Stage{stage.Name}HandlerBase : ICapSubscribe
 {{
     /// <summary>
-    /// 处理消息 <inheritdoc cref=""{WorkflowClassName}{stage.Name}StageMessage.EventName""/>
+    /// 处理消息 <inheritdoc cref=""Stage{stage.Name}Message.EventName""/>
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""cancellationToken""></param>
     /// <returns></returns>
-    [CapSubscribe({WorkflowClassName}{stage.Name}StageMessage.EventName)]
-    public virtual Task HandleMessageAsync({WorkflowClassName}{stage.Name}StageMessage message, CancellationToken cancellationToken)
+    [CapSubscribe(Stage{stage.Name}Message.EventName)]
+    public virtual Task HandleMessageAsync(Stage{stage.Name}Message message, CancellationToken cancellationToken)
     {{
         return HandleAsync(message, cancellationToken);
     }}
@@ -48,7 +48,7 @@ partial class {WorkflowClassName}{stage.Name}StageHandlerBase : ICapSubscribe
 ");
         }
 
-        yield return new($"{WorkflowClassName}.StageHandlers.Cap.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.StageHandlers.Cap.g.cs", builder.ToString());
 
         #endregion Handlers
     }

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using FluentWorkflow.Generator.Model;
+using Microsoft.CodeAnalysis;
 
 namespace FluentWorkflow.Generator.Providers.Workflow;
 
@@ -33,6 +34,18 @@ namespace {NameSpace};
 public abstract partial class {WorkflowContextName}Base
     : WorkflowContext, I{WorkflowClassName}
 {{
+");
+        foreach (var contextProperty in Context.WorkflowDeclaration.ContextProperties)
+        {
+            var nullable = contextProperty.Type.IsValueType ? "" : "?";
+            builder.AppendLine($$"""
+                                    /// <summary>
+                                    /// {{contextProperty.Comment}}
+                                    /// </summary>
+                                    public virtual {{contextProperty.Type.ToFullCodeString()}}{{nullable}} {{contextProperty.Name}} { get => InnerGet<{{contextProperty.Type.ToFullCodeString()}}>(); set => InnerSet(value); }
+                                """);
+        }
+        builder.AppendLine($@"
     /// <inheritdoc/>
     protected sealed override string WorkflowName => {WorkflowClassName}.WorkflowName;
 
@@ -99,11 +112,11 @@ public sealed partial class {WorkflowContextName}
     /// <inheritdoc/>
     public static IEnumerable<KeyValuePair<string, string>> ConvertToKeyValues({WorkflowContextName} instance)
     {{
-        return instance.DataContainer.AsReadOnly();
+        return instance.GetSnapshot();
     }}
 }}
 ");
-        yield return new($"{WorkflowClassName}.Context.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.Context.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

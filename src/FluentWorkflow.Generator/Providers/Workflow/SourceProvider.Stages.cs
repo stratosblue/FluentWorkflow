@@ -22,12 +22,12 @@ internal class StagesSourceProvider : WorkflowSourceProvider
 
 {Context.Usings}
 
-namespace {NameSpace};
+namespace {NameSpace}.{WorkflowName};
 
 /// <summary>
 /// <see cref=""{WorkflowClassName}""/> 的阶段定义
 /// </summary>
-public static class {WorkflowClassName}Stages
+public static class {WorkflowName}Stages
 {{
     /// <summary>
     /// 有序的阶段名称列表
@@ -55,24 +55,24 @@ public static class {WorkflowClassName}Stages
     /// <summary>
     /// 阶段 {stage.Name}
     /// </summary>
-    public const string {stage.Name} = ""{WorkflowClassName}.Stage.{stage.Name}"";
+    public const string {stage.Name} = ""{WorkflowName}.Stage.{stage.Name}"";
 ");
         }
 
         builder.AppendLine($@"/// <summary>
     /// 阶段 Completion
     /// </summary>
-    public const string Completion = ""{WorkflowClassName}.Stage.Completion"";
+    public const string Completion = ""{WorkflowName}.Stage.Completion"";
 
     /// <summary>
     /// 阶段 Failure
     /// </summary>
-    public const string Failure = ""{WorkflowClassName}.Stage.Failure"";
+    public const string Failure = ""{WorkflowName}.Stage.Failure"";
 ");
 
         builder.AppendLine($@"
-    /// <inheritdoc cref=""{WorkflowClassName}Stages""/>
-    static {WorkflowClassName}Stages()
+    /// <inheritdoc cref=""{WorkflowName}Stages""/>
+    static {WorkflowName}Stages()
     {{");
         builder.AppendLine($"OrderedStageIds = ImmutableArray.Create({string.Join(", ", Context.Stages.Select(m => m.Name))});");
         builder.AppendLine($"OrderedStages = ImmutableArray.Create({string.Join(", ", Context.Stages.Select(m => $"nameof({m.Name})"))});");
@@ -93,12 +93,12 @@ public interface I{WorkflowClassName} {{ }}
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"/// <summary>
-/// 标记接口 - 标记属于工作流程 <see cref=""{WorkflowClassName}""/> 的阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/>
+/// 标记接口 - 标记属于工作流程 <see cref=""{WorkflowClassName}""/> 的阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/>
 /// </summary>
-public interface I{WorkflowClassName}{stage.Name}Stage : IWorkflowStage, I{WorkflowClassName} {{ }}");
+public interface IStage{stage.Name} : IWorkflowStage, I{WorkflowClassName} {{ }}");
         }
 
-        yield return new($"{WorkflowClassName}.Stages.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.Stages.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

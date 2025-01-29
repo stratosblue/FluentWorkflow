@@ -83,9 +83,9 @@ internal sealed class {WorkflowClassName}Configuration<TWorkflow>
 
         #region StartRequestHandler
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, {WorkflowClassName}StartRequestHandler<TWorkflow>, {WorkflowClassName}StartRequestMessage, I{WorkflowClassName}>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, {WorkflowName}StartRequestHandler<TWorkflow>, {WorkflowName}StartRequestMessage, I{WorkflowClassName}>();
 
-        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof({WorkflowClassName}StartRequestHandler<TWorkflow>), typeof({WorkflowClassName}StartRequestHandler<TWorkflow>), ServiceLifetime.Scoped));
+        builder.Services.TryAdd(ServiceDescriptor.Describe(typeof({WorkflowName}StartRequestHandler<TWorkflow>), typeof({WorkflowName}StartRequestHandler<TWorkflow>), ServiceLifetime.Scoped));
 
         #endregion StartRequestHandler
 
@@ -94,11 +94,11 @@ internal sealed class {WorkflowClassName}Configuration<TWorkflow>
 ");
         foreach (var stage in Context.Stages)
         {
-            builder.AppendLine($"builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, {WorkflowClassName}StateMachineDriver, {WorkflowClassName}{stage.Name}StageCompletedMessage, I{WorkflowClassName}>();");
+            builder.AppendLine($"builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, {WorkflowClassName}StateMachineDriver, Stage{stage.Name}CompletedMessage, I{WorkflowClassName}>();");
         }
 
         builder.AppendLine($@"
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, {WorkflowClassName}StateMachineDriver, {WorkflowClassName}FailureMessage, I{WorkflowClassName}>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, {WorkflowClassName}StateMachineDriver, {WorkflowName}FailureMessage, I{WorkflowClassName}>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof({WorkflowClassName}StateMachineDriver), typeof({WorkflowClassName}StateMachineDriver), ServiceLifetime.Scoped));
 
@@ -114,7 +114,7 @@ internal sealed class {WorkflowClassName}Configuration<TWorkflow>
     }}
 }}
 ");
-        yield return new($"{WorkflowClassName}.DIExtensions.Configuration.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.DIExtensions.Configuration.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

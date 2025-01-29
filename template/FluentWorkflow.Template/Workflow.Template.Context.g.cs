@@ -22,7 +22,7 @@ public abstract partial class TemplateWorkflowContextBase
     /// <summary>
     /// 注释Name
     /// </summary>
-    public virtual string Name { get => RequiredInnerGet<string>(); set => InnerSet(value); }
+    public virtual string? Name { get => InnerGet<string>(); set => InnerSet(value); }
 
     /// <summary>
     ///
@@ -30,12 +30,12 @@ public abstract partial class TemplateWorkflowContextBase
     public virtual int? Age { get => InnerGet<int?>(); set => InnerSet(value); }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public virtual string? Address { get => InnerGet<string>(); set => InnerSet(value); }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public virtual TemplateWorkflowTestInfo? TestInfo { get => InnerGet<TemplateWorkflowTestInfo>(); set => InnerSet(value); }
 

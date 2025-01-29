@@ -22,7 +22,7 @@ internal class SchedulerSourceProvider : WorkflowSourceProvider
 
 {Context.Usings}
 
-namespace {NameSpace};
+namespace {NameSpace}.{WorkflowName}.Internal;
 
 /// <summary>
 /// <see cref=""{WorkflowClassName}""/> 调度器基类
@@ -54,7 +54,7 @@ internal partial class {WorkflowClassName}Scheduler : {WorkflowClassName}Schedul
     }}
 }}
 ");
-        yield return new($"{WorkflowClassName}.Scheduler.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.Scheduler.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

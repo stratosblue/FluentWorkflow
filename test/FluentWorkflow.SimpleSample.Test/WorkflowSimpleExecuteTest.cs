@@ -1,5 +1,6 @@
 ﻿using FluentWorkflow.Interface;
 using FluentWorkflow.SimpleSample;
+using FluentWorkflow.SimpleSample.Sample;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
@@ -23,7 +24,10 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
 
         var context = new SampleWorkflowContext(id)
         {
-            ExceptionStep = exceptionStep,
+            TestInfo = new()
+            {
+                ExceptionStep = exceptionStep,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -43,18 +47,21 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
 
         var id = Guid.NewGuid().ToString();
 
-        var context = new SampleWorkflowContext(id);
+        var context = new SampleWorkflowContext(id)
+        {
+            TestInfo = new()
+        };
         var workflow = workflowBuilder.Build(context);
 
         await workflow.StartAsync(default);
 
         await FinishWaiterContainer[id].WaitAsync();
 
-        Assert.AreEqual(SampleWorkflowStages.OrderedStageIds.Length, executeLogger.Stages.Count);
+        Assert.AreEqual(SampleStages.OrderedStageIds.Length, executeLogger.Stages.Count);
 
         for (int i = 0; i < executeLogger.Stages.Count; i++)
         {
-            Assert.AreEqual(SampleWorkflowStages.OrderedStageIds[i], executeLogger.Stages[i].Stage);
+            Assert.AreEqual(SampleStages.OrderedStageIds[i], executeLogger.Stages[i].Stage);
         }
     }
 
@@ -69,9 +76,9 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
                 {
                     configuration.AddScheduler()
                                  .AddResultObserver()
-                                 .AddSampleStage1StageHandler<SampleWorkflowSampleStage1StageHandler>()
-                                 .AddSampleStage2StageHandler<SampleWorkflowSampleStage2StageHandler>()
-                                 .AddSampleStage3StageHandler<SampleWorkflowSampleStage3StageHandler>();
+                                 .AddStageSampleStage1Handler<SampleWorkflowSampleStage1StageHandler>()
+                                 .AddStageSampleStage2Handler<SampleWorkflowSampleStage2StageHandler>()
+                                 .AddStageSampleStage3Handler<SampleWorkflowSampleStage3StageHandler>();
                 });
 
 

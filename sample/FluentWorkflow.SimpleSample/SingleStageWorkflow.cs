@@ -18,6 +18,7 @@ public partial class SingleStageWorkflowDeclaration : IWorkflowDeclaration
 {
     internal override void DeclareContext(IWorkflowContextDeclarator declarator)
     {
+        declarator.Property<SingleStageTestInfo>("TestInfo");
     }
 
     internal override void DeclareWorkflow(IWorkflowDeclarator declarator)

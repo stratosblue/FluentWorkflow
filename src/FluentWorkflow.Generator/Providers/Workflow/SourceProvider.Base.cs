@@ -22,8 +22,8 @@ internal class BaseSourceProvider : WorkflowSourceProvider
 
 {Context.Usings}
 
-namespace {NameSpace};
-
+namespace {NameSpace}
+{{
 /// <summary>
 /// <see cref=""{WorkflowClassName}""/> 基类
 /// </summary>
@@ -79,7 +79,7 @@ public abstract partial class {WorkflowClassName}Base
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"    /// <summary>
-    /// 在阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/> 发起前
+    /// 在阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 发起前
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""fireMessage"">执行消息后续处理的委托 (分发消息)</param>
@@ -91,7 +91,7 @@ public abstract partial class {WorkflowClassName}Base
     }}
 
     /// <summary>
-    /// 在阶段 <see cref=""{WorkflowClassName}Stages.{stage.Name}""/> 完成时
+    /// 在阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 完成时
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""fireMessage"">执行消息后续处理的委托 (更新上下文状态，并分发下阶段消息)</param>
@@ -172,8 +172,15 @@ partial class {WorkflowClassName}
 
     #endregion Serialize & Resume
 }}
+}}
+
+namespace {NameSpace}.{WorkflowName} {{ }}
+namespace {NameSpace}.{WorkflowName}.Continuator {{ }}
+namespace {NameSpace}.{WorkflowName}.Message {{ }}
+namespace {NameSpace}.{WorkflowName}.Handler {{ }}
+namespace {NameSpace}.{WorkflowName}.Internal {{ }}
 ");
-        yield return new($"{WorkflowClassName}.Base.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.Base.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

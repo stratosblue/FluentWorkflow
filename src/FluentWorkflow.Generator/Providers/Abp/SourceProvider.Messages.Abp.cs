@@ -24,29 +24,29 @@ internal class AbpMessagesSourceProvider : WorkflowSourceProvider
 {Context.Usings}
 using Volo.Abp.EventBus;
 
-namespace {NameSpace}.Message;
+namespace {NameSpace}.{WorkflowName}.Message;
 
 [EventName(EventName)]
-partial class {WorkflowClassName}StartRequestMessage {{ }}
+partial class {WorkflowName}StartRequestMessage {{ }}
 
 [EventName(EventName)]
-partial class {WorkflowClassName}FinishedMessage {{ }}
+partial class {WorkflowName}FinishedMessage {{ }}
 
 [EventName(EventName)]
-partial class {WorkflowClassName}FailureMessage {{ }}
+partial class {WorkflowName}FailureMessage {{ }}
 ");
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"
 [EventName(EventName)]
-partial class {WorkflowClassName}{stage.Name}StageMessage {{ }}
+partial class Stage{stage.Name}Message {{ }}
 
 [EventName(EventName)]
-partial class {WorkflowClassName}{stage.Name}StageCompletedMessage {{ }}
+partial class Stage{stage.Name}CompletedMessage {{ }}
 ");
         }
 
-        yield return new($"{WorkflowClassName}.Messages.Abp.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.Messages.Abp.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

@@ -1,6 +1,6 @@
 ﻿using FluentWorkflow.Interface;
 using FluentWorkflow.SimpleSample;
-using FluentWorkflow.SimpleSample.Message;
+using FluentWorkflow.SimpleSample.Sample.Message;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
@@ -30,13 +30,13 @@ internal class SampleWorkflowImpl : SampleWorkflow
         return base.OnCompletionAsync(context, cancellationToken);
     }
 
-    protected override Task OnFailedAsync(SampleWorkflowFailureMessage message, MessageFireDelegate<SampleWorkflowFailureMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnFailedAsync(SampleFailureMessage message, MessageFireDelegate<SampleFailureMessage> fireMessage, CancellationToken cancellationToken)
     {
         ServiceProvider.GetRequiredService<InMemoryWorkflowFinishWaiterContainer>()[Id].SetException(new WorkflowFailureException(Id, message.Stage, message.Message, message.RemoteStackTrace, message.Context));
         return base.OnFailedAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnSampleStage1Async(SampleWorkflowSampleStage1StageMessage message, MessageFireDelegate<SampleWorkflowSampleStage1StageMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnSampleStage1Async(StageSampleStage1Message message, MessageFireDelegate<StageSampleStage1Message> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -46,7 +46,7 @@ internal class SampleWorkflowImpl : SampleWorkflow
         return base.OnSampleStage1Async(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnSampleStage1CompletedAsync(SampleWorkflowSampleStage1StageCompletedMessage message, MessageFireDelegate<SampleWorkflowSampleStage1StageCompletedMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnSampleStage1CompletedAsync(StageSampleStage1CompletedMessage message, MessageFireDelegate<StageSampleStage1CompletedMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -56,7 +56,7 @@ internal class SampleWorkflowImpl : SampleWorkflow
         return base.OnSampleStage1CompletedAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnSampleStage2Async(SampleWorkflowSampleStage2StageMessage message, MessageFireDelegate<SampleWorkflowSampleStage2StageMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnSampleStage2Async(StageSampleStage2Message message, MessageFireDelegate<StageSampleStage2Message> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -66,7 +66,7 @@ internal class SampleWorkflowImpl : SampleWorkflow
         return base.OnSampleStage2Async(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnSampleStage2CompletedAsync(SampleWorkflowSampleStage2StageCompletedMessage message, MessageFireDelegate<SampleWorkflowSampleStage2StageCompletedMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnSampleStage2CompletedAsync(StageSampleStage2CompletedMessage message, MessageFireDelegate<StageSampleStage2CompletedMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -76,7 +76,7 @@ internal class SampleWorkflowImpl : SampleWorkflow
         return base.OnSampleStage2CompletedAsync(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnSampleStage3Async(SampleWorkflowSampleStage3StageMessage message, MessageFireDelegate<SampleWorkflowSampleStage3StageMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnSampleStage3Async(StageSampleStage3Message message, MessageFireDelegate<StageSampleStage3Message> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -86,7 +86,7 @@ internal class SampleWorkflowImpl : SampleWorkflow
         return base.OnSampleStage3Async(message, fireMessage, cancellationToken);
     }
 
-    protected override Task OnSampleStage3CompletedAsync(SampleWorkflowSampleStage3StageCompletedMessage message, MessageFireDelegate<SampleWorkflowSampleStage3StageCompletedMessage> fireMessage, CancellationToken cancellationToken)
+    protected override Task OnSampleStage3CompletedAsync(StageSampleStage3CompletedMessage message, MessageFireDelegate<StageSampleStage3CompletedMessage> fireMessage, CancellationToken cancellationToken)
     {
         if (ShouldWorkWithResume(message.Context))
         {
@@ -98,7 +98,7 @@ internal class SampleWorkflowImpl : SampleWorkflow
 
     protected Task RunWithResumeAsync(IWorkflowContextCarrier<SampleWorkflowContext> message)
     {
-        message.Context.SetBoolean("CurrentStageResumed", true);
+        message.Context.SetValue("CurrentStageResumed", true);
         var bytes = SerializeContext(message.Context);
 
         Task.Run(async () =>
@@ -112,13 +112,13 @@ internal class SampleWorkflowImpl : SampleWorkflow
 
     protected bool ShouldWorkWithResume(SampleWorkflowContext context)
     {
-        if (Context.WorkWithResume
-            && context.GetBoolean("CurrentStageResumed", false) == false)
+        if (Context.TestInfo?.WorkWithResume == true
+            && context.GetValue<bool>("CurrentStageResumed") == false)
         {
             return true;
         }
 
-        context.SetBoolean("CurrentStageResumed", false);
+        context.SetValue("CurrentStageResumed", false);
 
         return false;
     }

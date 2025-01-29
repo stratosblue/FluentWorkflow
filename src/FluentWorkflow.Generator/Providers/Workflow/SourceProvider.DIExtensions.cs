@@ -63,23 +63,23 @@ public static class {WorkflowClassName}DIExtensions
     }}
 
     /// <summary>
-    /// 添加 <see cref=""{WorkflowClassName}""/> 的结果观察器 <see cref=""{WorkflowClassName}ResultObserver""/>
+    /// 添加 <see cref=""{WorkflowClassName}""/> 的结果观察器 <see cref=""{WorkflowName}ResultObserver""/>
     /// </summary>
     /// <param name=""configuration""></param>
     /// <returns></returns>
-    public static {WorkflowClassName}Configuration AddResultObserver(this {WorkflowClassName}Configuration configuration) => configuration.AddResultObserver<{WorkflowClassName}ResultObserver>();
+    public static {WorkflowClassName}Configuration AddResultObserver(this {WorkflowClassName}Configuration configuration) => configuration.AddResultObserver<{WorkflowName}ResultObserver>();
 
     /// <summary>
-    /// 添加 <see cref=""{WorkflowClassName}""/> 的结果观察器，使用 <typeparamref name=""TWorkflowResultObserver""/> 替代默认的 <see cref=""{WorkflowClassName}ResultObserver""/>
+    /// 添加 <see cref=""{WorkflowClassName}""/> 的结果观察器，使用 <typeparamref name=""TWorkflowResultObserver""/> 替代默认的 <see cref=""{WorkflowName}ResultObserver""/>
     /// </summary>
     /// <param name=""configuration""></param>
     /// <returns></returns>
     public static {WorkflowClassName}Configuration AddResultObserver<TWorkflowResultObserver>(this {WorkflowClassName}Configuration configuration)
-        where TWorkflowResultObserver : {WorkflowClassName}ResultObserverBase
+        where TWorkflowResultObserver : {WorkflowName}ResultObserverBase
     {{
         var builder = configuration.Builder;
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, TWorkflowResultObserver, {WorkflowClassName}FinishedMessage, I{WorkflowClassName}>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, TWorkflowResultObserver, {WorkflowName}FinishedMessage, I{WorkflowClassName}>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowResultObserver<{WorkflowClassName}>), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TWorkflowResultObserver), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));
@@ -87,7 +87,7 @@ public static class {WorkflowClassName}DIExtensions
     }}
 }}
 ");
-        yield return new($"{WorkflowClassName}.DIExtensions.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.DIExtensions.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

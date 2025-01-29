@@ -22,7 +22,7 @@ internal class BuilderSourceProvider : WorkflowSourceProvider
 
 {Context.Usings}
 
-namespace {NameSpace};
+namespace {NameSpace}.{WorkflowName}.Internal;
 
 /// <summary>
 /// <see cref=""{WorkflowClassName}""/> 构造器基类
@@ -59,7 +59,7 @@ internal partial class {WorkflowClassName}Builder<TWorkflow>
     }}
 }}
 ");
-        yield return new($"{WorkflowClassName}.Builder.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.Builder.g.cs", builder.ToString());
     }
 
     #endregion Public 方法

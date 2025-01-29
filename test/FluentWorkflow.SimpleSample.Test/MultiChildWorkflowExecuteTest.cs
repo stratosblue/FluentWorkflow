@@ -1,5 +1,6 @@
 ﻿using FluentWorkflow.Interface;
 using FluentWorkflow.SimpleSample;
+using FluentWorkflow.SimpleSample.Sample;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
@@ -59,14 +60,17 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new SampleWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            MaxStageDelay = 50,
-            MaxSubWorkflow = subflowCount,
-            ExceptionStep = exceptionStep,
-            ExceptionDepth = depth,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                MaxStageDelay = 50,
+                MaxSubWorkflow = subflowCount,
+                ExceptionStep = exceptionStep,
+                ExceptionDepth = depth,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -123,13 +127,16 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new SampleWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            ExceptionStep = exceptionStep,
-            ExceptionDepth = depth,
-            MaxStageDelay = 50,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                ExceptionStep = exceptionStep,
+                ExceptionDepth = depth,
+                MaxStageDelay = 50,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -162,12 +169,15 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new SampleWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            MaxStageDelay = 50,
-            MaxSubWorkflow = subflowCount,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                MaxStageDelay = 50,
+                MaxSubWorkflow = subflowCount,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -175,7 +185,7 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         await FinishWaiterContainer[id].WaitAsync();
 
-        var baseLength = SampleWorkflowStages.OrderedStageIds.Length;
+        var baseLength = SampleStages.OrderedStageIds.Length;
         var expected = baseLength + baseLength * (depth * subflowCount);
         Assert.AreEqual(expected, executeLogger.Stages.Count);
     }
@@ -201,11 +211,14 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new SampleWorkflowContext(id)
         {
-            StepBase = stepBase,
-            Step = 0,
-            Depth = depth,
-            MaxStageDelay = 50,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                StepBase = stepBase,
+                Step = 0,
+                Depth = depth,
+                MaxStageDelay = 50,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -213,7 +226,7 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         await FinishWaiterContainer[id].WaitAsync();
 
-        Assert.AreEqual(SampleWorkflowStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages.Count);
+        Assert.AreEqual(SampleStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages.Count);
     }
 
     #endregion Public 方法
@@ -228,9 +241,9 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
                 {
                     configuration.AddScheduler()
                                  .AddResultObserver()
-                                 .AddSampleStage1StageHandler<SampleWorkflowSampleStage1StageHandler>()
-                                 .AddSampleStage2StageHandler<SampleWorkflowSampleStage2StageHandler>()
-                                 .AddSampleStage3StageHandler<SampleWorkflowSampleStage3StageHandler>();
+                                 .AddStageSampleStage1Handler<SampleWorkflowSampleStage1StageHandler>()
+                                 .AddStageSampleStage2Handler<SampleWorkflowSampleStage2StageHandler>()
+                                 .AddStageSampleStage3Handler<SampleWorkflowSampleStage3StageHandler>();
                 });
 
         services.AddSingleton<WorkflowExecuteLogger>();

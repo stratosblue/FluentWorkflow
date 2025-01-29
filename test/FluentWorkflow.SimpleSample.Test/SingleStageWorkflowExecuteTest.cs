@@ -1,5 +1,6 @@
 ﻿using FluentWorkflow.Interface;
 using FluentWorkflow.SimpleSample;
+using FluentWorkflow.SimpleSample.SingleStage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
@@ -28,8 +29,11 @@ public abstract class SingleStageWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new SingleStageWorkflowContext(id)
         {
-            ExceptionStep = exceptionStep,
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                ExceptionStep = exceptionStep,
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -51,7 +55,10 @@ public abstract class SingleStageWorkflowExecuteTest : FluentWorkflowTestBase
 
         var context = new SingleStageWorkflowContext(id)
         {
-            WorkWithResume = WorkWithResume,
+            TestInfo = new()
+            {
+                WorkWithResume = WorkWithResume,
+            }
         };
         var workflow = workflowBuilder.Build(context);
 
@@ -59,11 +66,11 @@ public abstract class SingleStageWorkflowExecuteTest : FluentWorkflowTestBase
 
         await FinishWaiterContainer[id].WaitAsync();
 
-        Assert.AreEqual(SingleStageWorkflowStages.OrderedStageIds.Length, executeLogger.Stages.Count);
+        Assert.AreEqual(SingleStageStages.OrderedStageIds.Length, executeLogger.Stages.Count);
 
         for (int i = 0; i < executeLogger.Stages.Count; i++)
         {
-            Assert.AreEqual(SingleStageWorkflowStages.OrderedStageIds[i], executeLogger.Stages[i].Stage);
+            Assert.AreEqual(SingleStageStages.OrderedStageIds[i], executeLogger.Stages[i].Stage);
         }
     }
 
@@ -77,7 +84,7 @@ public abstract class SingleStageWorkflowExecuteTest : FluentWorkflowTestBase
                 .AddSingleStageWorkflow<SingleStageWorkflowImpl>(configuration =>
                 {
                     configuration.AddScheduler()
-                                 .AddSampleStage5StageHandler<SingleStageWorkflowSampleStage5StageHandler>();
+                                 .AddStageSampleStage5Handler<SingleStageWorkflowSampleStage5StageHandler>();
                 });
 
         services.AddSingleton<WorkflowExecuteLogger>();

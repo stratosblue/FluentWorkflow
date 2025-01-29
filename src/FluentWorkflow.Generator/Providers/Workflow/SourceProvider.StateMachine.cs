@@ -36,7 +36,7 @@ namespace {NameSpace}
         /// <see cref=""{WorkflowClassName}""/> 状态机基类
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public abstract partial class {WorkflowClassName}StateMachineBase
+        public abstract partial class StateMachineBase
             : WorkflowStateMachine<I{WorkflowClassName}>
             , I{WorkflowClassName}
         {{
@@ -50,8 +50,8 @@ namespace {NameSpace}
             /// </summary>
             protected readonly {WorkflowClassName} Workflow;
 
-            /// <inheritdoc cref=""{WorkflowClassName}StateMachineBase""/>
-            public {WorkflowClassName}StateMachineBase({WorkflowClassName} workflow, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider)
+            /// <inheritdoc cref=""StateMachineBase""/>
+            public StateMachineBase({WorkflowClassName} workflow, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider)
                 : base(workflow.Context, messageDispatcher, serviceProvider)
             {{
                 Workflow = workflow ?? throw new ArgumentNullException(nameof(workflow));
@@ -65,7 +65,7 @@ namespace {NameSpace}
                 var currentStage = Context.Stage;
                 if (string.IsNullOrWhiteSpace(currentStage))
                 {{
-                    currentStage = {WorkflowClassName}Stages.{Context.Stages.First().Name};
+                    currentStage = {WorkflowName}Stages.{Context.Stages.First().Name};
                     Context.SetCurrentStage(currentStage);
                     if (!await Workflow.OnStartingAsync(TypedContext, cancellationToken))
                     {{
@@ -91,14 +91,14 @@ namespace {NameSpace}
         }
 
         builder.AppendLine($@"
-                    case {WorkflowClassName}Stages.Failure:
+                    case {WorkflowName}Stages.Failure:
                         {{
                             Context.TryGetFailureMessage(out var failureMessage);
-                            var finishedMessage = new {WorkflowClassName}FinishedMessage(TypedContext, false, failureMessage);
+                            var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, false, failureMessage);
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }}
-                    case {WorkflowClassName}Stages.Completion:
+                    case {WorkflowName}Stages.Completion:
                         {{
                             TypedContext.SetCurrentStageState(WorkflowStageState.Created);
                             await Workflow.OnCompletionAsync(TypedContext, cancellationToken);
@@ -106,7 +106,7 @@ namespace {NameSpace}
                             if (Context.Flag.HasFlag(WorkflowFlag.IsBeenAwaited)
                                 || !Context.Flag.HasFlag(WorkflowFlag.NotNotifyOnFinish))
                             {{
-                                var finishedMessage = new {WorkflowClassName}FinishedMessage(TypedContext, true, ""SUCCESS"");
+                                var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, true, ""SUCCESS"");
                                 await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             }}
                             return;
@@ -119,7 +119,7 @@ namespace {NameSpace}
             public override Task<bool> IsCompletedAsync(CancellationToken cancellationToken)
             {{
                 var currentStage = Context.Stage;
-                var result = string.Equals({WorkflowClassName}Stages.Completion, currentStage);
+                var result = string.Equals({WorkflowName}Stages.Completion, currentStage);
 
                 return Task.FromResult(result);
             }}
@@ -131,7 +131,7 @@ namespace {NameSpace}
             /// <param name=""cancellationToken""></param>
             /// <returns>是否执行后续代码</returns>
             /// <exception cref=""WorkflowInvalidOperationException""></exception>
-            internal virtual async Task<bool> SetStageCompletedAsync(I{WorkflowClassName}StageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
+            internal virtual async Task<bool> SetStageCompletedAsync(I{WorkflowName}StageCompletedMessage stageCompletedMessage, CancellationToken cancellationToken)
             {{
                 //设置上下文阶段状态，以使 OnStageCompletedAsync 中获取到的上下文当前阶段状态为已结束
                 //如果在 OnStageCompletedAsync 中挂起上下文，在恢复流程时使用此值确定应当再次调用 SetStageCompletedAsync 而不是 MoveNextAsync
@@ -196,9 +196,9 @@ namespace {NameSpace}
             /// <param name=""cancellationToken""></param>
             /// <returns>是否执行后续代码</returns>
             /// <exception cref=""WorkflowInvalidOperationException""></exception>
-            internal virtual async Task<bool> SetFailedAsync(I{WorkflowClassName}FailureMessage failureMessage, CancellationToken cancellationToken)
+            internal virtual async Task<bool> SetFailedAsync(I{WorkflowName}FailureMessage failureMessage, CancellationToken cancellationToken)
             {{
-                if (failureMessage is not {WorkflowClassName}FailureMessage typedFailureMessage)
+                if (failureMessage is not {WorkflowName}FailureMessage typedFailureMessage)
                 {{
                     throw new WorkflowInvalidOperationException($""未知的失败消息：{{failureMessage}}"");
                 }}
@@ -215,19 +215,19 @@ namespace {NameSpace}
             {{
                 await base.OnFailedAsync(failureMessage, cancellationToken);
 
-                Context.SetCurrentStage({WorkflowClassName}Stages.Failure);
+                Context.SetCurrentStage({WorkflowName}Stages.Failure);
             }}
         }}
     }}
 }}
 
-namespace {NameSpace}.Internal
+namespace {NameSpace}.{WorkflowName}.Internal
 {{
     /// <summary>
     /// <see cref=""{WorkflowClassName}""/> 的状态机
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public sealed partial class {WorkflowClassName}StateMachine : {WorkflowClassName}.{WorkflowClassName}StateMachineBase
+    public sealed partial class {WorkflowClassName}StateMachine : {WorkflowClassName}.StateMachineBase
     {{
         /// <inheritdoc/>
         public {WorkflowClassName}StateMachine({WorkflowClassName} workflow, IWorkflowMessageDispatcher messageDispatcher, IServiceProvider serviceProvider) : base(workflow, messageDispatcher, serviceProvider)
@@ -236,7 +236,7 @@ namespace {NameSpace}.Internal
     }}
 }}
 ");
-        yield return new($"{WorkflowClassName}.StateMachine.g.cs", builder.ToString());
+        yield return new($"Workflow.{WorkflowName}.StateMachine.g.cs", builder.ToString());
     }
 
     #endregion Public 方法
