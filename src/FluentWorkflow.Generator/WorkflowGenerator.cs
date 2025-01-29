@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace FluentWorkflow;
 
 [Generator(LanguageNames.CSharp)]
-public class FluentWorkflowSourceGenerator : IIncrementalGenerator
+public class WorkflowGenerator : IIncrementalGenerator
 {
     #region Public 方法
 
@@ -267,7 +267,7 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
                     var contextProperties = contextPropertyAttributeDatas.Select(m =>
                                                                          {
                                                                              var propertyType = m.AttributeClass!.TypeArguments[0];
-                                                                             var propertyName= (string)m.ConstructorArguments[0].Value!;
+                                                                             var propertyName = (string)m.ConstructorArguments[0].Value!;
                                                                              var propertyComment = m.ConstructorArguments[1].Value as string;
                                                                              return new WorkflowContextProperty(propertyName, propertyType, propertyComment);
                                                                          })
@@ -295,7 +295,7 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
     {
         context.RegisterPostInitializationOutput(context =>
         {
-            var assembly = typeof(FluentWorkflowSourceGenerator).Assembly;
+            var assembly = typeof(WorkflowGenerator).Assembly;
             var resourceNames = assembly.GetManifestResourceNames();
             AddPreCodes(context, assembly, resourceNames.Single(m => m.EndsWith("IWorkflowDeclaration.cs")));
             AddPreCodes(context, assembly, resourceNames.Single(m => m.EndsWith("WorkflowDeclarations.cs")));
@@ -307,7 +307,8 @@ public class FluentWorkflowSourceGenerator : IIncrementalGenerator
             using var reader = new StreamReader(resourceStream);
             var code = reader.ReadToEnd();
 
-            context.AddSource(Path.GetFileName(resourceName), SourceText.From(code, Encoding.UTF8));
+            var hintName = $"Predefined.{Path.GetFileName(resourceName).Replace("FluentWorkflow.Generator.Codes.", string.Empty)}";
+            context.AddSource(hintName, SourceText.From(code, Encoding.UTF8));
         }
     }
 
