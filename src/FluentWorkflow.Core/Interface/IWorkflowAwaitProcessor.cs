@@ -47,7 +47,7 @@ public sealed class WorkflowAwaitState
     /// <summary>
     /// 父工作流程上下文
     /// </summary>
-    public WorkflowContextMetadata ParentWorkflowContext { get; }
+    public WorkflowContextSnapshot ParentWorkflowContext { get; }
 
     #endregion Public 属性
 
@@ -59,7 +59,7 @@ public sealed class WorkflowAwaitState
     /// <param name="parentWorkflowContext">父工作流程上下文</param>
     /// <param name="isFinished">是否已结束（失败或成功）</param>
     /// <param name="childWorkflowContexts">所有子工作流程的上下文字典</param>
-    public WorkflowAwaitState(WorkflowContextMetadata parentWorkflowContext, bool isFinished, IReadOnlyDictionary<string, IWorkflowContext?> childWorkflowContexts)
+    public WorkflowAwaitState(WorkflowContextSnapshot parentWorkflowContext, bool isFinished, IReadOnlyDictionary<string, IWorkflowContext?> childWorkflowContexts)
     {
         ParentWorkflowContext = parentWorkflowContext ?? throw new ArgumentNullException(nameof(parentWorkflowContext));
         IsFinished = isFinished;

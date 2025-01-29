@@ -1,8 +1,5 @@
 ﻿#pragma warning disable CS1591
 
-using FluentWorkflow;
-using FluentWorkflow.SharedSample;
-
 namespace FluentWorkflow.SharedSample;
 
 public partial class SharedXXWorkflowDeclaration : IWorkflowDeclaration

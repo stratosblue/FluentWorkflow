@@ -46,7 +46,7 @@ public abstract partial class {WorkflowName}Continuator<TStageFinalizer>
     }}
 
     /// <inheritdoc/>
-    protected override Task<TStageFinalizer> GetStageFinalizerAsync(IWorkflowFinishedMessage childWorkflowFinishedMessage, WorkflowContextMetadata parentContextMetadata, CancellationToken cancellationToken)
+    protected override Task<TStageFinalizer> GetStageFinalizerAsync(IWorkflowFinishedMessage childWorkflowFinishedMessage, WorkflowContextSnapshot parentContextSnapshot, CancellationToken cancellationToken)
     {{
         return Task.FromResult<TStageFinalizer>(StageFinalizer);
     }}

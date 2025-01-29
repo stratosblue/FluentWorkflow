@@ -1,17 +1,16 @@
-﻿using System.Collections.Immutable;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Text.Json.Serialization;
 using FluentWorkflow.Interface;
 
 namespace FluentWorkflow;
 
 /// <summary>
-/// 工作流程上下文元数据
+/// 工作流程上下文快照
 /// </summary>
-[JsonConverter(typeof(KeyValuesConvertableJsonConverter<WorkflowContextMetadata>))]
-public sealed class WorkflowContextMetadata
+[JsonConverter(typeof(KeyValuesConvertableJsonConverter<WorkflowContextSnapshot>))]
+public sealed class WorkflowContextSnapshot
     : IWorkflowContext
-    , IKeyValuesConvertable<WorkflowContextMetadata>
+    , IKeyValuesConvertable<WorkflowContextSnapshot>
 {
     #region Private 字段
 
@@ -36,8 +35,8 @@ public sealed class WorkflowContextMetadata
 
     #region Public 构造函数
 
-    /// <inheritdoc cref="WorkflowContextMetadata"/>
-    public WorkflowContextMetadata(IEnumerable<KeyValuePair<string, string>> values)
+    /// <inheritdoc cref="WorkflowContextSnapshot"/>
+    public WorkflowContextSnapshot(IEnumerable<KeyValuePair<string, string>> values)
     {
         _rawValues = new(values, StringComparer.Ordinal);
 
@@ -66,7 +65,7 @@ public sealed class WorkflowContextMetadata
         set => throw new InvalidOperationException();
     }
 
-    WorkflowContextMetadata? IWorkflowContext.Parent => _rawValues.InnerGet<WorkflowContextMetadata>(null, FluentWorkflowConstants.ContextKeys.ParentWorkflow);
+    WorkflowContextSnapshot? IWorkflowContext.Parent => _rawValues.InnerGet<WorkflowContextSnapshot>(null, FluentWorkflowConstants.ContextKeys.ParentWorkflow);
 
     IReadOnlyDictionary<string, string> IWorkflowContext.GetSnapshot() => _rawValues.GetSnapshot();
 
@@ -74,7 +73,7 @@ public sealed class WorkflowContextMetadata
 
     void IWorkflowContext.SetCurrentStage(string stage) => throw new InvalidOperationException();
 
-    void IWorkflowContext.SetParent(WorkflowContextMetadata parent) => throw new InvalidOperationException();
+    void IWorkflowContext.SetParent(WorkflowContextSnapshot parent) => throw new InvalidOperationException();
 
     void IWorkflowContext.SetValue<TValue>(string key, TValue? value) where TValue : default
     {
@@ -109,10 +108,10 @@ public sealed class WorkflowContextMetadata
     #region IKeyValuesConvertable
 
     /// <inheritdoc/>
-    public static WorkflowContextMetadata ConstructFromKeyValues(IEnumerable<KeyValuePair<string, string>> values) => new(values);
+    public static WorkflowContextSnapshot ConstructFromKeyValues(IEnumerable<KeyValuePair<string, string>> values) => new(values);
 
     /// <inheritdoc/>
-    public static IEnumerable<KeyValuePair<string, string>> ConvertToKeyValues(WorkflowContextMetadata instance) => instance._rawValues.GetSnapshot();
+    public static IEnumerable<KeyValuePair<string, string>> ConvertToKeyValues(WorkflowContextSnapshot instance) => instance._rawValues.GetSnapshot();
 
     #endregion IKeyValuesConvertable
 }

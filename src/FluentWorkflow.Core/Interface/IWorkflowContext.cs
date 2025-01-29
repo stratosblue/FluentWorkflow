@@ -19,7 +19,7 @@ public interface IWorkflowContext
     /// <summary>
     /// 父工作流程上下文
     /// </summary>
-    public WorkflowContextMetadata? Parent { get; }
+    public WorkflowContextSnapshot? Parent { get; }
 
     #endregion Public 属性
 
@@ -57,7 +57,7 @@ public interface IWorkflowContext
     /// </summary>
     /// <param name="parent"></param>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public void SetParent(WorkflowContextMetadata parent);
+    public void SetParent(WorkflowContextSnapshot parent);
 
     /// <summary>
     /// 设置值

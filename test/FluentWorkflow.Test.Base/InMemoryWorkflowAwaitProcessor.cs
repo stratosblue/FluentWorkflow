@@ -29,24 +29,24 @@ public class InMemoryWorkflowAwaitProcessor : WorkflowAwaitProcessor
 
     #region Protected 方法
 
-    protected override Task<WorkflowAwaitState> OnFinishedOneAsync(WorkflowContextMetadata parentContextMetadata, IWorkflowFinishedMessage finishedMessage, CancellationToken cancellationToken)
+    protected override Task<WorkflowAwaitState> OnFinishedOneAsync(WorkflowContextSnapshot parentContextSnapshot, IWorkflowFinishedMessage finishedMessage, CancellationToken cancellationToken)
     {
-        if (!_store.TryGetValue(parentContextMetadata.Id, out var state))
+        if (!_store.TryGetValue(parentContextSnapshot.Id, out var state))
         {
-            throw new WorkflowInvalidOperationException($"No state for {parentContextMetadata.Id}");
+            throw new WorkflowInvalidOperationException($"No state for {parentContextSnapshot.Id}");
         }
         lock (state)
         {
             state.Children[finishedMessage.Context.GetChildWorkflowAlias()] = finishedMessage.Context.GetSnapshot();
 
             var childWorkflowContexts = state.Children.ToDictionary(m => m.Key,
-                                                                    m => m.Value is null ? null : (IWorkflowContext)new WorkflowContextMetadata(m.Value));
+                                                                    m => m.Value is null ? null : (IWorkflowContext)new WorkflowContextSnapshot(m.Value));
 
             if (!state.Children.Any(m => m.Value is null))
             {
-                return Task.FromResult(new WorkflowAwaitState(parentContextMetadata, true, childWorkflowContexts));
+                return Task.FromResult(new WorkflowAwaitState(parentContextSnapshot, true, childWorkflowContexts));
             }
-            return Task.FromResult(new WorkflowAwaitState(parentContextMetadata, false, childWorkflowContexts));
+            return Task.FromResult(new WorkflowAwaitState(parentContextSnapshot, false, childWorkflowContexts));
         }
     }
 

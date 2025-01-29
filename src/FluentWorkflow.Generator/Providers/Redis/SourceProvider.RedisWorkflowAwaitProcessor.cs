@@ -206,14 +206,14 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
         ArgumentNullException.ThrowIfNull(finishedMessage);
 
         var context = finishedMessage.Context;
-        if (context.Parent is not {{ }} parentContextMetadata)
+        if (context.Parent is not {{ }} parentContextSnapshot)
         {{
             throw new WorkflowInvalidOperationException($""Context - \""{{context.Id}}\"" has no parent."");
         }}
 
-        _logger.LogDebug(""Workflow [{{ParentWorkflowId}}]'s child workflow [{{ChildWorkflowId}}] finished with [{{IsSuccess}}]."", parentContextMetadata.Id, finishedMessage.Id, finishedMessage.IsSuccess);
+        _logger.LogDebug(""Workflow [{{ParentWorkflowId}}]'s child workflow [{{ChildWorkflowId}}] finished with [{{IsSuccess}}]."", parentContextSnapshot.Id, finishedMessage.Id, finishedMessage.IsSuccess);
 
-        var primaryKey = PrimaryKey(parentContextMetadata.Id);
+        var primaryKey = PrimaryKey(parentContextSnapshot.Id);
 
         if (!await _database.KeyExistsAsync(primaryKey))    //不存在此任务的Key
         {{
@@ -237,7 +237,7 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
             //已结束(键数量等于完成时应有数量)
             if (executeResult[0] == executeResult[1])
             {{
-                _logger.LogDebug(""Workflow [{{ParentWorkflowId}}]'s child workflow [{{ChildWorkflowId}}] finished. The workflow all finished."", parentContextMetadata.Id, finishedMessage.Id);
+                _logger.LogDebug(""Workflow [{{ParentWorkflowId}}]'s child workflow [{{ChildWorkflowId}}] finished. The workflow all finished."", parentContextSnapshot.Id, finishedMessage.Id);
 
                 ExpireFinishedItemAsync();
 
@@ -277,13 +277,13 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
         async Task<WorkflowAwaitState> CreateFinished()
         {{
             var childWorkflowContexts = await GetAllChildContexts(primaryKey);
-            return new WorkflowAwaitState(parentContextMetadata, true, childWorkflowContexts);
+            return new WorkflowAwaitState(parentContextSnapshot, true, childWorkflowContexts);
         }}
 
         //创建未完成的返回值
         WorkflowAwaitState CreateUnFinished()
         {{
-            return new WorkflowAwaitState(parentContextMetadata, false, new Dictionary<string, IWorkflowContext>() {{ {{ currentAlias, context }} }}!);
+            return new WorkflowAwaitState(parentContextSnapshot, false, new Dictionary<string, IWorkflowContext>() {{ {{ currentAlias, context }} }}!);
         }}
 
         //过期已完成的条目
@@ -349,7 +349,7 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
                 var childContext = string.IsNullOrEmpty(value)
                                    ? null
                                    : _objectSerializer.Deserialize<Dictionary<string, string>>(value) is {{ }} contextRawData
-                                     ? new WorkflowContextMetadata(contextRawData!)
+                                     ? new WorkflowContextSnapshot(contextRawData!)
                                      : null;
 
                 childWorkflowContexts.Add(alias, childContext);

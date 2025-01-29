@@ -16,7 +16,7 @@ public abstract class WorkflowContext
 
     private WorkflowFlag? _flag;
 
-    private WorkflowContextMetadata? _parent;
+    private WorkflowContextSnapshot? _parent;
 
     #endregion Private 字段
 
@@ -47,7 +47,7 @@ public abstract class WorkflowContext
     public string Id => InnerGet<string>(default, FluentWorkflowConstants.ContextKeys.Id) ?? throw new WorkflowInvalidOperationException("上下文数据错误：不存在Id");
 
     /// <inheritdoc/>
-    public WorkflowContextMetadata? Parent => _parent ??= InnerGet<WorkflowContextMetadata>(null, FluentWorkflowConstants.ContextKeys.ParentWorkflow);
+    public WorkflowContextSnapshot? Parent => _parent ??= InnerGet<WorkflowContextSnapshot>(null, FluentWorkflowConstants.ContextKeys.ParentWorkflow);
 
     /// <inheritdoc/>
     public string Stage => InnerGet<string>(default, FluentWorkflowConstants.ContextKeys.Stage) ?? throw new WorkflowInvalidOperationException($"上下文数据错误：不存在 {nameof(FluentWorkflowConstants.ContextKeys.Stage)}");
@@ -117,7 +117,7 @@ public abstract class WorkflowContext
 
     /// <inheritdoc/>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public void SetParent(WorkflowContextMetadata parent)
+    public void SetParent(WorkflowContextSnapshot parent)
     {
         ArgumentNullException.ThrowIfNull(parent);
 

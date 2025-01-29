@@ -63,7 +63,7 @@ public static class DiagnosticConstants
         /// <summary>
         /// <see cref="System.Diagnostics.ActivitySource"/> 名称
         /// </summary>
-        public const string RootActivitySourceName = "FluentWorkflow";
+        public const string RootActivitySourceName = FluentWorkflowConstants.ActivitySourceName;
 
         /// <summary>
         /// 阶段推进

@@ -128,7 +128,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
                     {
                         var workflow = workflowStarter.Workflow;
                         workflow.Context.SetChildWorkflowAlias(alias);
-                        workflow.Context.SetParent(new WorkflowContextMetadata(stageMessage.Context.GetSnapshot()));
+                        workflow.Context.SetParent(new WorkflowContextSnapshot(stageMessage.Context.GetSnapshot()));
                         workflow.Context.Flag |= childWorkflowFlag;
                     }
 

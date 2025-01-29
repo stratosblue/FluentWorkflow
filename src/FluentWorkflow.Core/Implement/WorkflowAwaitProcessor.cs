@@ -13,12 +13,12 @@ public abstract class WorkflowAwaitProcessor : IWorkflowAwaitProcessor
         ArgumentNullException.ThrowIfNull(finishedMessage);
 
         var context = finishedMessage.Context;
-        if (context.Parent is not { } parentContextMetadata)
+        if (context.Parent is not { } parentContextSnapshot)
         {
             throw new WorkflowInvalidOperationException($"Context - \"{context.Id}\" has no parent.");
         }
 
-        return OnFinishedOneAsync(parentContextMetadata, finishedMessage, cancellationToken);
+        return OnFinishedOneAsync(parentContextSnapshot, finishedMessage, cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -44,7 +44,7 @@ public abstract class WorkflowAwaitProcessor : IWorkflowAwaitProcessor
     #region Protected 方法
 
     /// <inheritdoc cref="IWorkflowAwaitProcessor.FinishedOneAsync(IWorkflowFinishedMessage, CancellationToken)"/>
-    protected abstract Task<WorkflowAwaitState> OnFinishedOneAsync(WorkflowContextMetadata parentContextMetadata, IWorkflowFinishedMessage finishedMessage, CancellationToken cancellationToken);
+    protected abstract Task<WorkflowAwaitState> OnFinishedOneAsync(WorkflowContextSnapshot parentContextSnapshot, IWorkflowFinishedMessage finishedMessage, CancellationToken cancellationToken);
 
     /// <inheritdoc cref="IWorkflowAwaitProcessor.RegisterAsync(IWorkflowContext,IDictionary{string, IWorkflow}, CancellationToken)"/>
     protected abstract Task OnRegisterAsync(IWorkflowContext parentWorkflowContext, IDictionary<string, IWorkflow> childWorkflows, CancellationToken cancellationToken);

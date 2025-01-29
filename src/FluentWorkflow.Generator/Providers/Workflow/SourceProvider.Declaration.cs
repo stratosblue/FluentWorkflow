@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using FluentWorkflow.Generator.Model;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace FluentWorkflow.Generator.Providers.Workflow;
 

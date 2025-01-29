@@ -11,7 +11,7 @@ internal sealed class SingleflowWorkflowAwaitProcessor : WorkflowAwaitProcessor
     #region Protected 方法
 
     /// <inheritdoc/>
-    protected override Task<WorkflowAwaitState> OnFinishedOneAsync(WorkflowContextMetadata parentContextMetadata, IWorkflowFinishedMessage finishedMessage, CancellationToken cancellationToken)
+    protected override Task<WorkflowAwaitState> OnFinishedOneAsync(WorkflowContextSnapshot parentContextSnapshot, IWorkflowFinishedMessage finishedMessage, CancellationToken cancellationToken)
     {
         var context = finishedMessage.Context;
 
@@ -27,7 +27,7 @@ internal sealed class SingleflowWorkflowAwaitProcessor : WorkflowAwaitProcessor
             { alias, context }
         };
 
-        var awaitState = new WorkflowAwaitState(parentContextMetadata, true, childWorkflowContexts);
+        var awaitState = new WorkflowAwaitState(parentContextSnapshot, true, childWorkflowContexts);
         return Task.FromResult(awaitState);
     }
 

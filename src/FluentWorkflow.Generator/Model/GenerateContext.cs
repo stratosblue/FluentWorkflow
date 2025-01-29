@@ -1,7 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
-using System.Xml.Linq;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace FluentWorkflow.Generator.Model;
 

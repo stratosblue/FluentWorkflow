@@ -47,7 +47,7 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
     public virtual async Task ContinueAsync(IWorkflowFinishedMessage childWorkflowFinishedMessage, CancellationToken cancellationToken = default)
     {
         var context = childWorkflowFinishedMessage.Context;
-        if (context.Parent is not { } parentContextMetadata)
+        if (context.Parent is not { } parentContextSnapshot)
         {
             throw new WorkflowInvalidOperationException($"Context - \"{context.Id}\" has no parent.");
         }
@@ -59,7 +59,7 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
             return;
         }
 
-        var finalizer = await GetStageFinalizerAsync(childWorkflowFinishedMessage, parentContextMetadata, cancellationToken);
+        var finalizer = await GetStageFinalizerAsync(childWorkflowFinishedMessage, parentContextSnapshot, cancellationToken);
 
         var parentWorkflowContext = workflowAwaitState.ParentWorkflowContext as IWorkflowContext;
 
@@ -113,10 +113,10 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
     /// 获取<see cref="IWorkflowStageFinalizer"/>
     /// </summary>
     /// <param name="childWorkflowFinishedMessage"></param>
-    /// <param name="parentContextMetadata"></param>
+    /// <param name="parentContextSnapshot"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected abstract Task<TWorkflowStageFinalizer> GetStageFinalizerAsync(IWorkflowFinishedMessage childWorkflowFinishedMessage, WorkflowContextMetadata parentContextMetadata, CancellationToken cancellationToken);
+    protected abstract Task<TWorkflowStageFinalizer> GetStageFinalizerAsync(IWorkflowFinishedMessage childWorkflowFinishedMessage, WorkflowContextSnapshot parentContextSnapshot, CancellationToken cancellationToken);
 
     #endregion Protected 方法
 }

@@ -42,9 +42,9 @@ public abstract class WorkflowResultObserver<TWorkflow, TWorkflowFinishedMessage
         var context = finishedMessage.Context;
 
         if (context.Flag.HasFlag(WorkflowFlag.HasParentWorkflow | WorkflowFlag.IsBeenAwaited)
-            && context.Parent is { } parentContextMetadata
+            && context.Parent is { } parentContextSnapshot
             && ServiceProvider.GetService<IWorkflowContinuatorHub>() is { } workflowContinuatorHub
-            && workflowContinuatorHub.TryGet(parentContextMetadata.WorkflowName, parentContextMetadata.Stage, out var workflowContinuator))
+            && workflowContinuatorHub.TryGet(parentContextSnapshot.WorkflowName, parentContextSnapshot.Stage, out var workflowContinuator))
         {
             await workflowContinuator.ContinueAsync(finishedMessage, cancellationToken);
         }
