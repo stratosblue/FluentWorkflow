@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Interface;
 
 namespace FluentWorkflow.Extensions;
@@ -11,128 +10,32 @@ public static class WorkflowContextExtensions
 {
     #region Public 方法
 
-    #region WorkflowAlias
-
     /// <summary>
-    /// 获取子工作流程别名
+    /// 获取失败信息
     /// </summary>
     /// <param name="workflowContext"></param>
     /// <returns></returns>
-    public static string GetChildWorkflowAlias(this IWorkflowContext workflowContext)
+    public static WorkflowFailureInformation? GetFailureInformation(this IWorkflowContext workflowContext)
     {
-        var alias = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.WorkflowAlias)
-                    ?? throw new WorkflowInvalidOperationException($"The context not contains the alias key \"{FluentWorkflowConstants.ContextKeys.WorkflowAlias}\".");
-
-        return alias;
+        return workflowContext.GetValue<WorkflowFailureInformation>(FluentWorkflowConstants.ContextKeys.FailureInformation);
     }
 
     /// <summary>
-    /// 设置子工作流程别名
+    /// 设置失败信息
     /// </summary>
     /// <param name="workflowContext"></param>
-    /// <param name="alias"></param>
-    /// <returns></returns>
+    /// <param name="stage"></param>
+    /// <param name="message"></param>
+    /// <param name="stackTrace"></param>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static void SetChildWorkflowAlias(this IWorkflowContext workflowContext, string alias)
+    public static void SetFailureInformation(this IWorkflowContext workflowContext, string stage, string message, string? stackTrace)
     {
-        workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.WorkflowAlias, alias);
+        ArgumentException.ThrowIfNullOrEmpty(stage);
+        ArgumentException.ThrowIfNullOrEmpty(message);
+
+        var failureInformation = new WorkflowFailureInformation(stage, message, stackTrace);
+        workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.FailureInformation, failureInformation);
     }
-
-    /// <summary>
-    /// 尝试获取子工作流程别名
-    /// </summary>
-    /// <param name="workflowContext"></param>
-    /// <param name="alias"></param>
-    /// <returns></returns>
-    public static bool TryGetChildWorkflowAlias(this IWorkflowContext workflowContext, [NotNullWhen(true)] out string? alias)
-    {
-        alias = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.WorkflowAlias);
-        return alias != null;
-    }
-
-    #endregion WorkflowAlias
-
-    #region FailureStackTrace
-
-    /// <summary>
-    /// 设置失败栈追踪
-    /// </summary>
-    /// <param name="workflowContext"></param>
-    /// <param name="failureStackTrace"></param>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static void SetFailureStackTrace(this IWorkflowContext workflowContext, string? failureStackTrace)
-    {
-        workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.FailureStackTrace, failureStackTrace);
-    }
-
-    /// <summary>
-    /// 尝试获取失败栈追踪
-    /// </summary>
-    /// <param name="workflowContext"></param>
-    /// <param name="failureStackTrace"></param>
-    /// <returns></returns>
-    public static bool TryGetFailureStackTrace(this IWorkflowContext workflowContext, [NotNullWhen(true)] out string? failureStackTrace)
-    {
-        failureStackTrace = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.FailureStackTrace);
-        return failureStackTrace != null;
-    }
-
-    #endregion FailureStackTrace
-
-    #region FailureMessage
-
-    /// <summary>
-    /// 设置失败栈追踪
-    /// </summary>
-    /// <param name="workflowContext"></param>
-    /// <param name="failureMessage"></param>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static void SetFailureMessage(this IWorkflowContext workflowContext, string failureMessage)
-    {
-        workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.FailureMessage, failureMessage);
-    }
-
-    /// <summary>
-    /// 尝试获取失败消息
-    /// </summary>
-    /// <param name="workflowContext"></param>
-    /// <param name="failureMessage"></param>
-    /// <returns></returns>
-    public static bool TryGetFailureMessage(this IWorkflowContext workflowContext, [NotNullWhen(true)] out string? failureMessage)
-    {
-        failureMessage = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.FailureMessage);
-        return failureMessage != null;
-    }
-
-    #endregion FailureMessage
-
-    #region StageState
-
-    /// <summary>
-    /// 设置上下文当前阶段状态
-    /// </summary>
-    /// <param name="workflowContext"></param>
-    /// <param name="state"></param>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static void SetCurrentStageState(this IWorkflowContext workflowContext, WorkflowStageState state)
-    {
-        workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.StageState, state);
-    }
-
-    /// <summary>
-    /// 获取上下文当前阶段状态
-    /// </summary>
-    /// <param name="workflowContext"></param>
-    /// <param name="state"></param>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static bool TryGetCurrentStageState(this IWorkflowContext workflowContext, out WorkflowStageState state)
-    {
-        var value = workflowContext.GetValue<WorkflowStageState?>(FluentWorkflowConstants.ContextKeys.StageState);
-        state = value ?? WorkflowStageState.Unknown;
-        return value.HasValue;
-    }
-
-    #endregion StageState
 
     #region Forwarded
 
@@ -143,15 +46,15 @@ public static class WorkflowContextExtensions
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static void AppendForwarded(this IWorkflowContext workflowContext)
     {
-        var currentValue = workflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.Forwarded);
+        var forwardeds = workflowContext.GetValue<List<string>>(FluentWorkflowConstants.ContextKeys.Forwarded);
 
-        if (string.IsNullOrEmpty(currentValue))
+        if (forwardeds is null)
         {
-            workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.Forwarded, FluentWorkflowEnvironment.Description);
+            workflowContext.SetValue<List<string>>(FluentWorkflowConstants.ContextKeys.Forwarded, [FluentWorkflowEnvironment.Description]);
         }
         else
         {
-            workflowContext.SetValue(FluentWorkflowConstants.ContextKeys.Forwarded, $"{currentValue}, {FluentWorkflowEnvironment.Description}");
+            forwardeds.Add(FluentWorkflowEnvironment.Description);
         }
     }
 

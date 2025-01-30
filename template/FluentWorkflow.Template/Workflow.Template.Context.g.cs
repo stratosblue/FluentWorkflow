@@ -52,11 +52,6 @@ public abstract partial class TemplateWorkflowContextBase
     {
     }
 
-    /// <inheritdoc cref="TemplateWorkflowContextBase"/>
-    protected TemplateWorkflowContextBase(string id, IEnumerable<KeyValuePair<string, string>> values) : base(id, values)
-    {
-    }
-
     /// <inheritdoc/>
     protected sealed override string CheckBeforeSetCurrentStage(string stage)
     {
@@ -88,11 +83,6 @@ public sealed partial class TemplateWorkflowContext
 
     /// <inheritdoc cref="TemplateWorkflowContext"/>
     public TemplateWorkflowContext(IEnumerable<KeyValuePair<string, string>> values) : base(values)
-    {
-    }
-
-    /// <inheritdoc cref="TemplateWorkflowContext"/>
-    public TemplateWorkflowContext(string id, IEnumerable<KeyValuePair<string, string>> values) : base(id, values)
     {
     }
 

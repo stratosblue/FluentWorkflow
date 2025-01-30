@@ -37,7 +37,8 @@ public class InMemoryWorkflowAwaitProcessor : WorkflowAwaitProcessor
         }
         lock (state)
         {
-            state.Children[finishedMessage.Context.GetChildWorkflowAlias()] = finishedMessage.Context.GetSnapshot();
+            var alias = finishedMessage.Context.State.Alias ?? throw new InvalidOperationException("The context has not alias.");
+            state.Children[alias] = finishedMessage.Context.GetSnapshot();
 
             var childWorkflowContexts = state.Children.ToDictionary(m => m.Key,
                                                                     m => m.Value is null ? null : (IWorkflowContext)new WorkflowContextSnapshot(m.Value));

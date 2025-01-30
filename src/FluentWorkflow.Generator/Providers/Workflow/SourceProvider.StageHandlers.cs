@@ -70,8 +70,9 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
     /// <inheritdoc/>
     protected override Task StageHandleFailedAsync(TStageMessage stageMessage, Exception exception, CancellationToken cancellationToken)
     {{
-        stageMessage.Context.SetFailureMessage(exception.Message);
-        stageMessage.Context.SetFailureStackTrace(exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());
+        stageMessage.Context.SetFailureInformation(stage: stageMessage.Stage,
+                                                   message: exception.Message,
+                                                   stackTrace: exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());
 
         return ((IWorkflowStageFinalizer)this).FailAsync(stageMessage.Context, cancellationToken);
     }}
@@ -128,8 +129,9 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
 
         await OnProcessFailedAsync(typedContext, cancellationToken);
 
-        var failureMessage = context.TryGetFailureMessage(out var failureMessageValue) ? failureMessageValue : ""Unknown error"";
-        var failureStackTrace = context.TryGetFailureStackTrace(out var failureStackTraceValue) ? failureStackTraceValue : null;
+        var failureInformation = context.GetFailureInformation();
+        var failureMessage = failureInformation?.Message ?? ""Unknown error"";
+        var failureStackTrace = failureInformation.StackTrace;
 
         var workflowFailureMessage = new {WorkflowName}FailureMessage(typedContext, failureMessage, failureStackTrace);
         await MessageDispatcher.PublishAsync(workflowFailureMessage, cancellationToken);

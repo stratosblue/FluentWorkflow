@@ -59,11 +59,6 @@ public abstract partial class {WorkflowContextName}Base
     {{
     }}
 
-    /// <inheritdoc cref=""{WorkflowContextName}Base""/>
-    protected {WorkflowContextName}Base(string id, IEnumerable<KeyValuePair<string, string>> values) : base(id, values)
-    {{
-    }}
-
     /// <inheritdoc/>
     protected override string CheckBeforeSetCurrentStage(string stage)
     {{
@@ -95,11 +90,6 @@ public sealed partial class {WorkflowContextName}
 
     /// <inheritdoc cref=""{WorkflowContextName}""/>
     public {WorkflowContextName}(IEnumerable<KeyValuePair<string, string>> values) : base(values)
-    {{
-    }}
-
-    /// <inheritdoc cref=""{WorkflowContextName}""/>
-    public {WorkflowContextName}(string id, IEnumerable<KeyValuePair<string, string>> values) : base(id, values)
     {{
     }}
 

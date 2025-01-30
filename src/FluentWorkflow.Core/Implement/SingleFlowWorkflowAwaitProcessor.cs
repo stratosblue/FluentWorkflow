@@ -20,7 +20,7 @@ internal sealed class SingleflowWorkflowAwaitProcessor : WorkflowAwaitProcessor
             throw new WorkflowInvalidOperationException($"The context \"{context.Id}\" not the unique child workflow.");
         }
 
-        var alias = context.TryGetChildWorkflowAlias(out var aliasValue) ? aliasValue : string.Empty;
+        var alias = context.State.Alias ?? string.Empty;
 
         var childWorkflowContexts = new Dictionary<string, IWorkflowContext?>(1)
         {

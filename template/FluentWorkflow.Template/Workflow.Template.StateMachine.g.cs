@@ -58,34 +58,34 @@ namespace TemplateNamespace
                     case TemplateStages.Stage1CAUK:
                         {
                             var stageMessage = new StageStage1CAUKMessage(TypedContext);
-                            stageMessage.Context.SetCurrentStageState(WorkflowStageState.Created);
+                            stageMessage.Context.State.SetStageState(WorkflowStageState.Created);
                             await Workflow.OnStage1CAUKAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                             return;
                         }
                     case TemplateStages.Stage2BPTG:
                         {
                             var stageMessage = new StageStage2BPTGMessage(TypedContext);
-                            stageMessage.Context.SetCurrentStageState(WorkflowStageState.Created);
+                            stageMessage.Context.State.SetStageState(WorkflowStageState.Created);
                             await Workflow.OnStage2BPTGAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                             return;
                         }
                     case TemplateStages.Stage3AWBN:
                         {
                             var stageMessage = new StageStage3AWBNMessage(TypedContext);
-                            stageMessage.Context.SetCurrentStageState(WorkflowStageState.Created);
+                            stageMessage.Context.State.SetStageState(WorkflowStageState.Created);
                             await Workflow.OnStage3AWBNAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                             return;
                         }
                     case TemplateStages.Failure:
                         {
-                            Context.TryGetFailureMessage(out var failureMessage);
-                            var finishedMessage = new TemplateFinishedMessage(TypedContext, false, failureMessage ?? "Unknown error");
+                            var failureInformation = Context.GetFailureInformation();
+                            var finishedMessage = new TemplateFinishedMessage(TypedContext, false, failureInformation?.Message ?? "Unknown error");
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }
                     case TemplateStages.Completion:
                         {
-                            TypedContext.SetCurrentStageState(WorkflowStageState.Created);
+                            TypedContext.State.SetStageState(WorkflowStageState.Created);
                             await Workflow.OnCompletionAsync(TypedContext, cancellationToken);
 
                             if (Context.Flag.HasFlag(WorkflowFlag.IsBeenAwaited)
@@ -120,7 +120,7 @@ namespace TemplateNamespace
             {
                 //设置上下文阶段状态，以使 OnStageCompletedAsync 中获取到的上下文当前阶段状态为已结束
                 //如果在 OnStageCompletedAsync 中挂起上下文，在恢复流程时使用此值确定应当再次调用 SetStageCompletedAsync 而不是 MoveNextAsync
-                stageCompletedMessage.Context.SetCurrentStageState(WorkflowStageState.Finished);
+                stageCompletedMessage.Context.State.SetStageState(WorkflowStageState.Finished);
 
                 using var singleCaller = new ScopeOnStageCompletedSingleCaller(this);
 

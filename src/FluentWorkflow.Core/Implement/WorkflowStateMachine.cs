@@ -78,9 +78,7 @@ public abstract class WorkflowStateMachine<TWorkflowBoundary>
     protected virtual Task OnFailedAsync<TFailureMessage>(TFailureMessage failureMessage, CancellationToken cancellationToken)
         where TFailureMessage : IWorkflowFailureMessage, TWorkflowBoundary
     {
-        Context.SetFailureMessage(failureMessage.Message);
-        Context.SetFailureStackTrace(failureMessage.RemoteStackTrace);
-        Context.SetValue(FluentWorkflowConstants.ContextKeys.FailureStage, failureMessage.Stage);
+        Context.SetFailureInformation(failureMessage.Stage,failureMessage.Message,failureMessage.RemoteStackTrace);
 
         return Task.CompletedTask;
     }

@@ -83,7 +83,7 @@ namespace {NameSpace}
             builder.AppendLine($@"case {Names.WorkflowNameStagesClass}.{stage.Name}:
                     {{
                         var stageMessage = new {Names.MessageName(stage)}(TypedContext);
-                        stageMessage.Context.SetCurrentStageState(WorkflowStageState.Created);
+                        stageMessage.Context.State.SetStageState(WorkflowStageState.Created);
                         await Workflow.On{stage.Name}Async(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                         return;
                     }}
@@ -93,14 +93,14 @@ namespace {NameSpace}
         builder.AppendLine($@"
                     case {WorkflowName}Stages.Failure:
                         {{
-                            Context.TryGetFailureMessage(out var failureMessage);
-                            var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, false, failureMessage);
+                            var failureInformation = Context.GetFailureInformation();
+                            var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, false, failureInformation?.Message ?? ""Unknown error"");
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }}
                     case {WorkflowName}Stages.Completion:
                         {{
-                            TypedContext.SetCurrentStageState(WorkflowStageState.Created);
+                            TypedContext.State.SetStageState(WorkflowStageState.Created);
                             await Workflow.OnCompletionAsync(TypedContext, cancellationToken);
 
                             if (Context.Flag.HasFlag(WorkflowFlag.IsBeenAwaited)
@@ -135,7 +135,7 @@ namespace {NameSpace}
             {{
                 //设置上下文阶段状态，以使 OnStageCompletedAsync 中获取到的上下文当前阶段状态为已结束
                 //如果在 OnStageCompletedAsync 中挂起上下文，在恢复流程时使用此值确定应当再次调用 SetStageCompletedAsync 而不是 MoveNextAsync
-                stageCompletedMessage.Context.SetCurrentStageState(WorkflowStageState.Finished);
+                stageCompletedMessage.Context.State.SetStageState(WorkflowStageState.Finished);
 
                 using var singleCaller = new ScopeOnStageCompletedSingleCaller(this);
 

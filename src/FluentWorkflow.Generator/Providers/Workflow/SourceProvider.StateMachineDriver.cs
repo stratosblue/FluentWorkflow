@@ -51,8 +51,8 @@ public abstract partial class {WorkflowClassName}StateMachineDriverBase
 
         ThrowIfContextInvalid(context);
 
-        if (!context.TryGetCurrentStageState(out var state)
-            || state == WorkflowStageState.Unknown)
+        var state = context.State.StageState;
+        if (state == WorkflowStageState.Unknown)
         {{
             throw new WorkflowInvalidOperationException(""The stage state is invalid. Can not resume."");
         }}

@@ -124,11 +124,12 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
 
                     childWorkflowFlag |= WorkflowFlag.HasParentWorkflow | WorkflowFlag.IsBeenAwaited;
 
+                    WorkflowContextSnapshot? currentContextSnapshot = null;
                     foreach (var (alias, workflowStarter) in childWorkflow)
                     {
                         var workflow = workflowStarter.Workflow;
-                        workflow.Context.SetChildWorkflowAlias(alias);
-                        workflow.Context.SetParent(new WorkflowContextSnapshot(stageMessage.Context.GetSnapshot()));
+                        workflow.Context.State.Alias = alias;
+                        workflow.Context.SetParent(currentContextSnapshot ??= new WorkflowContextSnapshot(stageMessage.Context.GetSnapshot()));
                         workflow.Context.Flag |= childWorkflowFlag;
                     }
 

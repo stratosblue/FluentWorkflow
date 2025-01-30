@@ -69,10 +69,9 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
         }
         catch (Exception exception)
         {
-            var currentAlias = childWorkflowFinishedMessage.Context.TryGetChildWorkflowAlias(out var aliasValue) ? aliasValue : "Unknown";
+            var currentAlias = childWorkflowFinishedMessage.Context.State.Alias ?? "Unknown";
             Logger.LogError(exception, "Await finished child workflow \"{Alias}\" failed.", currentAlias);
-            parentWorkflowContext.SetFailureMessage($"Await finished child workflow \"{currentAlias}\" failed: {exception.Message}");
-            parentWorkflowContext.SetFailureStackTrace(exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());
+            parentWorkflowContext.SetFailureInformation(context.State.Stage, $"Await finished child workflow \"{currentAlias}\" failed: {exception.Message}", exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());
 
             //执行等待失败，直接失败
             await finalizer.FailAsync(parentWorkflowContext, cancellationToken);
@@ -83,18 +82,12 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
             && failedWorkflowItem.Key is string alias
             && failedWorkflowItem.Value is { } failedWorkflowContext)   //获取第一个失败子流程
         {
-            if (!parentWorkflowContext.TryGetFailureMessage(out _)
-                && failedWorkflowContext.TryGetFailureMessage(out var failureMessage))  //如果父流程上下文当前没有失败消息，则设置为第一个失败子流程消息
+            if (parentWorkflowContext.GetFailureInformation() is null
+                && failedWorkflowContext.GetFailureInformation() is { } failedWorkflowFailureInformation)  //如果父流程上下文当前没有失败消息，则设置为第一个失败子流程消息
             {
-                parentWorkflowContext.SetFailureMessage(failureMessage);
-            }
-
-            if (!parentWorkflowContext.TryGetFailureStackTrace(out _)
-                && failedWorkflowContext.TryGetFailureStackTrace(out var failureStackTrace))    //如果父流程上下文当前没有失败堆栈，则设置为第一个失败子流程堆栈
-            {
-                var failedWorkflowName = failedWorkflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.WorkflowName);
-                var failedWorkflowStage = failedWorkflowContext.GetValue<string>(FluentWorkflowConstants.ContextKeys.FailureStage);
-                parentWorkflowContext.SetFailureStackTrace($"{failureStackTrace}\n   at {failedWorkflowName} stage {failedWorkflowStage} <- \"{alias}\"[{failedWorkflowContext.Id}]");
+                var (failureStage, failureMessage, failureStackTrace) = failedWorkflowFailureInformation;
+                failureStackTrace = $"{failureStackTrace}\n   at {failedWorkflowContext.Metadata.WorkflowName} stage {failureStage} <- \"{alias}\"[{failedWorkflowContext.Id}]";
+                parentWorkflowContext.SetFailureInformation(context.State.Stage, failureMessage, failureStackTrace);
             }
 
             await finalizer.FailAsync(parentWorkflowContext, cancellationToken);

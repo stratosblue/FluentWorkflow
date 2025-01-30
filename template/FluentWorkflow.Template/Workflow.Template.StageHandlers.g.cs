@@ -67,8 +67,9 @@ public abstract partial class TemplateStageHandler<TStage, TStageMessage, TStage
     /// <inheritdoc/>
     protected override Task StageHandleFailedAsync(TStageMessage stageMessage, Exception exception, CancellationToken cancellationToken)
     {
-        stageMessage.Context.SetFailureMessage(exception.Message);
-        stageMessage.Context.SetFailureStackTrace(exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());
+        stageMessage.Context.SetFailureInformation(stage: stageMessage.Stage,
+                                                   message: exception.Message,
+                                                   stackTrace: exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());
 
         return ((IWorkflowStageFinalizer)this).FailAsync(stageMessage.Context, cancellationToken);
     }
@@ -126,8 +127,9 @@ public abstract partial class TemplateStageHandler<TStage, TStageMessage, TStage
         //HACK 包装 OnProcessFailedAsync 的用户异常，保证消息正确发送？
         await OnProcessFailedAsync(typedContext, cancellationToken);
 
-        var failureMessage = context.TryGetFailureMessage(out var failureMessageValue) ? failureMessageValue : "Unknown error";
-        var failureStackTrace = context.TryGetFailureStackTrace(out var failureStackTraceValue) ? failureStackTraceValue : null;
+        var failureInformation = context.GetFailureInformation();
+        var failureMessage = failureInformation?.Message ?? "Unknown error";
+        var failureStackTrace = failureInformation.StackTrace;
 
         var workflowFailureMessage = new TemplateFailureMessage(typedContext, failureMessage, failureStackTrace);
         await MessageDispatcher.PublishAsync(workflowFailureMessage, cancellationToken);

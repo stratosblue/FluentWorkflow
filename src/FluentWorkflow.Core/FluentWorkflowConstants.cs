@@ -29,19 +29,9 @@ public static class FluentWorkflowConstants
         #region Public 字段
 
         /// <summary>
-        /// 失败消息
+        /// 失败信息
         /// </summary>
-        public const string FailureMessage = "-x-context-failure-message";
-
-        /// <summary>
-        /// 失败栈追踪
-        /// </summary>
-        public const string FailureStackTrace = "-x-context-failure-stack-trace";
-
-        /// <summary>
-        /// 失败阶段
-        /// </summary>
-        public const string FailureStage = "-x-context-failure-stage";
+        public const string FailureInformation = "-x-context-failure-information";
 
         /// <summary>
         /// 上下文发送信息，记录上下文的流转记录<br/>
@@ -51,9 +41,9 @@ public static class FluentWorkflowConstants
         public const string Forwarded = "-x-context-forwarded";
 
         /// <summary>
-        /// Id
+        /// 上下文元数据
         /// </summary>
-        public const string Id = "-x-context-id";
+        public const string Metadata = "-x-context-metadata";
 
         /// <summary>
         /// 父追踪上下文
@@ -66,29 +56,9 @@ public static class FluentWorkflowConstants
         public const string ParentWorkflow = "-x-context-parent-workflow";
 
         /// <summary>
-        /// 当前阶段
+        /// 上下文状态
         /// </summary>
-        public const string Stage = "-x-context-stage";
-
-        /// <summary>
-        /// 当前阶段状态
-        /// </summary>
-        public const string StageState = "-x-context-stage-state";
-
-        /// <summary>
-        /// 工作流程别名
-        /// </summary>
-        public const string WorkflowAlias = "-x-workflow-alias";
-
-        /// <summary>
-        /// 工作流程标识
-        /// </summary>
-        public const string WorkflowFlag = "-x-context-flag";
-
-        /// <summary>
-        /// 工作流程名称
-        /// </summary>
-        public const string WorkflowName = "-x-workflow-name";
+        public const string State = "-x-context-state";
 
         #endregion Public 字段
 
@@ -101,9 +71,8 @@ public static class FluentWorkflowConstants
         /// <returns></returns>
         public static bool IsInitOnlyKey(string key)
         {
-            return string.Equals(WorkflowName, key)
-                   || string.Equals(Id, key)
-                   || string.Equals(Stage, key)
+            return string.Equals(Metadata, key)
+                   || string.Equals(State, key)
                    || string.Equals(ParentWorkflow, key);
         }
 

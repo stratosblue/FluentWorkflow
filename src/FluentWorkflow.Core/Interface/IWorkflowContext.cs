@@ -17,9 +17,19 @@ public interface IWorkflowContext
     public WorkflowFlag Flag { get; [EditorBrowsable(EditorBrowsableState.Advanced)] set; }
 
     /// <summary>
+    /// 元数据
+    /// </summary>
+    public WorkflowContextMetadata Metadata { get; }
+
+    /// <summary>
     /// 父工作流程上下文
     /// </summary>
     public WorkflowContextSnapshot? Parent { get; }
+
+    /// <summary>
+    /// 状态
+    /// </summary>
+    public WorkflowContextState State { get; }
 
     #endregion Public 属性
 

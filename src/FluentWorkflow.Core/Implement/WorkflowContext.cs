@@ -12,14 +12,6 @@ public abstract class WorkflowContext
     : PropertyMapObject
     , IWorkflowContext
 {
-    #region Private 字段
-
-    private WorkflowFlag? _flag;
-
-    private WorkflowContextSnapshot? _parent;
-
-    #endregion Private 字段
-
     #region Protected 属性
 
     /// <summary>
@@ -34,23 +26,29 @@ public abstract class WorkflowContext
     /// <inheritdoc/>
     public WorkflowFlag Flag
     {
-        get => _flag ??= InnerGet<WorkflowFlag?>(WorkflowFlag.None, FluentWorkflowConstants.ContextKeys.WorkflowFlag).Value;
+        get => State.Flag;
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         set
         {
             ThrowIfStarted();
-            InnerSet(value, FluentWorkflowConstants.ContextKeys.WorkflowFlag);
+            State.Flag = value;
         }
     }
 
     /// <inheritdoc/>
-    public string Id => InnerGet<string>(default, FluentWorkflowConstants.ContextKeys.Id) ?? throw new WorkflowInvalidOperationException("上下文数据错误：不存在Id");
+    public string Id => Metadata.Id;
 
     /// <inheritdoc/>
-    public WorkflowContextSnapshot? Parent => _parent ??= InnerGet<WorkflowContextSnapshot>(null, FluentWorkflowConstants.ContextKeys.ParentWorkflow);
+    public WorkflowContextMetadata Metadata => InnerGet<WorkflowContextMetadata>(null, FluentWorkflowConstants.ContextKeys.Metadata) ?? throw new WorkflowInvalidOperationException("上下文数据错误：不存在元数据");
 
     /// <inheritdoc/>
-    public string Stage => InnerGet<string>(default, FluentWorkflowConstants.ContextKeys.Stage) ?? throw new WorkflowInvalidOperationException($"上下文数据错误：不存在 {nameof(FluentWorkflowConstants.ContextKeys.Stage)}");
+    public WorkflowContextSnapshot? Parent => InnerGet<WorkflowContextSnapshot>(null, FluentWorkflowConstants.ContextKeys.ParentWorkflow);
+
+    /// <inheritdoc/>
+    public string Stage => State.Stage;
+
+    /// <inheritdoc/>
+    public WorkflowContextState State => InnerGet<WorkflowContextState>(null, FluentWorkflowConstants.ContextKeys.State) ?? throw new WorkflowInvalidOperationException("上下文数据错误：不存在状态数据");
 
     #endregion Public 属性
 
@@ -65,9 +63,11 @@ public abstract class WorkflowContext
     {
         WorkflowException.ThrowIfNullOrWhiteSpace(id);
 
-        InnerSetWithoutValidation(id, FluentWorkflowConstants.ContextKeys.Id);
-        InnerSetWithoutValidation(ValidWorkflowName(), FluentWorkflowConstants.ContextKeys.WorkflowName);
-        InnerSetWithoutValidation(string.Empty, FluentWorkflowConstants.ContextKeys.Stage);
+        var metadata = new WorkflowContextMetadata(ValidWorkflowName(), id);
+        var state = new WorkflowContextState(string.Empty, WorkflowStageState.Unknown);
+
+        InnerSetWithoutValidation(metadata, FluentWorkflowConstants.ContextKeys.Metadata);
+        InnerSetWithoutValidation(state, FluentWorkflowConstants.ContextKeys.State);
     }
 
     /// <summary>
@@ -76,32 +76,13 @@ public abstract class WorkflowContext
     /// <param name="values"></param>
     public WorkflowContext(IEnumerable<KeyValuePair<string, string>> values) : base(values, StringComparer.Ordinal)
     {
-        var currentWorkflowName = InnerGet<string>(null, FluentWorkflowConstants.ContextKeys.WorkflowName);
+        ArgumentNullException.ThrowIfNull(State);
+        var currentWorkflowName = Metadata.WorkflowName;
         if (currentWorkflowName is null
             || !string.Equals(ValidWorkflowName(), currentWorkflowName))
         {
             throw new ArgumentException($"\"{currentWorkflowName}\" 对于 {GetType()} 是无效的工作流程名称, 这通常是因为使用了错误的上下文数据进行构造。");
         }
-
-        //保证上下文中一定存在阶段的非 null 值
-        if (!DataContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.Stage)
-            || ObjectContainer.ContainsKey(FluentWorkflowConstants.ContextKeys.Stage))
-        {
-            InnerSetWithoutValidation(string.Empty, FluentWorkflowConstants.ContextKeys.Stage);
-        }
-    }
-
-    /// <summary>
-    /// <inheritdoc cref="WorkflowContext"/>
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="values"></param>
-    /// <exception cref="ArgumentException"></exception>
-    public WorkflowContext(string id, IEnumerable<KeyValuePair<string, string>> values) : this(values)
-    {
-        WorkflowException.ThrowIfNullOrWhiteSpace(id);
-
-        InnerSetWithoutValidation(id, FluentWorkflowConstants.ContextKeys.Id);
     }
 
     #endregion Public 构造函数
@@ -113,7 +94,7 @@ public abstract class WorkflowContext
 
     /// <inheritdoc/>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public void SetCurrentStage(string stage) => ObjectContainer[FluentWorkflowConstants.ContextKeys.Stage] = CheckBeforeSetCurrentStage(stage);
+    public void SetCurrentStage(string stage) => State.Stage = CheckBeforeSetCurrentStage(stage);
 
     /// <inheritdoc/>
     [EditorBrowsable(EditorBrowsableState.Never)]

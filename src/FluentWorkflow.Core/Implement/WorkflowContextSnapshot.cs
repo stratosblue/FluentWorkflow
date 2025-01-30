@@ -21,15 +21,21 @@ public sealed class WorkflowContextSnapshot
     #region Public 属性
 
     /// <inheritdoc/>
-    public string Id { get; }
+    public WorkflowContextMetadata Metadata => GetRequiredKey<WorkflowContextMetadata>(FluentWorkflowConstants.ContextKeys.Metadata);
 
     /// <inheritdoc/>
-    public string Stage { get; }
+    public WorkflowContextState State => GetRequiredKey<ImmutableWorkflowContextState>(FluentWorkflowConstants.ContextKeys.State);
+
+    /// <inheritdoc/>
+    public string Id => Metadata.Id;
+
+    /// <inheritdoc/>
+    public string Stage => State.Stage;
 
     /// <summary>
     /// 工作流程名称
     /// </summary>
-    public string WorkflowName { get; }
+    public string WorkflowName => Metadata.WorkflowName;
 
     #endregion Public 属性
 
@@ -39,10 +45,6 @@ public sealed class WorkflowContextSnapshot
     public WorkflowContextSnapshot(IEnumerable<KeyValuePair<string, string>> values)
     {
         _rawValues = new(values, StringComparer.Ordinal);
-
-        WorkflowName = GetRequiredKey<string>(FluentWorkflowConstants.ContextKeys.WorkflowName);
-        Id = GetRequiredKey<string>(FluentWorkflowConstants.ContextKeys.Id);
-        Stage = GetRequiredKey<string>(FluentWorkflowConstants.ContextKeys.Stage);
     }
 
     #endregion Public 构造函数
@@ -60,7 +62,7 @@ public sealed class WorkflowContextSnapshot
 
     WorkflowFlag IWorkflowContext.Flag
     {
-        get => _rawValues.InnerGet<WorkflowFlag>(WorkflowFlag.None, FluentWorkflowConstants.ContextKeys.WorkflowFlag);
+        get => State.Flag;
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         set => throw new InvalidOperationException();
     }

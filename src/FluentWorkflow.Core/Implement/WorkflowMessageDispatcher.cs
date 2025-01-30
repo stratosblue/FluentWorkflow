@@ -44,7 +44,7 @@ public abstract class WorkflowMessageDispatcher : IWorkflowMessageDispatcher
         _diagnosticSource.MessagePublish(message);
         Logger.LogTrace("Publish [{EventName}] message - {{{Id}}}[{Message}].", TMessage.EventName, message.Id, message);
 
-        message.Context.SetCurrentStageState(WorkflowStageState.Scheduled);
+        message.Context.State.StageState = WorkflowStageState.Scheduled;
         message.Context.AppendForwarded();
 
         return Task.CompletedTask;
