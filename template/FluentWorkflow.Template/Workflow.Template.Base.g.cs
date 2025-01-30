@@ -183,7 +183,7 @@ namespace TemplateNamespace
             else
             {
                 var messageDispatcher = ServiceProvider.GetRequiredService<IWorkflowMessageDispatcher>();
-                var startRequestMessage = new TemplateStartRequestMessage(Context);
+                var startRequestMessage = new TemplateStartRequestMessage(WorkflowMessageIdProvider.Generate(), Context);
                 logger?.LogInformation("Start workflow [{Workflow}] - {WorkflowId} by publish start request message.", GetType(), Id);
                 return messageDispatcher.PublishAsync(startRequestMessage, cancellationToken);
             }

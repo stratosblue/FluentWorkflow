@@ -77,7 +77,7 @@ public abstract partial class {WorkflowClassName}StateMachineDriverBase
             builder.AppendLine($@"
                         case {Names.WorkflowNameStagesClass}.{stage.Name}:
                             {{
-                                var stageMessage = new {Names.MessageName(stage)}(typedContext);
+                                var stageMessage = new {Names.MessageName(stage)}(WorkflowMessageIdProvider.Generate(), typedContext);
                                 await MessageDispatcher.PublishAsync(stageMessage, cancellationToken);
                                 break;
                             }}
@@ -99,7 +99,7 @@ public abstract partial class {WorkflowClassName}StateMachineDriverBase
         foreach (var stage in Context.Stages)
         {
             builder.AppendLine($@"
-                        {Names.WorkflowNameStagesClass}.{stage.Name} => new {Names.CompletedMessageName(stage)}(typedContext),");
+                        {Names.WorkflowNameStagesClass}.{stage.Name} => new {Names.CompletedMessageName(stage)}(WorkflowMessageIdProvider.Generate(), typedContext),");
         }
         builder.AppendLine($@"
                         _ => throw new WorkflowInvalidOperationException($""Unsupported finished stage：{{currentStage}}""),

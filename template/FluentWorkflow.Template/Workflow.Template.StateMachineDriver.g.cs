@@ -57,19 +57,19 @@ public abstract partial class TemplateWorkflowStateMachineDriverBase
                     {
                         case TemplateStages.Stage1CAUK:
                             {
-                                var stageMessage = new StageStage1CAUKMessage(typedContext);
+                                var stageMessage = new StageStage1CAUKMessage(WorkflowMessageIdProvider.Generate(), typedContext);
                                 await MessageDispatcher.PublishAsync(stageMessage, cancellationToken);
                                 break;
                             }
                         case TemplateStages.Stage2BPTG:
                             {
-                                var stageMessage = new StageStage2BPTGMessage(typedContext);
+                                var stageMessage = new StageStage2BPTGMessage(WorkflowMessageIdProvider.Generate(), typedContext);
                                 await MessageDispatcher.PublishAsync(stageMessage, cancellationToken);
                                 break;
                             }
                         case TemplateStages.Stage3AWBN:
                             {
-                                var stageMessage = new StageStage3AWBNMessage(typedContext);
+                                var stageMessage = new StageStage3AWBNMessage(WorkflowMessageIdProvider.Generate(), typedContext);
                                 await MessageDispatcher.PublishAsync(stageMessage, cancellationToken);
                                 break;
                             }
@@ -84,9 +84,9 @@ public abstract partial class TemplateWorkflowStateMachineDriverBase
                     var currentStage = context.Stage;
                     TemplateStageCompletedMessageBase stageCompletedMessage = currentStage switch
                     {
-                        TemplateStages.Stage1CAUK => new StageStage1CAUKCompletedMessage(typedContext),
-                        TemplateStages.Stage2BPTG => new StageStage2BPTGCompletedMessage(typedContext),
-                        TemplateStages.Stage3AWBN => new StageStage3AWBNCompletedMessage(typedContext),
+                        TemplateStages.Stage1CAUK => new StageStage1CAUKCompletedMessage(WorkflowMessageIdProvider.Generate(), typedContext),
+                        TemplateStages.Stage2BPTG => new StageStage2BPTGCompletedMessage(WorkflowMessageIdProvider.Generate(), typedContext),
+                        TemplateStages.Stage3AWBN => new StageStage3AWBNCompletedMessage(WorkflowMessageIdProvider.Generate(), typedContext),
                         _ => throw new WorkflowInvalidOperationException($"Unsupported finished stage：{currentStage}"),
                     };
 

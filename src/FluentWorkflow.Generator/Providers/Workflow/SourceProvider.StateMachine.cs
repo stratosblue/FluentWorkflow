@@ -82,7 +82,7 @@ namespace {NameSpace}
         {
             builder.AppendLine($@"case {Names.WorkflowNameStagesClass}.{stage.Name}:
                     {{
-                        var stageMessage = new {Names.MessageName(stage)}(TypedContext);
+                        var stageMessage = new {Names.MessageName(stage)}(WorkflowMessageIdProvider.Generate(), TypedContext);
                         stageMessage.Context.State.SetStageState(WorkflowStageState.Created);
                         await Workflow.On{stage.Name}Async(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                         return;
@@ -94,7 +94,7 @@ namespace {NameSpace}
                     case {WorkflowName}Stages.Failure:
                         {{
                             var failureInformation = Context.GetFailureInformation();
-                            var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, false, failureInformation?.Message ?? ""Unknown error"");
+                            var finishedMessage = new {WorkflowName}FinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, false, failureInformation?.Message ?? ""Unknown error"");
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }}
@@ -106,7 +106,7 @@ namespace {NameSpace}
                             if (Context.Flag.HasFlag(WorkflowFlag.IsBeenAwaited)
                                 || !Context.Flag.HasFlag(WorkflowFlag.NotNotifyOnFinish))
                             {{
-                                var finishedMessage = new {WorkflowName}FinishedMessage(TypedContext, true, ""SUCCESS"");
+                                var finishedMessage = new {WorkflowName}FinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, true, ""SUCCESS"");
                                 await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             }}
                             return;

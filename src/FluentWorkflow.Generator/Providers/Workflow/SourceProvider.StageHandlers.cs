@@ -133,7 +133,7 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
         var failureMessage = failureInformation?.Message ?? ""Unknown error"";
         var failureStackTrace = failureInformation.StackTrace;
 
-        var workflowFailureMessage = new {WorkflowName}FailureMessage(typedContext, failureMessage, failureStackTrace);
+        var workflowFailureMessage = new {WorkflowName}FailureMessage(WorkflowMessageIdProvider.Generate(), typedContext, failureMessage, failureStackTrace);
         await MessageDispatcher.PublishAsync(workflowFailureMessage, cancellationToken);
     }}
 
@@ -163,7 +163,7 @@ public abstract partial class Stage{stage.Name}HandlerBase
     /// <inheritdoc/>
     protected override Stage{stage.Name}CompletedMessage CreateCompletedMessage({WorkflowClassName}Context context)
     {{
-        return new Stage{stage.Name}CompletedMessage(context);
+        return new Stage{stage.Name}CompletedMessage(WorkflowMessageIdProvider.Generate(), context);
     }}
 }}
 ");

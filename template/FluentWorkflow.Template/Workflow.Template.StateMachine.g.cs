@@ -57,21 +57,21 @@ namespace TemplateNamespace
                 {
                     case TemplateStages.Stage1CAUK:
                         {
-                            var stageMessage = new StageStage1CAUKMessage(TypedContext);
+                            var stageMessage = new StageStage1CAUKMessage(WorkflowMessageIdProvider.Generate(), TypedContext);
                             stageMessage.Context.State.SetStageState(WorkflowStageState.Created);
                             await Workflow.OnStage1CAUKAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                             return;
                         }
                     case TemplateStages.Stage2BPTG:
                         {
-                            var stageMessage = new StageStage2BPTGMessage(TypedContext);
+                            var stageMessage = new StageStage2BPTGMessage(WorkflowMessageIdProvider.Generate(), TypedContext);
                             stageMessage.Context.State.SetStageState(WorkflowStageState.Created);
                             await Workflow.OnStage2BPTGAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                             return;
                         }
                     case TemplateStages.Stage3AWBN:
                         {
-                            var stageMessage = new StageStage3AWBNMessage(TypedContext);
+                            var stageMessage = new StageStage3AWBNMessage(WorkflowMessageIdProvider.Generate(), TypedContext);
                             stageMessage.Context.State.SetStageState(WorkflowStageState.Created);
                             await Workflow.OnStage3AWBNAsync(stageMessage, singleCaller.PublishStageMessageAsync, cancellationToken);
                             return;
@@ -79,7 +79,7 @@ namespace TemplateNamespace
                     case TemplateStages.Failure:
                         {
                             var failureInformation = Context.GetFailureInformation();
-                            var finishedMessage = new TemplateFinishedMessage(TypedContext, false, failureInformation?.Message ?? "Unknown error");
+                            var finishedMessage = new TemplateFinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, false, failureInformation?.Message ?? "Unknown error");
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }
@@ -91,7 +91,7 @@ namespace TemplateNamespace
                             if (Context.Flag.HasFlag(WorkflowFlag.IsBeenAwaited)
                                 || !Context.Flag.HasFlag(WorkflowFlag.NotNotifyOnFinish))
                             {
-                                var finishedMessage = new TemplateFinishedMessage(TypedContext, true, "SUCCESS");
+                                var finishedMessage = new TemplateFinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, true, "SUCCESS");
                                 await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             }
                             return;

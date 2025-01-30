@@ -131,7 +131,7 @@ public abstract partial class TemplateStageHandler<TStage, TStageMessage, TStage
         var failureMessage = failureInformation?.Message ?? "Unknown error";
         var failureStackTrace = failureInformation.StackTrace;
 
-        var workflowFailureMessage = new TemplateFailureMessage(typedContext, failureMessage, failureStackTrace);
+        var workflowFailureMessage = new TemplateFailureMessage(WorkflowMessageIdProvider.Generate(), typedContext, failureMessage, failureStackTrace);
         await MessageDispatcher.PublishAsync(workflowFailureMessage, cancellationToken);
     }
 
@@ -157,7 +157,7 @@ public abstract partial class StageStage1CAUKHandlerBase
     /// <inheritdoc/>
     protected override StageStage1CAUKCompletedMessage CreateCompletedMessage(TemplateWorkflowContext context)
     {
-        return new StageStage1CAUKCompletedMessage(context);
+        return new StageStage1CAUKCompletedMessage(WorkflowMessageIdProvider.Generate(), context);
     }
 }
 
@@ -180,7 +180,7 @@ public abstract partial class StageStage2BPTGHandlerBase
     /// <inheritdoc/>
     protected override StageStage2BPTGCompletedMessage CreateCompletedMessage(TemplateWorkflowContext context)
     {
-        return new StageStage2BPTGCompletedMessage(context);
+        return new StageStage2BPTGCompletedMessage(WorkflowMessageIdProvider.Generate(), context);
     }
 }
 
@@ -203,6 +203,6 @@ public abstract partial class StageStage3AWBNHandlerBase
     /// <inheritdoc/>
     protected override StageStage3AWBNCompletedMessage CreateCompletedMessage(TemplateWorkflowContext context)
     {
-        return new StageStage3AWBNCompletedMessage(context);
+        return new StageStage3AWBNCompletedMessage(WorkflowMessageIdProvider.Generate(), context);
     }
 }

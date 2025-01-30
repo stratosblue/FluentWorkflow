@@ -151,7 +151,7 @@ partial class {WorkflowClassName}
         else
         {{
             var messageDispatcher = ServiceProvider.GetRequiredService<IWorkflowMessageDispatcher>();
-            var startRequestMessage = new {Names.StartRequestMessage}(Context);
+            var startRequestMessage = new {Names.StartRequestMessage}(WorkflowMessageIdProvider.Generate(), Context);
             logger?.LogInformation(""Start workflow [{{Workflow}}] - {{WorkflowId}} by publish start request message."", GetType(), Id);
             return messageDispatcher.PublishAsync(startRequestMessage, cancellationToken);
         }}

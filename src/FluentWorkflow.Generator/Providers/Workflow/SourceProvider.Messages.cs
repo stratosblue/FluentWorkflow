@@ -22,6 +22,7 @@ internal class MessagesSourceProvider : WorkflowSourceProvider
         builder.AppendLine($@"{FluentWorkflowGeneratorConstants.CodeHeader}
 
 {Context.Usings}
+using System.Text.Json.Serialization;
 
 namespace {NameSpace}.{WorkflowName}.Message;
 
@@ -89,17 +90,19 @@ public partial interface I{WorkflowName}FailureMessage : IWorkflowFailureMessage
 public abstract partial class {WorkflowName}StageMessageBase : I{WorkflowName}StageMessage
 {{
     /// <inheritdoc/>
-    public string Id => Context.Id;
+    public string Id {{ get; }}
 
     /// <inheritdoc/>
+    [JsonIgnore]
     public string Stage => Context.Stage;
 
     /// <inheritdoc/>
     public {WorkflowClassName}Context Context {{ get; }}
 
     /// <inheritdoc cref=""{WorkflowName}StageMessageBase""/>
-    protected {WorkflowName}StageMessageBase({WorkflowClassName}Context context)
+    protected {WorkflowName}StageMessageBase(string id, {WorkflowClassName}Context context)
     {{
+        Id = id ?? throw new ArgumentNullException(nameof(id));
         Context = context ?? throw new ArgumentNullException(nameof(context));
     }}
 }}
@@ -112,17 +115,19 @@ public abstract partial class {WorkflowName}StageMessageBase : I{WorkflowName}St
 public abstract partial class {WorkflowName}StageCompletedMessageBase : I{WorkflowName}StageCompletedMessage
 {{
     /// <inheritdoc/>
-    public string Id => Context.Id;
+    public string Id {{ get; }}
 
     /// <inheritdoc/>
+    [JsonIgnore]
     public string Stage => Context.Stage;
 
     /// <inheritdoc/>
     public {WorkflowClassName}Context Context {{ get; }}
 
     /// <inheritdoc cref=""{WorkflowName}StageCompletedMessageBase""/>
-    protected {WorkflowName}StageCompletedMessageBase({WorkflowClassName}Context context)
+    protected {WorkflowName}StageCompletedMessageBase(string id, {WorkflowClassName}Context context)
     {{
+        Id = id ?? throw new ArgumentNullException(nameof(id));
         Context = context ?? throw new ArgumentNullException(nameof(context));
     }}
 }}
@@ -145,7 +150,7 @@ public sealed partial class {WorkflowName}StartRequestMessage : I{WorkflowName}S
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
 
     /// <inheritdoc/>
-    public string Id => Context.Id;
+    public string Id {{ get; }}
 
     /// <inheritdoc/>
     public {WorkflowClassName}Context Context {{ get; }}
@@ -154,15 +159,16 @@ public sealed partial class {WorkflowName}StartRequestMessage : I{WorkflowName}S
     IWorkflowContext IWorkflowContextCarrier<IWorkflowContext>.Context => Context;
 
     /// <inheritdoc cref=""{WorkflowName}StartRequestMessage""/>
-    public {WorkflowName}StartRequestMessage(IEnumerable<KeyValuePair<string, string>> context)
-        : this(new {WorkflowClassName}Context(context))
+    public {WorkflowName}StartRequestMessage(string id, IEnumerable<KeyValuePair<string, string>> context)
+        : this(id, new {WorkflowClassName}Context(context))
     {{
     }}
 
     /// <inheritdoc cref=""{WorkflowName}StartRequestMessage""/>
     [System.Text.Json.Serialization.JsonConstructor]
-    public {WorkflowName}StartRequestMessage({WorkflowClassName}Context context)
+    public {WorkflowName}StartRequestMessage(string id, {WorkflowClassName}Context context)
     {{
+        Id = id ?? throw new ArgumentNullException(nameof(id));
         Context = context ?? throw new ArgumentNullException(nameof(context));
     }}
 }}
@@ -185,7 +191,7 @@ public sealed partial class {WorkflowName}FinishedMessage : I{WorkflowName}Finis
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
 
     /// <inheritdoc/>
-    public string Id => Context.Id;
+    public string Id {{ get; }}
 
     /// <inheritdoc/>
     public {WorkflowClassName}Context Context {{ get; }}
@@ -200,8 +206,9 @@ public sealed partial class {WorkflowName}FinishedMessage : I{WorkflowName}Finis
     public string? Message {{ get; }}
 
     /// <inheritdoc cref=""{WorkflowName}FinishedMessage""/>
-    public {WorkflowName}FinishedMessage({WorkflowClassName}Context context, bool isSuccess, string? message = null)
+    public {WorkflowName}FinishedMessage(string id, {WorkflowClassName}Context context, bool isSuccess, string? message = null)
     {{
+        Id = id ?? throw new ArgumentNullException(nameof(id));
         Context = context ?? throw new ArgumentNullException(nameof(context));
         IsSuccess = isSuccess;
         Message = message;
@@ -225,9 +232,10 @@ public sealed partial class {WorkflowName}FailureMessage : I{WorkflowName}Failur
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
 
     /// <inheritdoc/>
-    public string Id => Context.Id;
+    public string Id {{ get; }}
 
     /// <inheritdoc/>
+    [JsonIgnore]
     public string Stage => Context.Stage;
 
     /// <inheritdoc/>
@@ -240,10 +248,11 @@ public sealed partial class {WorkflowName}FailureMessage : I{WorkflowName}Failur
     public {WorkflowClassName}Context Context {{ get; }}
 
     /// <inheritdoc cref=""{WorkflowName}FailureMessage""/>
-    public {WorkflowName}FailureMessage({WorkflowClassName}Context context, string message, string? remoteStackTrace)
+    public {WorkflowName}FailureMessage(string id, {WorkflowClassName}Context context, string message, string? remoteStackTrace)
     {{
         WorkflowException.ThrowIfNullOrWhiteSpace(message);
 
+        Id = id ?? throw new ArgumentNullException(nameof(id));
         Context = context ?? throw new ArgumentNullException(nameof(context));
         Message = message;
         RemoteStackTrace = remoteStackTrace;
@@ -269,7 +278,7 @@ public sealed partial class Stage{stage.Name}Message : {WorkflowName}StageMessag
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
 
     /// <inheritdoc cref=""Stage{stage.Name}Message""/>
-    public Stage{stage.Name}Message({WorkflowClassName}Context context) : base(context)
+    public Stage{stage.Name}Message(string id, {WorkflowClassName}Context context) : base(id, context)
     {{
     }}
 }}
@@ -291,7 +300,7 @@ public sealed partial class Stage{stage.Name}CompletedMessage : {WorkflowName}St
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
 
     /// <inheritdoc cref=""Stage{stage.Name}CompletedMessage""/>
-    public Stage{stage.Name}CompletedMessage({WorkflowClassName}Context context) : base(context)
+    public Stage{stage.Name}CompletedMessage(string id, {WorkflowClassName}Context context) : base(id, context)
     {{
     }}
 }}
