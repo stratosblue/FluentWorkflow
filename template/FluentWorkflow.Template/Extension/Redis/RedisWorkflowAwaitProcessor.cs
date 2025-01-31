@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -118,7 +117,7 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
             throw new WorkflowInvalidOperationException($"The context data for \"{primaryKey}\" no existed.");
         }
 
-        var currentAlias = finishedMessage.Context.State.Alias?? throw new InvalidOperationException("The context has not alias.");
+        var currentAlias = finishedMessage.Context.State.Alias ?? throw new InvalidOperationException("The context has not alias.");
         var currentMarkField = AliasMarkField(currentAlias);
 
         //设置当前完成工作流程的上下文

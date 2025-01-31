@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using FluentWorkflow.Diagnostics;
-using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;

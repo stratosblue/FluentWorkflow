@@ -1,5 +1,4 @@
-﻿using FluentWorkflow.Extensions;
-using FluentWorkflow.Interface;
+﻿using FluentWorkflow.Interface;
 
 namespace FluentWorkflow;
 
