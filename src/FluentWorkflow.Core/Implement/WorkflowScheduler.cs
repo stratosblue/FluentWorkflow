@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
-using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;
@@ -56,18 +56,16 @@ public abstract class WorkflowScheduler<TWorkflow, TWorkflowStateMachine, TWorkf
     /// <inheritdoc/>
     public virtual Task StartAsync(TWorkflow workflow, CancellationToken cancellationToken = default)
     {
-        var activity = ActivitySource.StartActivity($"{DiagnosticConstants.ActivityNames.WorkflowStarting} - {TWorkflow.WorkflowName}", System.Diagnostics.ActivityKind.Consumer);
+        if (Activity.Current is { } activity)
+        {
+            activity.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.WorkflowStarting} - {TWorkflow.WorkflowName}"));
+            activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Context, PrettyJSONObject.Create(workflow.Context, ObjectSerializer));
+        }
 
         _diagnosticSource.WorkflowScheduleStart(workflow);
 
         var stateMachine = CreateStateMachine(workflow);
         var task = stateMachine.MoveNextAsync(cancellationToken);
-
-        if (activity != null)
-        {
-            activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Context, PrettyJSONObject.Create(workflow.Context, ObjectSerializer));
-            task.DisposeActivityWhenTaskCompleted(activity);
-        }
 
         return task;
     }

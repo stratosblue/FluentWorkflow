@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Interface;
@@ -60,13 +61,14 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
     /// <inheritdoc/>
     public virtual Task HandleAsync(TStageCompletedMessage message, CancellationToken cancellationToken)
     {
-        var activity = ActivitySource.StartActivity($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}", System.Diagnostics.ActivityKind.Consumer);
+        var activity = Activity.Current;
+        activity?.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}"));
+
         var task = DoInputAsync(message, cancellationToken);
         if (activity != null)
         {
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "completed");
-            task.DisposeActivityWhenTaskCompleted(activity);
         }
         return task;
     }
@@ -74,7 +76,9 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
     /// <inheritdoc/>
     public virtual Task HandleAsync(TFailureMessage message, CancellationToken cancellationToken)
     {
-        var activity = ActivitySource.StartActivity($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}", System.Diagnostics.ActivityKind.Consumer);
+        var activity = Activity.Current;
+        activity?.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}"));
+
         var task = DoInputAsync(message, cancellationToken);
         if (activity != null)
         {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel;
+using System.Diagnostics;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Extensions;
 using FluentWorkflow.Interface;
@@ -84,8 +85,12 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
     /// <returns></returns>
     public virtual async Task HandleAsync(TStageMessage stageMessage, CancellationToken cancellationToken)
     {
-        using var activity = ActivitySource.StartActivity($"{DiagnosticConstants.ActivityNames.StageProcessing} - {stageMessage.Stage}", System.Diagnostics.ActivityKind.Consumer);
-        activity?.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(stageMessage, ObjectSerializer));
+        var activity = Activity.Current;
+        if (activity is not null)
+        {
+            activity.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageProcessing} - {stageMessage.Stage}"));
+            activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(stageMessage, ObjectSerializer));
+        }
 
         Exception? exception = null;
         var notFiredDiagnostic = true;
