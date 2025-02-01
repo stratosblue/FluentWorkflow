@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow;

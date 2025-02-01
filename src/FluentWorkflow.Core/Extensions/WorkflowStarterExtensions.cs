@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
 
 namespace FluentWorkflow;
 

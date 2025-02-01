@@ -1,4 +1,6 @@
-﻿namespace FluentWorkflow.Interface;
+﻿using FluentWorkflow.Abstractions;
+
+namespace FluentWorkflow;
 
 /// <summary>
 /// <typeparamref name="TWorkflow"/> 构建器

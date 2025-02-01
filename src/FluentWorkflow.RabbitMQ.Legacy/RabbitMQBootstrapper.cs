@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
-using FluentWorkflow.Interface;
 using FluentWorkflow.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,4 @@
-﻿using FluentWorkflow.Interface;
+﻿using FluentWorkflow;
 using FluentWorkflow.SimpleSample;
 using FluentWorkflow.SimpleSample.Sample;
 using Microsoft.Extensions.DependencyInjection;

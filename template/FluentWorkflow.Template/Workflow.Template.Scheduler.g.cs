@@ -2,7 +2,7 @@
 
 using System.ComponentModel;
 using FluentWorkflow;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Scheduler;
 
 namespace TemplateNamespace.Template.Internal;
 

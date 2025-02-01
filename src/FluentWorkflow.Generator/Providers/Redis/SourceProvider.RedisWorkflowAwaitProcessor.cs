@@ -30,7 +30,6 @@ internal class RedisWorkflowAwaitProcessorSourceProvider : SourceProvider
 
         builder.AppendLine($@"{FluentWorkflowGeneratorConstants.CodeHeader}
 
-using FluentWorkflow.Interface;
 using StackExchange.Redis;
 
 namespace FluentWorkflow.GenericExtension{_nameSpacePostFix};
@@ -101,8 +100,6 @@ internal sealed class FluentWorkflowRedisConnectionProvider : IFluentWorkflowRed
         builder.AppendLine($@"{FluentWorkflowGeneratorConstants.CodeHeader}
 
 using System.ComponentModel;
-using FluentWorkflow.Extensions;
-using FluentWorkflow.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -408,7 +405,6 @@ internal static class HashEntryExtensions
         builder.AppendLine($@"{FluentWorkflowGeneratorConstants.CodeHeader}
 
 using System.ComponentModel;
-using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using StackExchange.Redis;

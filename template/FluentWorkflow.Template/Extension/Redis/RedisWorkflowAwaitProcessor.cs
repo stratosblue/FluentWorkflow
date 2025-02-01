@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
+using FluentWorkflow.Handler;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;

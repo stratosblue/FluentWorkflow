@@ -1,4 +1,4 @@
-﻿using FluentWorkflow.Interface;
+﻿using FluentWorkflow.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using TemplateNamespace;
 using TemplateNamespace.Template.Message;

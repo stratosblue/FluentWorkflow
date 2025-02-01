@@ -1,4 +1,4 @@
-﻿namespace FluentWorkflow.Interface;
+﻿namespace FluentWorkflow;
 
 /// <summary>
 /// 允许使用 KeyValues 列表构建 <typeparamref name="T"/> 的对象

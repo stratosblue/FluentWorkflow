@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
+using FluentWorkflow.Handler;
 
 namespace FluentWorkflow;
 

@@ -1,5 +1,4 @@
-﻿using FluentWorkflow.Interface;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using TemplateNamespace;
 using TemplateNamespace.Template;
 

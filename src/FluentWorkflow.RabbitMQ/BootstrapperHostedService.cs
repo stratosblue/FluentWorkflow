@@ -1,5 +1,4 @@
-﻿using FluentWorkflow.Interface;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 
 namespace FluentWorkflow.RabbitMQ;
 

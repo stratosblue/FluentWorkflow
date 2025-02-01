@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using FluentWorkflow.Interface;
 
 namespace FluentWorkflow;
 

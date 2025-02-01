@@ -1,5 +1,5 @@
 ﻿using FluentWorkflow;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
 
 [assembly: GenerateWorkflowCodes<TemplateNamespace.TemplateWorkflowDeclaration>(WorkflowSourceGenerationMode.All)]
 namespace TemplateNamespace;

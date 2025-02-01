@@ -1,5 +1,4 @@
-﻿//using FluentWorkflow.Interface;
-//using FluentWorkflow.SharedSample;
+﻿//using FluentWorkflow.SharedSample;
 //using FluentWorkflow.SharedSample.SharedXX;
 //using Microsoft.Extensions.DependencyInjection;
 

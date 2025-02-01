@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using FluentWorkflow.Interface;
 
 namespace FluentWorkflow.Extensions;
 

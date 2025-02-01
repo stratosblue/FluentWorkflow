@@ -1,4 +1,4 @@
-﻿using FluentWorkflow.Interface;
+﻿using FluentWorkflow.Handler;
 using StackExchange.Redis;
 
 namespace FluentWorkflow.GenericExtension.TemplateNamespace;

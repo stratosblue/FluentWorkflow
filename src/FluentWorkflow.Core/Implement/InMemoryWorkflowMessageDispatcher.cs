@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using FluentWorkflow.Build;
-using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

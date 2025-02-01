@@ -1,4 +1,4 @@
-﻿using FluentWorkflow.Interface;
+﻿using FluentWorkflow.Abstractions;
 using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;

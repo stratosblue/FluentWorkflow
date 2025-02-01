@@ -2,8 +2,9 @@
 
 using System.ComponentModel;
 using FluentWorkflow;
+using FluentWorkflow.Abstractions;
 using FluentWorkflow.Extensions;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Scheduler;
 using TemplateNamespace.Template.Message;
 
 namespace TemplateNamespace.Template.Internal;

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using FluentWorkflow.Abstractions;
 using FluentWorkflow.Diagnostics;
-using FluentWorkflow.Interface;
 using FluentWorkflow.RabbitMQ;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.Logging;

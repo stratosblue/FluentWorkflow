@@ -1,6 +1,7 @@
-﻿using FluentWorkflow.Diagnostics;
+﻿using FluentWorkflow.Abstractions;
+using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Extensions;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Scheduler;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

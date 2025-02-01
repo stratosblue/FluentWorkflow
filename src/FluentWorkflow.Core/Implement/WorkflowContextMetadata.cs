@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
+using FluentWorkflow.Scheduler;
 
 namespace FluentWorkflow;
 

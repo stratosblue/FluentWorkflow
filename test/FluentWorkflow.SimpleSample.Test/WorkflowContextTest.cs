@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using FluentWorkflow.Interface;
 using FluentWorkflow.SimpleSample;
 using Microsoft.Extensions.DependencyInjection;
 

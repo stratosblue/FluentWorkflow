@@ -1,4 +1,6 @@
-﻿namespace FluentWorkflow.Interface;
+﻿using FluentWorkflow.Abstractions;
+
+namespace FluentWorkflow;
 
 /// <summary>
 /// 工作流程消息分发器

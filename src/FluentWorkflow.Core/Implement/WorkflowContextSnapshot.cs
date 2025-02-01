@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Text.Json.Serialization;
-using FluentWorkflow.Interface;
 
 namespace FluentWorkflow;
 

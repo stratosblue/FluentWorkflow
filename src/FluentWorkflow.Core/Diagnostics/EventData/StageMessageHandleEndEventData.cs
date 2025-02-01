@@ -1,4 +1,4 @@
-﻿using FluentWorkflow.Interface;
+﻿using FluentWorkflow.Abstractions;
 
 namespace FluentWorkflow.Diagnostics.EventData;
 

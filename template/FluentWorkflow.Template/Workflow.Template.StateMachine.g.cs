@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using FluentWorkflow;
 using FluentWorkflow.Extensions;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Scheduler;
 using TemplateNamespace.Template;
 using TemplateNamespace.Template.Message;
 

@@ -1,4 +1,4 @@
-﻿namespace FluentWorkflow.Interface;
+﻿namespace FluentWorkflow;
 
 /// <summary>
 /// FluentWorkflow 引导程序

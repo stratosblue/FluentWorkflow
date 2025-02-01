@@ -2,7 +2,6 @@
 #pragma warning disable CS8618
 
 using System.Runtime.Serialization;
-using FluentWorkflow.Interface;
 
 namespace FluentWorkflow;
 

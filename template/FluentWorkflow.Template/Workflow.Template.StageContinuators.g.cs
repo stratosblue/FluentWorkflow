@@ -2,7 +2,8 @@
 
 using System.ComponentModel;
 using FluentWorkflow;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
+using FluentWorkflow.Handler;
 using Microsoft.Extensions.Logging;
 using TemplateNamespace.Template.Handler;
 

@@ -29,7 +29,6 @@ internal class AbpDistributedEventBusWorkflowMessageDispatcherSourceProvider : S
         builder.AppendLine($@"{FluentWorkflowGeneratorConstants.CodeHeader}
 
 using System.ComponentModel;
-using FluentWorkflow.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Volo.Abp.EventBus.Distributed;

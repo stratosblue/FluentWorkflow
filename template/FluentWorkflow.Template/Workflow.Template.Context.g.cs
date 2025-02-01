@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 using FluentWorkflow;
-using FluentWorkflow.Interface;
 using TemplateNamespace.Template;
 
 namespace TemplateNamespace;

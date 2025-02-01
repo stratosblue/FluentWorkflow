@@ -2,7 +2,8 @@
 
 using System.ComponentModel;
 using FluentWorkflow;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
+using FluentWorkflow.Scheduler;
 using FluentWorkflow.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

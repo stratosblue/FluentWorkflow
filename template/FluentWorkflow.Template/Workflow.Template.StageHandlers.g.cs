@@ -4,8 +4,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using FluentWorkflow;
 using FluentWorkflow.Extensions;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Handler;
 using TemplateNamespace.Template.Message;
+using FluentWorkflow.Abstractions;
 
 namespace TemplateNamespace.Template.Handler;
 

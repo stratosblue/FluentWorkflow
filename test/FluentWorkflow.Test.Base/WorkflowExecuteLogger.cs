@@ -1,4 +1,4 @@
-﻿using FluentWorkflow.Interface;
+﻿using FluentWorkflow.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace FluentWorkflow;

@@ -1,7 +1,7 @@
 ﻿#pragma warning disable CS1591
 
 using FluentWorkflow;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
 using FluentWorkflow.SimpleSample;
 
 [assembly: GenerateWorkflowCodes<SingleStageWorkflowDeclaration>]

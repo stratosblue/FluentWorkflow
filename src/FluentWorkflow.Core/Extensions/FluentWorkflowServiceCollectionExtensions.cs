@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Handler;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

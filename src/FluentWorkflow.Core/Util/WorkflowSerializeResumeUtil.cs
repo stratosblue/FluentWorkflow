@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
+using FluentWorkflow.Scheduler;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow.Util;

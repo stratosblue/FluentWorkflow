@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
+using FluentWorkflow.Abstractions;
 using FluentWorkflow.Diagnostics.EventData;
-using FluentWorkflow.Interface;
 
 namespace FluentWorkflow.Diagnostics;
 

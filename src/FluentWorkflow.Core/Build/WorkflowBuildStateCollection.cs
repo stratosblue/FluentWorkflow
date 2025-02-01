@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics;
-using FluentWorkflow.Interface;
+using FluentWorkflow.Abstractions;
 
 namespace FluentWorkflow.Build;
 
