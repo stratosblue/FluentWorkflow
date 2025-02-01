@@ -23,7 +23,7 @@ internal sealed class MultipleEventMessageConsumer : EventMessageBasicConsumer
 
     public ImmutableDictionary<string, ConsumeDescriptor> ConsumeDescriptors { get; }
 
-    public ImmutableHashSet<string> StandaloneEventNames { get; }
+    public ImmutableHashSet<string> ExcludedEventNames { get; }
 
     #endregion Public 属性
 
@@ -32,7 +32,7 @@ internal sealed class MultipleEventMessageConsumer : EventMessageBasicConsumer
     /// <inheritdoc cref="MultipleEventMessageConsumer"/>
     public MultipleEventMessageConsumer(ImmutableDictionary<string, ConsumeDescriptor> consumeDescriptors,
                                         RabbitMQOptions options,
-                                        HashSet<string> standaloneEventNames,
+                                        HashSet<string> excludedEventNames,
                                         IChannel channel,
                                         IServiceScopeFactory serviceScopeFactory,
                                         IObjectSerializer objectSerializer,
@@ -41,13 +41,10 @@ internal sealed class MultipleEventMessageConsumer : EventMessageBasicConsumer
                                         CancellationToken runningToken)
         : base(channel, serviceScopeFactory, objectSerializer, diagnosticSource, logger, runningToken)
     {
-        if (options is null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentNullException.ThrowIfNull(options);
 
         ConsumeDescriptors = consumeDescriptors ?? throw new ArgumentNullException(nameof(consumeDescriptors));
-        StandaloneEventNames = standaloneEventNames?.ToImmutableHashSet() ?? throw new ArgumentNullException(nameof(standaloneEventNames));
+        ExcludedEventNames = excludedEventNames?.ToImmutableHashSet() ?? throw new ArgumentNullException(nameof(excludedEventNames));
         _errorMessageRequeuePolicy = options.ErrorMessageRequeuePolicy;
         _errorMessageRequeueDelay = options.ErrorMessageRequeueDelay;
     }
@@ -66,11 +63,11 @@ internal sealed class MultipleEventMessageConsumer : EventMessageBasicConsumer
             return ConsumeMessageAsync(consumeDescriptor, consumerTag, deliveryTag, redelivered, exchange, routingKey, body);
         }
 
-        var forceNotRequeue = StandaloneEventNames.Contains(eventName);
+        var forceNotRequeue = ExcludedEventNames.Contains(eventName);
 
         if (forceNotRequeue)
         {
-            Logger.LogWarning("Consume message error on received {EventName}. Not found consumer for it but find this message bind in Qos queue. Not requeue it. If changed the qos for the message, you may need to manually unbind the routing key of the queue. [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}.", eventName, consumerTag, exchange, routingKey);
+            Logger.LogWarning("Consume message error on received {EventName}. The message is in excluded list for current consumer. Not requeue it. If changed the options for the message, you may need to manually unbind the routing key of the queue. [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}.", eventName, consumerTag, exchange, routingKey);
         }
 
         return HandleErrorMessageAsync(eventName: eventName,

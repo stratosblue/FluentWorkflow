@@ -16,6 +16,8 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 {
     #region Private 字段
 
+    private readonly List<ChannelScope> _channelScopes = [];
+
     private readonly IRabbitMQConnectionProvider _connectionProvider;
 
     private readonly ILogger _consumeLogger;
@@ -33,6 +35,8 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
     private readonly CancellationToken _runningCancellationToken;
 
     private readonly CancellationTokenSource _runningCancellationTokenSource;
+
+    private readonly IServiceProvider _serviceProvider;
 
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
@@ -56,12 +60,14 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                                 IObjectSerializer objectSerializer,
                                 IWorkflowDiagnosticSource diagnosticSource,
                                 ILoggerFactory loggerFactory,
+                                IServiceProvider serviceProvider,
                                 IOptions<RabbitMQOptions> optionsAccessor)
     {
         _connectionProvider = connectionProvider ?? throw new ArgumentNullException(nameof(connectionProvider));
         _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
         _objectSerializer = objectSerializer ?? throw new ArgumentNullException(nameof(objectSerializer));
         _diagnosticSource = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));
         _eventSubscribeDescriptors = workflowBuildStates.SelectMany(m => m)
                                                         .ToImmutableDictionary(m => m.EventName, m => m.ToArray());
@@ -97,6 +103,11 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
         _connection?.Dispose();
 
+        foreach (var item in _channelScopes)
+        {
+            item.Dispose();
+        }
+
         _disposed = true;
         return ValueTask.CompletedTask;
     }
@@ -128,39 +139,74 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
             await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: _options.GlobalQos, global: false, cancellationToken: cancellationToken);
         }
 
-        var defaultConsumeDescriptors = new Dictionary<string, ConsumeDescriptor>();
-        var standaloneEventNames = new HashSet<string>();
-        foreach (var (eventName, invokerDescriptors) in _eventSubscribeDescriptors)
+        var groupedEventNames = new HashSet<string>();
+
+        foreach (var (groupName, messageGroup) in _options.MessageGroups)
         {
-            if (_options.MessageHandleOptions.TryGetValue(eventName, out var messageHandleOptions)
-                && messageHandleOptions.Qos > 0)
+            var messageHandleOptions = messageGroup.MessageHandleOptions;
+
+            var groupQueueName = $"{defaultConsumeQueueName}:{groupName}";
+            var groupQueueArguments = GetQueueArguments(groupQueueName);
+            var groupChannelScope = await messageGroup.ChannelFactory(_serviceProvider, groupQueueName, groupQueueArguments, messageGroup, cancellationToken);
+
+            _channelScopes.Add(groupChannelScope);
+
+            var groupChannel = groupChannelScope.Channel;
+            var groupConsumeDescriptors = new Dictionary<string, ConsumeDescriptor>();
+            foreach (var message in messageGroup.Messages)
             {
-                var standaloneQueueName = $"{defaultConsumeQueueName}:{eventName}";
+                var eventName = message.Key;
+                if (!_eventSubscribeDescriptors.TryGetValue(eventName, out var invokerDescriptors))
+                {
+                    throw new InvalidOperationException($"The grouped message - \"{eventName}\" has no subscription information.");
+                }
+                groupedEventNames.Add(eventName);
 
-                _logger.LogInformation("Use standalone channel consume workflow messages. EventName: {EventName}. QueueName: {QueueName}.", eventName, standaloneQueueName);
+                //从默认队列解绑
+                await channel.QueueUnbindAsync(queue: defaultConsumeQueueName, exchange: exchangeName, routingKey: eventName, arguments: null, cancellationToken: cancellationToken);
 
-                var standaloneChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
                 var consumeDescriptor = new ConsumeDescriptor(EventName: eventName,
                                                               InvokerDescriptors: invokerDescriptors,
                                                               RequeuePolicy: messageHandleOptions.RequeuePolicy,
                                                               RequeueDelay: messageHandleOptions.RequeueDelay);
-                await SetupStandAloneConsumerAsync(standaloneChannel, standaloneQueueName, consumeDescriptor, messageHandleOptions, cancellationToken);
-                //从默认队列解绑
-                await channel.QueueUnbindAsync(queue: defaultConsumeQueueName, exchange: exchangeName, routingKey: eventName, arguments: null, cancellationToken: cancellationToken);
-                //绑定到独立队列
-                await channel.QueueBindAsync(queue: standaloneQueueName, exchange: exchangeName, routingKey: eventName, arguments: null, noWait: false, cancellationToken: cancellationToken);
-                standaloneEventNames.Add(eventName);
+                groupConsumeDescriptors.Add(message.Key, consumeDescriptor);
             }
-            else
+
+            var consumer = new MultipleEventMessageConsumer(groupConsumeDescriptors.ToImmutableDictionary(),
+                                                            _options,
+                                                            [],
+                                                            channel,
+                                                            _serviceScopeFactory,
+                                                            _objectSerializer,
+                                                            _diagnosticSource,
+                                                            _consumeLogger,
+                                                            _runningCancellationToken);
+
+            await groupChannel.BasicConsumeAsync(queue: groupQueueName,
+                                                 autoAck: false,
+                                                 consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
+                                                 noLocal: false,
+                                                 exclusive: false,
+                                                 arguments: null,
+                                                 consumer: consumer,
+                                                 cancellationToken: cancellationToken);
+        }
+
+        var defaultConsumeDescriptors = new Dictionary<string, ConsumeDescriptor>();
+        foreach (var (eventName, invokerDescriptors) in _eventSubscribeDescriptors)
+        {
+            if (_options.MessageGroups.Values.Any(m => m.Messages.ContainsKey(eventName)))
             {
-                var consumeDescriptor = new ConsumeDescriptor(EventName: eventName,
-                                                              InvokerDescriptors: invokerDescriptors,
-                                                              RequeuePolicy: messageHandleOptions?.RequeuePolicy ?? MessageRequeuePolicy.Unlimited,
-                                                              RequeueDelay: messageHandleOptions?.RequeueDelay ?? RabbitMQOptions.MessageRequeueDelay);
-                defaultConsumeDescriptors.Add(eventName, consumeDescriptor);
-                //绑定到默认队列
-                await channel.QueueBindAsync(queue: defaultConsumeQueueName, exchange: exchangeName, routingKey: eventName, arguments: null, noWait: false, cancellationToken: cancellationToken);
+                continue;
             }
+
+            var consumeDescriptor = new ConsumeDescriptor(EventName: eventName,
+                                                          InvokerDescriptors: invokerDescriptors,
+                                                          RequeuePolicy: MessageRequeuePolicy.Unlimited,
+                                                          RequeueDelay: RabbitMQOptions.MessageRequeueDelay);
+            defaultConsumeDescriptors.Add(eventName, consumeDescriptor);
+            //绑定到默认队列
+            await channel.QueueBindAsync(queue: defaultConsumeQueueName, exchange: exchangeName, routingKey: eventName, arguments: null, noWait: false, cancellationToken: cancellationToken);
         }
 
         if (defaultConsumeDescriptors.Count > 0)
@@ -171,7 +217,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
             var consumer = new MultipleEventMessageConsumer(consumeDescriptors,
                                                             _options,
-                                                            standaloneEventNames,
+                                                            groupedEventNames,
                                                             channel,
                                                             _serviceScopeFactory,
                                                             _objectSerializer,
@@ -200,7 +246,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
     #region Private 方法
 
-    private Dictionary<string, object> GetQueueArguments(string standaloneQueueName)
+    private Dictionary<string, object> GetQueueArguments(string queueName)
     {
         var arguments = new Dictionary<string, object>()
         {
@@ -208,7 +254,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
             { "x-consumer-timeout", (uint)TimeSpan.FromHours(1).TotalMilliseconds },
         };
 
-        _options.QueueArgumentsSetup?.Invoke(standaloneQueueName, arguments);
+        _options.QueueArgumentsSetup?.Invoke(queueName, arguments);
 
         return arguments;
     }
@@ -230,31 +276,6 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                 throw new InvalidOperationException($"Invalid workflow consume queue name \"{finalQueueName}\"");
             }
         }
-    }
-
-    private async Task SetupStandAloneConsumerAsync(IChannel channel, string standaloneQueueName, ConsumeDescriptor consumeDescriptor, MessageHandleOptions messageHandleOptions, CancellationToken cancellationToken)
-    {
-        var queueArguments = GetQueueArguments(standaloneQueueName);
-
-        await channel.QueueDeclareAsync(queue: standaloneQueueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArguments!, noWait: false, cancellationToken: cancellationToken);
-        await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: messageHandleOptions.Qos, global: false, cancellationToken: cancellationToken);
-
-        var consumer = new StandaloneEventMessageConsumer(consumeDescriptor: consumeDescriptor,
-                                                          channel: channel,
-                                                          serviceScopeFactory: _serviceScopeFactory,
-                                                          objectSerializer: _objectSerializer,
-                                                          diagnosticSource: _diagnosticSource,
-                                                          logger: _consumeLogger,
-                                                          runningToken: _runningCancellationToken);
-
-        await channel.BasicConsumeAsync(queue: standaloneQueueName,
-                                        autoAck: false,
-                                        consumerTag: $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
-                                        noLocal: false,
-                                        exclusive: false,
-                                        arguments: null,
-                                        consumer: consumer,
-                                        cancellationToken: cancellationToken);
     }
 
     #endregion Private 方法

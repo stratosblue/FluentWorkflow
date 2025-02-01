@@ -1,5 +1,4 @@
-﻿using FluentWorkflow.Interface;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;
 
@@ -84,7 +83,7 @@ public class RabbitMQOptions
     public string? ExchangeName { get; set; } = DefaultExchangeName;
 
     /// <summary>
-    /// 全局Qos，默认为 0 不限制
+    /// 全局Qos，默认为 0 不限制 (不包括自定义消息组)
     /// </summary>
     public ushort GlobalQos { get; set; } = 0;
 
@@ -114,28 +113,38 @@ public class RabbitMQOptions
     #region Internal 属性
 
     /// <summary>
-    /// 消息处理设置
+    /// 消息组
     /// </summary>
-    internal Dictionary<string, MessageHandleOptions> MessageHandleOptions { get; } = new(StringComparer.OrdinalIgnoreCase);
+    internal Dictionary<string, MessageConsumeGroup> MessageGroups { get; } = [];
 
     #endregion Internal 属性
 
     #region Public 方法
 
     /// <summary>
-    /// 配置选项
+    /// 定义消息组
     /// </summary>
-    /// <typeparam name="TMessage"></typeparam>
-    /// <param name="setupAction"></param>
-    public void Option<TMessage>(Action<MessageHandleOptions> setupAction)
-        where TMessage : IWorkflowMessage, IEventNameDeclaration
+    /// <param name="groupName"></param>
+    /// <param name="groupBuildAction"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    public void MessageGroup(string groupName, Action<MessageConsumeGroupBuilder> groupBuildAction)
     {
-        if (!MessageHandleOptions.TryGetValue(TMessage.EventName, out var options))
+        if (MessageGroups.ContainsKey(groupName))
         {
-            options = new MessageHandleOptions();
-            MessageHandleOptions.Add(TMessage.EventName, options);
+            throw new InvalidOperationException($"There already has group \"{groupName}\".");
         }
-        setupAction(options);
+        var builder = new MessageConsumeGroupBuilder(groupName, (name, type) =>
+        {
+            foreach (var group in MessageGroups)
+            {
+                if (group.Value.Messages.ContainsKey(name))
+                {
+                    throw new InvalidOperationException($"The message \"{name}\" already defined in group \"{group.Key}\".");
+                }
+            }
+        });
+        groupBuildAction(builder);
+        MessageGroups.Add(groupName, builder.Build());
     }
 
     #endregion Public 方法
