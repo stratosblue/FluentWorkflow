@@ -1,13 +1,4 @@
 ﻿using System.ComponentModel;
-
-/* 项目“FluentWorkflow.Core (net8.0)”的未合并的更改
-在此之前:
-using FluentWorkflow.Abstractions;
-在此之后:
-using FluentWorkflow;
-using FluentWorkflow;
-using FluentWorkflow.Abstractions;
-*/
 using FluentWorkflow.Abstractions;
 
 namespace FluentWorkflow;

@@ -25,7 +25,7 @@ public static class DiagnosticConstants
     public const string MessagePublish = $"{DiagnosticName}.Message.Publish";
 
     /// <summary>
-    /// 消息 - 发送
+    /// 消息 - 接收
     /// </summary>
     public const string MessageReceived = $"{DiagnosticName}.Message.Received";
 

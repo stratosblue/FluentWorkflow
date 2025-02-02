@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace FluentWorkflow;
 
@@ -33,21 +31,4 @@ public class WorkflowException : Exception
     }
 
     #endregion Protected 构造函数
-
-    #region Public 方法
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="argument"></param>
-    /// <param name="paramName"></param>
-    public static void ThrowIfNullOrWhiteSpace([NotNull] string? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
-    {
-        if (string.IsNullOrWhiteSpace(argument))
-        {
-            throw new ArgumentException("Can not be null or whitespace.", paramName);
-        }
-    }
-
-    #endregion Public 方法
 }

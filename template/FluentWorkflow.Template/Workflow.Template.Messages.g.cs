@@ -204,9 +204,9 @@ public sealed partial class TemplateFinishedMessage : ITemplateFinishedMessage
 public sealed partial class TemplateFailureMessage : ITemplateFailureMessage, ITemplateContextCarrier, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Failure
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - <see cref="TemplateStages.Failure"/>
     /// </summary>
-    public const string EventName = "Template.Failure";
+    public const string EventName = TemplateStages.Failure;
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
@@ -230,7 +230,7 @@ public sealed partial class TemplateFailureMessage : ITemplateFailureMessage, IT
     /// <inheritdoc cref="TemplateFailureMessage"/>
     public TemplateFailureMessage(string id, TemplateWorkflowContext context, string message, string? remoteStackTrace)
     {
-        WorkflowException.ThrowIfNullOrWhiteSpace(message);
+        ArgumentException.ThrowIfNullOrWhiteSpace(message);
 
         Id = id ?? throw new ArgumentNullException(nameof(id));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -247,9 +247,9 @@ public sealed partial class TemplateFailureMessage : ITemplateFailureMessage, IT
 public sealed partial class StageStage1CAUKMessage : TemplateStageMessageBase, IStageStage1CAUK, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage1CAUK
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - <see cref="TemplateStages.Stage1CAUK"/>
     /// </summary>
-    public const string EventName = "Template.Stage1CAUK";
+    public const string EventName = TemplateStages.Stage1CAUK;
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
@@ -268,9 +268,9 @@ public sealed partial class StageStage1CAUKMessage : TemplateStageMessageBase, I
 public sealed partial class StageStage1CAUKCompletedMessage : TemplateStageCompletedMessageBase, IStageStage1CAUK, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage1CAUK.Completed
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - {<see cref="TemplateStages.Stage1CAUK"/>}.Completed
     /// </summary>
-    public const string EventName = "Template.Stage1CAUK.Completed";
+    public const string EventName = $"{TemplateStages.Stage1CAUK}.Completed";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
@@ -289,9 +289,9 @@ public sealed partial class StageStage1CAUKCompletedMessage : TemplateStageCompl
 public sealed partial class StageStage2BPTGMessage : TemplateStageMessageBase, IStageStage2BPTG, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage2BPTG
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - <see cref="TemplateStages.Stage2BPTG"/>
     /// </summary>
-    public const string EventName = "Template.Stage2BPTG";
+    public const string EventName = TemplateStages.Stage2BPTG;
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
@@ -310,9 +310,9 @@ public sealed partial class StageStage2BPTGMessage : TemplateStageMessageBase, I
 public sealed partial class StageStage2BPTGCompletedMessage : TemplateStageCompletedMessageBase, IStageStage2BPTG, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage2BPTG.Completed
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - {<see cref="TemplateStages.Stage2BPTG"/>}.Completed
     /// </summary>
-    public const string EventName = "Template.Stage2BPTG.Completed";
+    public const string EventName = $"{TemplateStages.Stage2BPTG}.Completed";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
@@ -331,9 +331,9 @@ public sealed partial class StageStage2BPTGCompletedMessage : TemplateStageCompl
 public sealed partial class StageStage3AWBNMessage : TemplateStageMessageBase, IStageStage3AWBN, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage3AWBN
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - <see cref="TemplateStages.Stage3AWBN"/>
     /// </summary>
-    public const string EventName = "Template.Stage3AWBN";
+    public const string EventName = TemplateStages.Stage3AWBN;
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
@@ -352,9 +352,9 @@ public sealed partial class StageStage3AWBNMessage : TemplateStageMessageBase, I
 public sealed partial class StageStage3AWBNCompletedMessage : TemplateStageCompletedMessageBase, IStageStage3AWBN, IEventNameDeclaration
 {
     /// <summary>
-    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - Template.Stage3AWBN.Completed
+    /// <inheritdoc cref="IEventNameDeclaration.EventName"/> - {<see cref="TemplateStages.Stage3AWBN"/>}.Completed
     /// </summary>
-    public const string EventName = "Template.Stage3AWBN.Completed";
+    public const string EventName = $"{TemplateStages.Stage3AWBN}.Completed";
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;

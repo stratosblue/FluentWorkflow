@@ -32,6 +32,8 @@ public static class FluentWorkflowServiceCollectionExtensions
 
         services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowContinuatorHub), typeof(WorkflowContinuatorHub), ServiceLifetime.Scoped));
 
+        services.TryAddSingleton<IMessageConsumeDispatcher, MessageConsumeDispatcher>();
+
         return new FluentWorkflowBuilder(services);
     }
 

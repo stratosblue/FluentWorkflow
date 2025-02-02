@@ -242,7 +242,7 @@ internal abstract class EventMessageBasicConsumer : AsyncDefaultBasicConsumer
 
         DiagnosticSource.MessageReceived(message);
 
-        var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetType);
+        var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetHandlerType);
         return activity is null
                ? InnerInvokeAsync(invokerDescriptor, message, handler, cancellationToken)
                : InnerInvokeWithActivityAsync(invokerDescriptor, message, handler, activity, cancellationToken);

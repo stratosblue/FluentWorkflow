@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Collections.Immutable;
+using FluentWorkflow.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;
@@ -26,21 +28,22 @@ public static class MessageConsumeGroupBuildExtensions
     }
 
     /// <summary>
-    /// 使用Qos信道工厂
+    /// 使用Qos信道初始化回调
     /// </summary>
     /// <param name="builder"></param>
     /// <param name="qos"></param>
     /// <returns></returns>
-    public static MessageConsumeGroupBuilder WithQosChannelFactory(this MessageConsumeGroupBuilder builder, ushort qos)
+    public static MessageConsumeGroupBuilder WithQosChannelInitialization(this MessageConsumeGroupBuilder builder, ushort qos)
     {
-        builder.WithChannelFactory(CreateQosChannelAsync);
+        builder.WithInitialization(CreateQosChannelAsync);
         return builder;
 
-        async Task<ChannelScope> CreateQosChannelAsync(IServiceProvider serviceProvider,
-                                                       string queueName,
-                                                       Dictionary<string, object> queueArguments,
-                                                       MessageConsumeGroup messageConsumeGroup,
-                                                       CancellationToken cancellationToken)
+        async Task<MessageConsumeGroupInitializationResult> CreateQosChannelAsync(IServiceProvider serviceProvider,
+                                                                                  string queueName,
+                                                                                  Dictionary<string, object> queueArguments,
+                                                                                  MessageConsumeGroup messageConsumeGroup,
+                                                                                  ImmutableDictionary<string, ImmutableArray<WorkflowEventInvokerDescriptor>> eventSubscribeDescriptors,
+                                                                                  CancellationToken cancellationToken)
         {
             var connectionProvider = serviceProvider.GetRequiredService<IRabbitMQConnectionProvider>();
             var connection = await connectionProvider.GetAsync(cancellationToken);
@@ -48,7 +51,8 @@ public static class MessageConsumeGroupBuildExtensions
             {
                 var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
                 await DeclareQosQueueAsync(channel, queueName, queueArguments, qos, cancellationToken);
-                return new ChannelScope(channel, connection.Dispose);
+                var channelScope = new ChannelScope(channel, connection.Dispose);
+                return MessageConsumeGroupInitializationResult.CreateByChannelScope(channelScope);
             }
             catch
             {

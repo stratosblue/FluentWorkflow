@@ -1,4 +1,7 @@
-﻿namespace FluentWorkflow.Abstractions;
+﻿using System.ComponentModel;
+using FluentWorkflow.MessageDispatch;
+
+namespace FluentWorkflow.Abstractions;
 
 /// <summary>
 /// 事件消息处理器执行委托
@@ -32,9 +35,14 @@ public class WorkflowEventInvokerDescriptor : IEquatable<WorkflowEventInvokerDes
     public Type MessageType { get; }
 
     /// <summary>
-    /// 目标类型
+    /// 目标处理器类型
     /// </summary>
-    public Type TargetType { get; }
+    public Type TargetHandlerType { get; }
+
+    /// <summary>
+    /// 传输类型 - <see cref="IDataTransmissionModel{TMessage}"/>
+    /// </summary>
+    public Type TransmissionType { get; }
 
     /// <summary>
     /// 工作流程名称
@@ -46,28 +54,47 @@ public class WorkflowEventInvokerDescriptor : IEquatable<WorkflowEventInvokerDes
     #region Public 构造函数
 
     /// <inheritdoc cref="WorkflowEventInvokerDescriptor"/>
-    public WorkflowEventInvokerDescriptor(string workflowName, string eventName, Type messageType, Type targetType, EventMessageHandlerInvokeDelegate handlerInvokeDelegate)
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public WorkflowEventInvokerDescriptor(string workflowName,
+                                          string eventName,
+                                          Type messageType,
+                                          Type targetHandlerType,
+                                          Type transmissionType,
+                                          EventMessageHandlerInvokeDelegate handlerInvokeDelegate)
     {
-        if (string.IsNullOrWhiteSpace(workflowName))
-        {
-            throw new ArgumentException($"“{nameof(workflowName)}”不能为 null 或空白。", nameof(workflowName));
-        }
-
-        if (string.IsNullOrWhiteSpace(eventName))
-        {
-            throw new ArgumentException($"“{nameof(eventName)}”不能为 null 或空。", nameof(eventName));
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(workflowName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(eventName);
 
         WorkflowName = workflowName;
         EventName = eventName;
         MessageType = messageType ?? throw new ArgumentNullException(nameof(messageType));
-        TargetType = targetType ?? throw new ArgumentNullException(nameof(targetType));
+        TargetHandlerType = targetHandlerType ?? throw new ArgumentNullException(nameof(targetHandlerType));
+        TransmissionType = transmissionType ?? throw new ArgumentNullException(nameof(transmissionType));
         HandlerInvokeDelegate = handlerInvokeDelegate ?? throw new ArgumentNullException(nameof(handlerInvokeDelegate));
     }
 
     #endregion Public 构造函数
 
     #region Public 方法
+
+    /// <summary>
+    /// 创建一个 <typeparamref name="TMessage"/> 的 <see cref="WorkflowEventInvokerDescriptor"/>
+    /// </summary>
+    /// <typeparam name="TMessage"></typeparam>
+    /// <param name="workflowName"></param>
+    /// <param name="targetHandlerType"></param>
+    /// <param name="handlerInvokeDelegate"></param>
+    /// <returns></returns>
+    public static WorkflowEventInvokerDescriptor Create<TMessage>(string workflowName, Type targetHandlerType, EventMessageHandlerInvokeDelegate handlerInvokeDelegate)
+        where TMessage : IWorkflowMessage, IEventNameDeclaration
+    {
+        return new WorkflowEventInvokerDescriptor(workflowName: workflowName,
+                                                  eventName: TMessage.EventName,
+                                                  messageType: typeof(TMessage),
+                                                  targetHandlerType: targetHandlerType,
+                                                  transmissionType: typeof(DataTransmissionModel<TMessage>),
+                                                  handlerInvokeDelegate: handlerInvokeDelegate);
+    }
 
     /// <inheritdoc/>
     public bool Equals(WorkflowEventInvokerDescriptor? other)
@@ -76,19 +103,20 @@ public class WorkflowEventInvokerDescriptor : IEquatable<WorkflowEventInvokerDes
                && other.WorkflowName == WorkflowName
                && other.EventName == EventName
                && other.MessageType == MessageType
-               && other.TargetType == TargetType;
+               && other.TargetHandlerType == TargetHandlerType
+               && other.TransmissionType == TransmissionType;
     }
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => Equals(obj as WorkflowEventInvokerDescriptor);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(WorkflowName, EventName, MessageType, TargetType);
+    public override int GetHashCode() => HashCode.Combine(WorkflowName, EventName, MessageType, TargetHandlerType, TransmissionType);
 
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"[{WorkflowName}].[{EventName}] - Handler: {TargetType} , Message: {MessageType}";
+        return $"[{WorkflowName}].[{EventName}] - Handler: {TargetHandlerType} , Message: {MessageType}, TransmissionType: {TransmissionType}";
     }
 
     #endregion Public 方法

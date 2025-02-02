@@ -7,15 +7,25 @@ namespace FluentWorkflow.RabbitMQ;
 /// </summary>
 /// <param name="channel"></param>
 /// <param name="disposeCallback"></param>
-public class ChannelScope(IChannel channel, Action disposeCallback) : IDisposable
+public sealed class ChannelScope(IChannel channel, Action disposeCallback) : IDisposable
 {
-    /// <inheritdoc cref="IChannel"/>
-    public IChannel Channel { get; } = channel;
+    #region Public 属性
+
+    /// <summary>
+    /// 当前信道域对应的 <see cref="IChannel"/>
+    /// </summary>
+    public IChannel Channel { get; } = channel ?? throw new ArgumentNullException(nameof(channel));
+
+    #endregion Public 属性
+
+    #region Public 方法
 
     /// <inheritdoc/>
-    public virtual void Dispose()
+    public void Dispose()
     {
         Channel.Dispose();
         disposeCallback?.Invoke();
     }
+
+    #endregion Public 方法
 }

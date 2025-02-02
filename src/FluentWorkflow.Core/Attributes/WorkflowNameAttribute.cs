@@ -24,7 +24,7 @@ public class WorkflowNameAttribute : Attribute
     /// <exception cref="ArgumentException"></exception>
     public WorkflowNameAttribute(string name)
     {
-        WorkflowException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         Name = name;
     }

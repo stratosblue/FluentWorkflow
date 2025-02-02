@@ -41,7 +41,9 @@ public class WorkflowBuildStateCollection : IEnumerable<WorkflowBuildState>
         where THandler : IWorkflowMessageHandler<TMessage>, TWorkflowBoundary
         where TMessage : IWorkflowMessage, IEventNameDeclaration, TWorkflowBoundary
     {
-        var descriptor = new WorkflowEventInvokerDescriptor(TWorkflow.WorkflowName, TMessage.EventName, typeof(TMessage), typeof(THandler), InvokeHandler);
+        var descriptor = WorkflowEventInvokerDescriptor.Create<TMessage>(workflowName: TWorkflow.WorkflowName,
+                                                                         targetHandlerType: typeof(THandler),
+                                                                         handlerInvokeDelegate: InvokeHandler);
 
         AddEventInvokerDescriptor(descriptor);
 

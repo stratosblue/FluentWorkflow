@@ -61,14 +61,14 @@ internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
                 var serviceProvider = serviceScope.ServiceProvider;
                 if (invokerDescriptors.Length == 1)
                 {
-                    var handler = serviceProvider.GetRequiredService(invokerDescriptors[0].TargetType);
+                    var handler = serviceProvider.GetRequiredService(invokerDescriptors[0].TargetHandlerType);
                     await invokerDescriptors[0].HandlerInvokeDelegate(handler, messageClone, CancellationToken.None);
                 }
                 else
                 {
                     var tasks = invokerDescriptors.Select(invokerDescriptor =>
                     {
-                        var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetType);
+                        var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetHandlerType);
                         return invokerDescriptor.HandlerInvokeDelegate(handler, messageClone, CancellationToken.None);
                     }).ToList();
 

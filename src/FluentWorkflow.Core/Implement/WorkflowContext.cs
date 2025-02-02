@@ -61,7 +61,7 @@ public abstract class WorkflowContext
     /// <exception cref="ArgumentException"></exception>
     public WorkflowContext(string id) : base(StringComparer.Ordinal)
     {
-        WorkflowException.ThrowIfNullOrWhiteSpace(id);
+        ArgumentException.ThrowIfNullOrWhiteSpace(id);
 
         var metadata = new WorkflowContextMetadata(ValidWorkflowName(), id);
         var state = new WorkflowContextState(string.Empty, WorkflowStageState.Unknown);
@@ -180,7 +180,7 @@ public abstract class WorkflowContext
     {
         var name = WorkflowName;
 
-        WorkflowException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         return name;
     }

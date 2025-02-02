@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Abstractions;
 using FluentWorkflow.Diagnostics;
-using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow.Scheduler;
@@ -61,33 +60,26 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
     /// <inheritdoc/>
     public virtual Task HandleAsync(TStageCompletedMessage message, CancellationToken cancellationToken)
     {
-        var activity = Activity.Current;
-        activity?.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}"));
-
-        var task = DoInputAsync(message, cancellationToken);
-        if (activity != null)
+        if (Activity.Current is { } activity)
         {
+            activity.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}"));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "completed");
         }
-        return task;
+        return DoInputAsync(message, cancellationToken);
     }
 
     /// <inheritdoc/>
     public virtual Task HandleAsync(TFailureMessage message, CancellationToken cancellationToken)
     {
-        var activity = Activity.Current;
-        activity?.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}"));
-
-        var task = DoInputAsync(message, cancellationToken);
-        if (activity != null)
+        if (Activity.Current is { } activity)
         {
+            activity.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}"));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "failure");
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.FailureMessage, message.Message);
-            task.DisposeActivityWhenTaskCompleted(activity);
         }
-        return task;
+        return DoInputAsync(message, cancellationToken);
     }
 
     #endregion Public 方法

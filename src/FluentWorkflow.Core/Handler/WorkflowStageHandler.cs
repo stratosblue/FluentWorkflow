@@ -347,7 +347,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
         {
             ThrowIfCommitted();
 
-            WorkflowException.ThrowIfNullOrWhiteSpace(alias);
+            ArgumentException.ThrowIfNullOrWhiteSpace(alias);
 
             //检查当前服务是否有对应工作流程的结果观察器，否则不允许启动
             if (!ServiceProviderIsService.IsService(typeof(IWorkflowResultObserver<TWorkflow>)))

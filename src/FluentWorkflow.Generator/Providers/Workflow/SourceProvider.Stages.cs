@@ -62,12 +62,12 @@ public static class {WorkflowName}Stages
         builder.AppendLine($@"/// <summary>
     /// 阶段 Completion
     /// </summary>
-    public const string Completion = ""{WorkflowName}.Stage.Completion"";
+    public const string Completion = ""{WorkflowName}.Stage.@Completion"";
 
     /// <summary>
     /// 阶段 Failure
     /// </summary>
-    public const string Failure = ""{WorkflowName}.Stage.Failure"";
+    public const string Failure = ""{WorkflowName}.Stage.@Failure"";
 ");
 
         builder.AppendLine($@"

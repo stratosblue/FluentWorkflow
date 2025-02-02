@@ -36,15 +36,9 @@ public class WorkflowEventSubscribeDescriptor : IEnumerable<WorkflowEventInvoker
     /// <inheritdoc cref="WorkflowEventSubscribeDescriptor"/>
     public WorkflowEventSubscribeDescriptor(string workflowName, string eventName)
     {
-        if (string.IsNullOrWhiteSpace(workflowName))
-        {
-            throw new ArgumentException($"“{nameof(workflowName)}”不能为 null 或空白。", nameof(workflowName));
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(workflowName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(eventName);
 
-        if (string.IsNullOrWhiteSpace(eventName))
-        {
-            throw new ArgumentException($"“{nameof(eventName)}”不能为 null 或空白。", nameof(eventName));
-        }
         WorkflowName = workflowName;
         EventName = eventName;
     }

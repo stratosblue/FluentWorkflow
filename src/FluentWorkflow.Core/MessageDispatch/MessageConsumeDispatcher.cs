@@ -81,24 +81,39 @@ public class MessageConsumeDispatcher : IMessageConsumeDispatcher
     {
         Logger.LogDebug("Start consume message {EventName} - {Message}.", eventName, message);
 
-        var invokerDescriptors = consumeDescriptor.InvokerDescriptors;
+        Exception? exception = null;
+        try
+        {
+            DiagnosticSource.MessageReceived(message);
 
-        if (consumeDescriptor.SingleWorkflowEventInvoker)
-        {
-            await using var serviceScope = ServiceScopeFactory.CreateAsyncScope();
-            var serviceProvider = serviceScope.ServiceProvider;
-            await InnerInvokeAsync(message, invokerDescriptors[0], serviceProvider, cancellationToken);
-        }
-        else
-        {
-            var tasks = invokerDescriptors.Select([StackTraceHidden][DebuggerStepThrough] async (invokerDescriptor) =>
+            var invokerDescriptors = consumeDescriptor.InvokerDescriptors;
+
+            if (consumeDescriptor.SingleWorkflowEventInvoker)
             {
                 await using var serviceScope = ServiceScopeFactory.CreateAsyncScope();
                 var serviceProvider = serviceScope.ServiceProvider;
-                await InnerInvokeAsync(message, invokerDescriptor, serviceProvider, cancellationToken);
-            }).ToList();
+                await InnerInvokeAsync(message, invokerDescriptors[0], serviceProvider, cancellationToken);
+            }
+            else
+            {
+                var tasks = invokerDescriptors.Select([StackTraceHidden][DebuggerStepThrough] async (invokerDescriptor) =>
+                {
+                    await using var serviceScope = ServiceScopeFactory.CreateAsyncScope();
+                    var serviceProvider = serviceScope.ServiceProvider;
+                    await InnerInvokeAsync(message, invokerDescriptor, serviceProvider, cancellationToken);
+                }).ToList();
 
-            await Task.WhenAll(tasks);
+                await Task.WhenAll(tasks);
+            }
+        }
+        catch (Exception ex)
+        {
+            exception = ex;
+            throw;
+        }
+        finally
+        {
+            DiagnosticSource.MessageHandleFinished(message, exception);
         }
         Logger.LogDebug("Consume message {EventName} - {Message} successfully.", eventName, message);
     }
@@ -111,22 +126,9 @@ public class MessageConsumeDispatcher : IMessageConsumeDispatcher
     [DebuggerStepThrough]
     private async Task InnerInvokeAsync(object message, WorkflowEventInvokerDescriptor invokerDescriptor, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        Exception? exception = null;
-        try
-        {
-            var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetType);
+        var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetHandlerType);
 
-            await invokerDescriptor.HandlerInvokeDelegate(handler, message, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            exception = ex;
-            throw;
-        }
-        finally
-        {
-            DiagnosticSource.MessageHandleFinished(message, exception);
-        }
+        await invokerDescriptor.HandlerInvokeDelegate(handler, message, cancellationToken);
     }
 
     #endregion Private 方法

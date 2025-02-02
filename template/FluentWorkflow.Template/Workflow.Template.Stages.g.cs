@@ -48,12 +48,12 @@ public static class TemplateStages
     /// <summary>
     /// 阶段 Completion
     /// </summary>
-    public const string Completion = "Template.Stage.Completion";
+    public const string Completion = "Template.Stage.@Completion";
 
     /// <summary>
     /// 阶段 Failure
     /// </summary>
-    public const string Failure = "Template.Stage.Failure";
+    public const string Failure = "Template.Stage.@Failure";
 
     /// <inheritdoc cref="TemplateStages"/>
     static TemplateStages()

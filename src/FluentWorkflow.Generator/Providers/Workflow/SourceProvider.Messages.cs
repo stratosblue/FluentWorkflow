@@ -224,9 +224,9 @@ public sealed partial class {WorkflowName}FinishedMessage : I{WorkflowName}Finis
 public sealed partial class {WorkflowName}FailureMessage : I{WorkflowName}FailureMessage, I{WorkflowName}ContextCarrier, IEventNameDeclaration
 {{
     /// <summary>
-    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowName}.Failure
+    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - <see cref=""{Names.WorkflowNameStagesClass}.Failure""/>
     /// </summary>
-    public const string EventName = ""{WorkflowName}.Failure"";
+    public const string EventName = {Names.WorkflowNameStagesClass}.Failure;
 
     /// <inheritdoc cref=""EventName""/>
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
@@ -250,7 +250,7 @@ public sealed partial class {WorkflowName}FailureMessage : I{WorkflowName}Failur
     /// <inheritdoc cref=""{WorkflowName}FailureMessage""/>
     public {WorkflowName}FailureMessage(string id, {WorkflowClassName}Context context, string message, string? remoteStackTrace)
     {{
-        WorkflowException.ThrowIfNullOrWhiteSpace(message);
+        ArgumentException.ThrowIfNullOrWhiteSpace(message);
 
         Id = id ?? throw new ArgumentNullException(nameof(id));
         Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -270,9 +270,9 @@ public sealed partial class {WorkflowName}FailureMessage : I{WorkflowName}Failur
 public sealed partial class Stage{stage.Name}Message : {WorkflowName}StageMessageBase, IStage{stage.Name}, IEventNameDeclaration
 {{
     /// <summary>
-    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowName}.{stage.Name}
+    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - <see cref=""{Names.WorkflowNameStagesClass}.{stage.Name}""/>
     /// </summary>
-    public const string EventName = ""{WorkflowName}.{stage.Name}"";
+    public const string EventName = {Names.WorkflowNameStagesClass}.{stage.Name};
 
     /// <inheritdoc cref=""EventName""/>
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
@@ -292,9 +292,9 @@ public sealed partial class Stage{stage.Name}Message : {WorkflowName}StageMessag
 public sealed partial class Stage{stage.Name}CompletedMessage : {WorkflowName}StageCompletedMessageBase, IStage{stage.Name}, IEventNameDeclaration
 {{
     /// <summary>
-    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {WorkflowName}.{stage.Name}.Completed
+    /// <inheritdoc cref=""IEventNameDeclaration.EventName""/> - {{<see cref=""{Names.WorkflowNameStagesClass}.{stage.Name}""/>}}.Completed
     /// </summary>
-    public const string EventName = ""{WorkflowName}.{stage.Name}.Completed"";
+    public const string EventName = $""{{{Names.WorkflowNameStagesClass}.{stage.Name}}}.Completed"";
 
     /// <inheritdoc cref=""EventName""/>
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;

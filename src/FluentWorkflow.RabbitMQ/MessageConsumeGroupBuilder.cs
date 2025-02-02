@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using FluentWorkflow.Abstractions;
-using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;
 
@@ -17,7 +16,7 @@ public class MessageConsumeGroupBuilder(string groupName, Action<string, Type> m
 
     private readonly Dictionary<string, Type> _messages = [];
 
-    private CreateChannelDelegate? _channelFactory;
+    private MessageConsumeGroupInitializationDelegate? _groupInitializationCallback;
 
     #endregion Private 字段
 
@@ -43,11 +42,11 @@ public class MessageConsumeGroupBuilder(string groupName, Action<string, Type> m
     /// <exception cref="InvalidOperationException"></exception>
     public MessageConsumeGroup Build()
     {
-        if (_channelFactory is null)
+        if (_groupInitializationCallback is null)
         {
-            throw new InvalidOperationException("Must set channel factory first.");
+            throw new InvalidOperationException("Must set initialization callback first.");
         }
-        return new MessageConsumeGroup(groupName, _messages.ToImmutableDictionary(), _channelFactory, _messageHandleOptions);
+        return new MessageConsumeGroup(groupName, _messages.ToImmutableDictionary(), _groupInitializationCallback, _messageHandleOptions);
     }
 
     /// <summary>
@@ -61,15 +60,15 @@ public class MessageConsumeGroupBuilder(string groupName, Action<string, Type> m
     }
 
     /// <summary>
-    /// 设置信道工厂
+    /// 设置初始化回调
     /// </summary>
-    /// <param name="channelFactory"></param>
+    /// <param name="groupInitializationCallback"></param>
     /// <returns></returns>
-    public MessageConsumeGroupBuilder WithChannelFactory(CreateChannelDelegate channelFactory)
+    public MessageConsumeGroupBuilder WithInitialization(MessageConsumeGroupInitializationDelegate groupInitializationCallback)
     {
-        ArgumentNullException.ThrowIfNull(channelFactory);
+        ArgumentNullException.ThrowIfNull(groupInitializationCallback);
 
-        _channelFactory = channelFactory;
+        _groupInitializationCallback = groupInitializationCallback;
         return this;
     }
 

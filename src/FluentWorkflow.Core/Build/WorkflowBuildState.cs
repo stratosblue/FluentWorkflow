@@ -28,10 +28,7 @@ public class WorkflowBuildState : IEnumerable<WorkflowEventSubscribeDescriptor>
     /// <inheritdoc cref="WorkflowBuildState"/>
     public WorkflowBuildState(string workflowName)
     {
-        if (string.IsNullOrWhiteSpace(workflowName))
-        {
-            throw new ArgumentException($"“{nameof(workflowName)}”不能为 null 或空白。", nameof(workflowName));
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(workflowName);
 
         WorkflowName = workflowName;
     }

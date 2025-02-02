@@ -54,9 +54,9 @@ public class WorkflowFailureException : WorkflowException
     /// <inheritdoc cref="WorkflowFailureException"/>
     public WorkflowFailureException(string id, string stage, string message, string? remoteStackTrace, IWorkflowContext context) : base(message)
     {
-        ThrowIfNullOrWhiteSpace(id);
-        ThrowIfNullOrWhiteSpace(stage);
-        ThrowIfNullOrWhiteSpace(message);
+        ArgumentException.ThrowIfNullOrWhiteSpace(id);
+        ArgumentException.ThrowIfNullOrWhiteSpace(stage);
+        ArgumentException.ThrowIfNullOrWhiteSpace(message);
 
         ArgumentNullException.ThrowIfNull(context);
         Id = id;
