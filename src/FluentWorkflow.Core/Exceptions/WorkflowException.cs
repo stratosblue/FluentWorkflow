@@ -18,7 +18,7 @@ public class WorkflowException : Exception
     }
 
     /// <inheritdoc cref="WorkflowException"/>
-    public WorkflowException(string message, Exception inner) : base(message, inner)
+    public WorkflowException(string message, Exception? innerException) : base(message, innerException)
     {
     }
 

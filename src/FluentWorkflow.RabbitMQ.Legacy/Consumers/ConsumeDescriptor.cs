@@ -1,4 +1,4 @@
-﻿using FluentWorkflow.Build;
+﻿using FluentWorkflow.Abstractions;
 
 namespace FluentWorkflow.RabbitMQ;
 

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Immutable;
+using FluentWorkflow.Abstractions;
 using FluentWorkflow.Build;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace FluentWorkflow;
+namespace FluentWorkflow.MessageDispatch;
 
 internal class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
 {

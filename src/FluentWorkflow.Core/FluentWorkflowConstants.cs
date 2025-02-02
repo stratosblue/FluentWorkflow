@@ -46,11 +46,6 @@ public static class FluentWorkflowConstants
         public const string Metadata = "-x-context-metadata";
 
         /// <summary>
-        /// 父追踪上下文
-        /// </summary>
-        public const string ParentTraceContext = "-x-parent-trace-context";
-
-        /// <summary>
         /// 父工作流程
         /// </summary>
         public const string ParentWorkflow = "-x-context-parent-workflow";

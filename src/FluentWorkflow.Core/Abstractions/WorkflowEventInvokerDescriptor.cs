@@ -1,4 +1,4 @@
-﻿namespace FluentWorkflow.Build;
+﻿namespace FluentWorkflow.Abstractions;
 
 /// <summary>
 /// 事件消息处理器执行委托

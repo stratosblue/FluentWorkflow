@@ -6,7 +6,7 @@ namespace FluentWorkflow;
 /// 工作流程无效操作异常
 /// </summary>
 [Serializable]
-public class WorkflowInvalidOperationException : Exception
+public class WorkflowInvalidOperationException : WorkflowException
 {
     #region Public 构造函数
 
