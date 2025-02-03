@@ -11,9 +11,9 @@ internal class GenerateContext
 
     public ImmutableArray<StageName> Stages { get; }
 
-    public WorkflowDeclaration WorkflowDeclaration { get; }
-
     public string Usings { get; }
+
+    public WorkflowDeclaration WorkflowDeclaration { get; }
 
     #endregion Public 属性
 

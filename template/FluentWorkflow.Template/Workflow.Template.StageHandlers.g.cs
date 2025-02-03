@@ -130,7 +130,7 @@ public abstract partial class TemplateStageHandler<TStage, TStageMessage, TStage
 
         var failureInformation = context.GetFailureInformation();
         var failureMessage = failureInformation?.Message ?? "Unknown error";
-        var failureStackTrace = failureInformation.StackTrace;
+        var failureStackTrace = failureInformation?.StackTrace;
 
         var workflowFailureMessage = new TemplateFailureMessage(WorkflowMessageIdProvider.Generate(), typedContext, failureMessage, failureStackTrace);
         await MessageDispatcher.PublishAsync(workflowFailureMessage, cancellationToken);

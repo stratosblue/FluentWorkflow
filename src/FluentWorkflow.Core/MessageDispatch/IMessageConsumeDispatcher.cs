@@ -8,6 +8,8 @@ namespace FluentWorkflow.MessageDispatch;
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public interface IMessageConsumeDispatcher
 {
+    #region Public 方法
+
     /// <summary>
     /// 调度消息
     /// </summary>
@@ -16,4 +18,6 @@ public interface IMessageConsumeDispatcher
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public Task DispatchAsync(string eventName, object message, CancellationToken cancellationToken);
+
+    #endregion Public 方法
 }

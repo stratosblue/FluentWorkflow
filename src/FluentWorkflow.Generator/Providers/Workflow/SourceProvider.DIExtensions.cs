@@ -26,7 +26,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// 
+///
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public static class {WorkflowClassName}DIExtensions

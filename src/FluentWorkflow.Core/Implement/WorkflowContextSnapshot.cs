@@ -20,16 +20,16 @@ public sealed class WorkflowContextSnapshot
     #region Public 属性
 
     /// <inheritdoc/>
-    public WorkflowContextMetadata Metadata => GetRequiredKey<WorkflowContextMetadata>(FluentWorkflowConstants.ContextKeys.Metadata);
-
-    /// <inheritdoc/>
-    public WorkflowContextState State => GetRequiredKey<ImmutableWorkflowContextState>(FluentWorkflowConstants.ContextKeys.State);
-
-    /// <inheritdoc/>
     public string Id => Metadata.Id;
 
     /// <inheritdoc/>
+    public WorkflowContextMetadata Metadata => GetRequiredKey<WorkflowContextMetadata>(FluentWorkflowConstants.ContextKeys.Metadata);
+
+    /// <inheritdoc/>
     public string Stage => State.Stage;
+
+    /// <inheritdoc/>
+    public WorkflowContextState State => GetRequiredKey<ImmutableWorkflowContextState>(FluentWorkflowConstants.ContextKeys.State);
 
     /// <summary>
     /// 工作流程名称
@@ -68,23 +68,6 @@ public sealed class WorkflowContextSnapshot
 
     WorkflowContextSnapshot? IWorkflowContext.Parent => _rawValues.InnerGet<WorkflowContextSnapshot>(null, FluentWorkflowConstants.ContextKeys.ParentWorkflow);
 
-    IReadOnlyDictionary<string, string> IWorkflowContext.GetSnapshot() => _rawValues.GetSnapshot();
-
-    TValue? IWorkflowContext.GetValue<TValue>(string key) where TValue : default => _rawValues.InnerGet<TValue>(default, key);
-
-    void IWorkflowContext.SetCurrentStage(string stage) => throw new InvalidOperationException();
-
-    void IWorkflowContext.SetParent(WorkflowContextSnapshot parent) => throw new InvalidOperationException();
-
-    void IWorkflowContext.SetValue<TValue>(string key, TValue? value) where TValue : default
-    {
-        if (FluentWorkflowConstants.ContextKeys.IsInitOnlyKey(key))
-        {
-            throw new InvalidOperationException($"Can not set init only key \"{key}\".");
-        }
-        _rawValues.InnerSet(value, key);
-    }
-
     void IWorkflowContext.ApplyChanges(IWorkflowContext snapshotContext)
     {
         var sourceSnapshot = snapshotContext.GetSnapshot();
@@ -102,6 +85,23 @@ public sealed class WorkflowContextSnapshot
                 _rawValues.ObjectContainer.Remove(key);
             }
         }
+    }
+
+    IReadOnlyDictionary<string, string> IWorkflowContext.GetSnapshot() => _rawValues.GetSnapshot();
+
+    TValue? IWorkflowContext.GetValue<TValue>(string key) where TValue : default => _rawValues.InnerGet<TValue>(default, key);
+
+    void IWorkflowContext.SetCurrentStage(string stage) => throw new InvalidOperationException();
+
+    void IWorkflowContext.SetParent(WorkflowContextSnapshot parent) => throw new InvalidOperationException();
+
+    void IWorkflowContext.SetValue<TValue>(string key, TValue? value) where TValue : default
+    {
+        if (FluentWorkflowConstants.ContextKeys.IsInitOnlyKey(key))
+        {
+            throw new InvalidOperationException($"Can not set init only key \"{key}\".");
+        }
+        _rawValues.InnerSet(value, key);
     }
 
     #endregion IWorkflowContext

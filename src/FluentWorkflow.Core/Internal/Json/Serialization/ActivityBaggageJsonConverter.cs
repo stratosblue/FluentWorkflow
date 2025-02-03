@@ -16,6 +16,7 @@ internal sealed class ActivityBaggageJsonConverter : JsonConverter<IEnumerable<K
                     result.Add(new(item.Name, item.Value.GetString()));
                 }
                 return result;
+
             case JsonValueKind.Undefined:
             case JsonValueKind.Null:
                 return null;

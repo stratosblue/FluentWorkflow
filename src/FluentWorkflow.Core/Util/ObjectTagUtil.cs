@@ -30,9 +30,11 @@ public static class ObjectTagUtil
             {
                 case '=':
                     break;
+
                 case '+' or '/':
                     builder.Append('_');
                     break;
+
                 default:
                     builder.Append(current);
                     break;

@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿#pragma warning disable CS8618
+
+using System.Runtime.Serialization;
 
 namespace FluentWorkflow;
 

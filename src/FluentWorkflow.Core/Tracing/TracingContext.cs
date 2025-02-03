@@ -100,17 +100,17 @@ public readonly struct TracingContext
     public static TracingContext Capture() => Activity.Current is { } activity ? new(activity) : throw new InvalidOperationException("There is currently no tracing.");
 
     /// <summary>
-    /// 尝试捕获当前上下文
-    /// </summary>
-    /// <returns></returns>
-    public static TracingContext? TryCapture() => Activity.Current is { } activity ? new(activity) : null;
-
-    /// <summary>
     /// 创建上下文
     /// </summary>
     /// <param name="activity"></param>
     /// <returns></returns>
     public static TracingContext Create(Activity activity) => new(activity);
+
+    /// <summary>
+    /// 尝试捕获当前上下文
+    /// </summary>
+    /// <returns></returns>
+    public static TracingContext? TryCapture() => Activity.Current is { } activity ? new(activity) : null;
 
     #endregion Util
 }

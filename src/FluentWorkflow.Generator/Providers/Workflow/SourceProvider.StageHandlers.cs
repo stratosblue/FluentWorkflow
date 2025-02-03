@@ -131,7 +131,7 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
 
         var failureInformation = context.GetFailureInformation();
         var failureMessage = failureInformation?.Message ?? ""Unknown error"";
-        var failureStackTrace = failureInformation.StackTrace;
+        var failureStackTrace = failureInformation?.StackTrace;
 
         var workflowFailureMessage = new {WorkflowName}FailureMessage(WorkflowMessageIdProvider.Generate(), typedContext, failureMessage, failureStackTrace);
         await MessageDispatcher.PublishAsync(workflowFailureMessage, cancellationToken);

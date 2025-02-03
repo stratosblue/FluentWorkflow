@@ -6,8 +6,12 @@
 public enum GeneratorAdditional
 {
     AbpFoundation,
+
     CAPFoundation,
+
     AbpMessageDispatcher,
+
     CAPMessageDispatcher,
+
     RedisAwaitProcessor,
 }

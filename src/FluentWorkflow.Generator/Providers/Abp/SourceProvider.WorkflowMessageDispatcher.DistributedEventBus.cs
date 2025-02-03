@@ -58,7 +58,7 @@ internal partial class AbpDistributedWorkflowMessageDispatcher : WorkflowMessage
 }}
 
 /// <summary>
-/// 
+///
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public static partial class AbpDistributedWorkflowMessageDispatcherDIExtensions

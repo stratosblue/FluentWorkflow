@@ -219,13 +219,6 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
 
     #region Private 方法
 
-    private string PureCurrentContext(IWorkflowContext context)
-    {
-        var pureCurrentContext = new Dictionary<string, string>(context.GetSnapshot());
-        pureCurrentContext.Remove(FluentWorkflowConstants.ContextKeys.ParentWorkflow);
-        return _objectSerializer.Serialize(pureCurrentContext);
-    }
-
     private async Task<Dictionary<string, IWorkflowContext?>> GetAllChildContexts(RedisKey primaryKey)
     {
         var hashEntries = await _database.HashGetAllAsync(primaryKey);
@@ -255,6 +248,13 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
         }
 
         return childWorkflowContexts;
+    }
+
+    private string PureCurrentContext(IWorkflowContext context)
+    {
+        var pureCurrentContext = new Dictionary<string, string>(context.GetSnapshot());
+        pureCurrentContext.Remove(FluentWorkflowConstants.ContextKeys.ParentWorkflow);
+        return _objectSerializer.Serialize(pureCurrentContext);
     }
 
     #region key

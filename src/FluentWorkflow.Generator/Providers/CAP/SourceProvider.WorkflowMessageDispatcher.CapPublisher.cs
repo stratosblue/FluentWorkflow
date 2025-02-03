@@ -56,7 +56,7 @@ internal partial class CapPublisherWorkflowMessageDispatcher : WorkflowMessageDi
 }}
 
 /// <summary>
-/// 
+///
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public static partial class CapPublisherWorkflowMessageDispatcherDIExtensions

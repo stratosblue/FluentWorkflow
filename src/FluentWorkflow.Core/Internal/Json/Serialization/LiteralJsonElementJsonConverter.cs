@@ -5,6 +5,8 @@
 /// </summary>
 internal sealed class LiteralJsonElementJsonConverter : JsonConverter<LiteralJsonElement>
 {
+    #region Public 方法
+
     /// <inheritdoc/>
     public override LiteralJsonElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -16,4 +18,6 @@ internal sealed class LiteralJsonElementJsonConverter : JsonConverter<LiteralJso
     {
         writer.WriteRawValue(value.Json, true);
     }
+
+    #endregion Public 方法
 }

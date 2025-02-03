@@ -2,25 +2,32 @@
 using FluentWorkflow.Abstractions;
 
 [assembly: GenerateWorkflowCodes<TemplateNamespace.TemplateWorkflowDeclaration>(WorkflowSourceGenerationMode.All)]
+
 namespace TemplateNamespace;
 
 public partial class TemplateWorkflow : IWorkflow
 {
+    #region Public 构造函数
+
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="context"></param>
     /// <param name="serviceProvider"></param>
     public TemplateWorkflow(TemplateWorkflowContext context, IServiceProvider serviceProvider) : base(context, serviceProvider)
     {
     }
+
+    #endregion Public 构造函数
 }
 
 /// <summary>
-/// 
+///
 /// </summary>
 public sealed partial class TemplateWorkflowDeclaration : IWorkflowDeclaration
 {
+    #region Internal 方法
+
     /// <inheritdoc/>
     internal override void DeclareContext(IWorkflowContextDeclarator declarator)
     {
@@ -41,4 +48,6 @@ public sealed partial class TemplateWorkflowDeclaration : IWorkflowDeclaration
                   .Then("Stage3AWBN")
                   .Completion();
     }
+
+    #endregion Internal 方法
 }
