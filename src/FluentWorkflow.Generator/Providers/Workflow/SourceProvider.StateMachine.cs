@@ -94,7 +94,7 @@ namespace {NameSpace}
                     case {WorkflowName}Stages.Failure:
                         {{
                             var failureInformation = Context.GetFailureInformation();
-                            var finishedMessage = new {WorkflowName}FinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, false, failureInformation?.Message ?? ""Unknown error"");
+                            var finishedMessage = new global::{NameSpace}.{WorkflowName}.Message.{WorkflowName}FinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, false, failureInformation?.Message ?? ""Unknown error"");
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }}
@@ -106,7 +106,7 @@ namespace {NameSpace}
                             if (Context.Flag.HasFlag(WorkflowFlag.IsBeenAwaited)
                                 || !Context.Flag.HasFlag(WorkflowFlag.NotNotifyOnFinish))
                             {{
-                                var finishedMessage = new {WorkflowName}FinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, true, ""SUCCESS"");
+                                var finishedMessage = new global::{NameSpace}.{WorkflowName}.Message.{WorkflowName}FinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, true, ""SUCCESS"");
                                 await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             }}
                             return;

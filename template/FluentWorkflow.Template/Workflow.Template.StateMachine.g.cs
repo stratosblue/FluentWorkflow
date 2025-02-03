@@ -79,7 +79,7 @@ namespace TemplateNamespace
                     case TemplateStages.Failure:
                         {
                             var failureInformation = Context.GetFailureInformation();
-                            var finishedMessage = new TemplateFinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, false, failureInformation?.Message ?? "Unknown error");
+                            var finishedMessage = new global::TemplateNamespace.Template.Message.TemplateFinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, false, failureInformation?.Message ?? "Unknown error");
                             await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             return;
                         }
@@ -91,7 +91,7 @@ namespace TemplateNamespace
                             if (Context.Flag.HasFlag(WorkflowFlag.IsBeenAwaited)
                                 || !Context.Flag.HasFlag(WorkflowFlag.NotNotifyOnFinish))
                             {
-                                var finishedMessage = new TemplateFinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, true, "SUCCESS");
+                                var finishedMessage = new global::TemplateNamespace.Template.Message.TemplateFinishedMessage(WorkflowMessageIdProvider.Generate(), TypedContext, true, "SUCCESS");
                                 await _messageDispatcher.PublishAsync(finishedMessage, cancellationToken);
                             }
                             return;
