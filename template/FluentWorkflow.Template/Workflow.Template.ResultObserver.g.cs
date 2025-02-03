@@ -2,7 +2,6 @@
 
 using System.ComponentModel;
 using FluentWorkflow.Handler;
-using TemplateNamespace.Template.Message;
 
 namespace TemplateNamespace.Template.Handler;
 
@@ -11,7 +10,7 @@ namespace TemplateNamespace.Template.Handler;
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public abstract partial class TemplateResultObserverBase
-    : WorkflowResultObserver<TemplateWorkflow, TemplateFinishedMessage, ITemplateWorkflow>
+    : WorkflowResultObserver<TemplateWorkflow, global::TemplateNamespace.Template.Message.TemplateFinishedMessage, ITemplateWorkflow>
     , ITemplateWorkflow
 {
     /// <inheritdoc cref="TemplateResultObserverBase"/>
@@ -20,7 +19,7 @@ public abstract partial class TemplateResultObserverBase
     }
 
     /// <inheritdoc/>
-    protected override Task OnFinishedAsync(TemplateFinishedMessage finishedMessage, CancellationToken cancellationToken) => Task.CompletedTask;
+    protected override Task OnFinishedAsync(global::TemplateNamespace.Template.Message.TemplateFinishedMessage finishedMessage, CancellationToken cancellationToken) => Task.CompletedTask;
 }
 
 /// <summary>
