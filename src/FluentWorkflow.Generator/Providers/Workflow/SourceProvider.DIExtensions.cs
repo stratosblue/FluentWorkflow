@@ -79,7 +79,7 @@ public static class {WorkflowClassName}DIExtensions
     {{
         var builder = configuration.Builder;
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, TWorkflowResultObserver, {WorkflowName}FinishedMessage, I{WorkflowClassName}>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<{WorkflowClassName}, TWorkflowResultObserver, global::{NameSpace}.{WorkflowName}.Message.{WorkflowName}FinishedMessage, I{WorkflowClassName}>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowResultObserver<{WorkflowClassName}>), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TWorkflowResultObserver), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));

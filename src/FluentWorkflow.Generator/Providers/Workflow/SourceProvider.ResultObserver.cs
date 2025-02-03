@@ -29,7 +29,7 @@ namespace {NameSpace}.{WorkflowName}.Handler;
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public abstract partial class {WorkflowName}ResultObserverBase
-    : WorkflowResultObserver<{WorkflowClassName}, {WorkflowName}FinishedMessage, I{WorkflowClassName}>
+    : WorkflowResultObserver<{WorkflowClassName}, global::{NameSpace}.{WorkflowName}.Message.{WorkflowName}FinishedMessage, I{WorkflowClassName}>
     , I{WorkflowClassName}
 {{
     /// <inheritdoc cref=""{WorkflowName}ResultObserverBase""/>
@@ -38,7 +38,7 @@ public abstract partial class {WorkflowName}ResultObserverBase
     }}
 
     /// <inheritdoc/>
-    protected override Task OnFinishedAsync({WorkflowName}FinishedMessage finishedMessage, CancellationToken cancellationToken) => Task.CompletedTask;
+    protected override Task OnFinishedAsync(global::{NameSpace}.{WorkflowName}.Message.{WorkflowName}FinishedMessage finishedMessage, CancellationToken cancellationToken) => Task.CompletedTask;
 }}
 
 /// <summary>

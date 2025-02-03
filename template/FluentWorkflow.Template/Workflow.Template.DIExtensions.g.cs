@@ -66,7 +66,7 @@ public static class TemplateWorkflowDIExtensions
     {
         var builder = configuration.Builder;
 
-        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TWorkflowResultObserver, TemplateFinishedMessage, ITemplateWorkflow>();
+        builder.WorkflowBuildStates.AddEventInvokerDescriptor<TemplateWorkflow, TWorkflowResultObserver, global::TemplateNamespace.Template.Message.TemplateFinishedMessage, ITemplateWorkflow>();
 
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(IWorkflowResultObserver<TemplateWorkflow>), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));
         builder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TWorkflowResultObserver), typeof(TWorkflowResultObserver), ServiceLifetime.Scoped));
