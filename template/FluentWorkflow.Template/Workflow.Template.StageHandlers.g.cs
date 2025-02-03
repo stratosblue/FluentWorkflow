@@ -128,11 +128,12 @@ public abstract partial class TemplateStageHandler<TStage, TStageMessage, TStage
         //HACK 包装 OnProcessFailedAsync 的用户异常，保证消息正确发送？
         await OnProcessFailedAsync(typedContext, cancellationToken);
 
-        var failureInformation = context.GetFailureInformation();
-        var failureMessage = failureInformation?.Message ?? "Unknown error";
-        var failureStackTrace = failureInformation?.StackTrace;
+        if (context.GetFailureInformation() is null)
+        {
+            context.SetFailureInformation(Stage, "Unknown error", null);
+        }
 
-        var workflowFailureMessage = new TemplateFailureMessage(WorkflowMessageIdProvider.Generate(), typedContext, failureMessage, failureStackTrace);
+        var workflowFailureMessage = new TemplateFailureMessage(WorkflowMessageIdProvider.Generate(), typedContext);
         await MessageDispatcher.PublishAsync(workflowFailureMessage, cancellationToken);
     }
 

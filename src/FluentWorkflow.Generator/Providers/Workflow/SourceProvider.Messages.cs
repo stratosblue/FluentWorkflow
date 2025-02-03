@@ -236,26 +236,30 @@ public sealed partial class {WorkflowName}FailureMessage : I{WorkflowName}Failur
 
     /// <inheritdoc/>
     [JsonIgnore]
-    public string Stage => Context.Stage;
+    public string Stage {{ get; }}
 
     /// <inheritdoc/>
+    [JsonIgnore]
     public string Message {{ get; }}
 
     /// <inheritdoc/>
+    [JsonIgnore]
     public string? RemoteStackTrace {{ get; }}
 
     /// <inheritdoc/>
     public {WorkflowClassName}Context Context {{ get; }}
 
     /// <inheritdoc cref=""{WorkflowName}FailureMessage""/>
-    public {WorkflowName}FailureMessage(string id, {WorkflowClassName}Context context, string message, string? remoteStackTrace)
+    public {WorkflowName}FailureMessage(string id, {WorkflowClassName}Context context)
     {{
-        ArgumentException.ThrowIfNullOrWhiteSpace(message);
+        WorkflowFailureInformation? failureInformation = null;
+        ArgumentNullException.ThrowIfNull(failureInformation = context.GetFailureInformation());
 
         Id = id ?? throw new ArgumentNullException(nameof(id));
         Context = context ?? throw new ArgumentNullException(nameof(context));
-        Message = message;
-        RemoteStackTrace = remoteStackTrace;
+        Stage = failureInformation.Stage;
+        Message = failureInformation.Message;
+        RemoteStackTrace = failureInformation.StackTrace;
     }}
 }}");
         foreach (var stage in Context.Stages)

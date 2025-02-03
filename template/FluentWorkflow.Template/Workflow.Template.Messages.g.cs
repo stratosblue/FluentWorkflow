@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Text.Json.Serialization;
 using FluentWorkflow;
 using FluentWorkflow.Abstractions;
+using FluentWorkflow.Extensions;
 
 namespace TemplateNamespace.Template.Message;
 
@@ -216,26 +217,30 @@ public sealed partial class TemplateFailureMessage : ITemplateFailureMessage, IT
 
     /// <inheritdoc/>
     [JsonIgnore]
-    public string Stage => Context.Stage;
+    public string Stage { get; }
 
     /// <inheritdoc/>
+    [JsonIgnore]
     public string Message { get; }
 
     /// <inheritdoc/>
+    [JsonIgnore]
     public string? RemoteStackTrace { get; }
 
     /// <inheritdoc/>
     public TemplateWorkflowContext Context { get; }
 
     /// <inheritdoc cref="TemplateFailureMessage"/>
-    public TemplateFailureMessage(string id, TemplateWorkflowContext context, string message, string? remoteStackTrace)
+    public TemplateFailureMessage(string id, TemplateWorkflowContext context)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(message);
+        WorkflowFailureInformation? failureInformation = null;
+        ArgumentNullException.ThrowIfNull(failureInformation = context.GetFailureInformation());
 
         Id = id ?? throw new ArgumentNullException(nameof(id));
         Context = context ?? throw new ArgumentNullException(nameof(context));
-        Message = message;
-        RemoteStackTrace = remoteStackTrace;
+        Stage = failureInformation.Stage;
+        Message = failureInformation.Message;
+        RemoteStackTrace = failureInformation.StackTrace;
     }
 }
 
