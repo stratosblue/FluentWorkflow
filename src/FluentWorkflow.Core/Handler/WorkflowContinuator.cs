@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using FluentWorkflow.Abstractions;
 using FluentWorkflow.Extensions;
 using Microsoft.Extensions.Logging;
-using FluentWorkflow.Abstractions;
 
 namespace FluentWorkflow.Handler;
 

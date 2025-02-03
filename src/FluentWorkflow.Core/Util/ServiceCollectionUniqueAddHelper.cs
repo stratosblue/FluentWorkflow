@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using FluentWorkflow.Abstractions;
 using FluentWorkflow.Handler;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using FluentWorkflow.Abstractions;
 
 namespace FluentWorkflow.Util;
 

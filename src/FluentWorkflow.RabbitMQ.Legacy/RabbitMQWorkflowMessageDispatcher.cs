@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using FluentWorkflow.Abstractions;
 using FluentWorkflow.Diagnostics;
+using FluentWorkflow.MessageDispatch;
 using FluentWorkflow.RabbitMQ;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.Logging;
@@ -85,7 +86,7 @@ public class RabbitMQWorkflowMessageDispatcher
 
     #region Private 方法
 
-    private void SendMessage<TMessage>(IModel channel, TMessage message, CancellationToken cancellationToken)
+    private void SendMessage<TMessage>(IModel channel, DataTransmissionModel<TMessage> dataTransmissionModel, CancellationToken cancellationToken)
         where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration
     {
         var basicProperties = channel.CreateBasicProperties();
@@ -93,12 +94,12 @@ public class RabbitMQWorkflowMessageDispatcher
         basicProperties.Headers = new Dictionary<string, object>(2)
         {
             { RabbitMQOptions.EventNameHeaderKey, TMessage.EventName },
-            { RabbitMQOptions.WorkflowIdHeaderKey, message.Id }
+            { RabbitMQOptions.WorkflowIdHeaderKey, dataTransmissionModel.Message.Context.Id }
         };
 
-        var exchange = ExchangeSelector.GetExchange(message, cancellationToken);
+        var exchange = ExchangeSelector.GetExchange(dataTransmissionModel.Message, cancellationToken);
 
-        var data = ObjectSerializer.SerializeToBytes(message);
+        var data = ObjectSerializer.SerializeToBytes(dataTransmissionModel);
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -120,17 +121,14 @@ public class RabbitMQWorkflowMessageDispatcher
     private async Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
         where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration
     {
+        var dataTransmissionModel = new DataTransmissionModel<TMessage>(message, TracingContext.TryCapture());
         using var activity = PublisherActivitySource.StartActivity($"PublishWorkflowEventMessage {TMessage.EventName}", ActivityKind.Producer);
-        if (activity is not null)
-        {
-            message.Context.SetValue(FluentWorkflowConstants.ContextKeys.ParentTraceContext, TracingContext.Create(activity));
-        }
 
         IModel? channel = null;
         try
         {
             channel = await RabbitMQChannelPool.RentAsync(cancellationToken);
-            SendMessage(channel, message, cancellationToken);
+            SendMessage(channel, dataTransmissionModel, cancellationToken);
         }
         catch (Exception ex)
         {

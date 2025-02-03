@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
-using Microsoft.Extensions.DependencyInjection;
 using FluentWorkflow.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow.Handler;
 

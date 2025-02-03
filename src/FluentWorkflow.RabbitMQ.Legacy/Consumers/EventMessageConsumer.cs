@@ -20,20 +20,22 @@ namespace FluentWorkflow.RabbitMQ;
 /// <param name="messageHandleOptions">消息处理选项字典</param>
 /// <param name="targetEventNames">目标消息名称集合</param>
 /// <param name="logger"></param>
+/// <param name="runningCancellationToken"></param>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public class EventMessageConsumer(IChannel channel,
+public class EventMessageConsumer(IModel channel,
                                   IMessageConsumeDispatcher messageConsumeDispatcher,
                                   IObjectSerializer objectSerializer,
                                   ImmutableDictionary<string, Type> messageTransmissionTypes,
                                   ImmutableDictionary<string, MessageHandleOptions> messageHandleOptions,
                                   ImmutableHashSet<string> targetEventNames,
-                                  ILogger logger)
+                                  ILogger logger,
+                                  CancellationToken runningCancellationToken)
     : AsyncDefaultBasicConsumer(channel)
 {
     #region Public 方法
 
     /// <inheritdoc/>
-    public override async Task HandleBasicDeliverAsync(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body, CancellationToken cancellationToken)
+    public override async Task HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, ReadOnlyMemory<byte> body)
     {
         using var activity = ConsumerActivitySource.StartActivity("ConsumeWorkflowEventMessage", ActivityKind.Consumer);
         var eventName = "UnknownEventName";
@@ -69,9 +71,9 @@ public class EventMessageConsumer(IChannel channel,
                         activity.AddBaggages(tracingContext.Baggage);
                     }
 
-                    await messageConsumeDispatcher.DispatchAsync(eventName, message, cancellationToken);
+                    await messageConsumeDispatcher.DispatchAsync(eventName, message, runningCancellationToken);
 
-                    await Channel.BasicAckAsync(deliveryTag, false, cancellationToken);
+                    Model.BasicAck(deliveryTag, false);
                 }
                 else
                 {
@@ -84,7 +86,7 @@ public class EventMessageConsumer(IChannel channel,
                                                   routingKey: routingKey,
                                                   policy: handleOptions?.RequeuePolicy ?? MessageRequeuePolicy.Once,
                                                   delay: handleOptions?.RequeueDelay ?? RabbitMQOptions.MessageRequeueDelay,
-                                                  cancellationToken: cancellationToken);
+                                                  cancellationToken: runningCancellationToken);
                 }
             }
             else
@@ -104,10 +106,10 @@ public class EventMessageConsumer(IChannel channel,
 
             if (requeue)
             {
-                await Task.Delay(handleOptions?.RequeueDelay ?? RabbitMQOptions.MessageRequeueDelay, cancellationToken);
+                await Task.Delay(handleOptions?.RequeueDelay ?? RabbitMQOptions.MessageRequeueDelay, runningCancellationToken);
             }
 
-            await Channel.BasicRejectAsync(deliveryTag, requeue, cancellationToken);
+            Model.BasicReject(deliveryTag, requeue);
         }
     }
 
@@ -162,20 +164,21 @@ public class EventMessageConsumer(IChannel channel,
         if (requeue)
         {
             return Task.Delay(delay, cancellationToken)
-                       .ContinueWith(async _ =>
+                       .ContinueWith(_ =>
                        {
                            try
                            {
-                               await Channel.BasicRejectAsync(deliveryTag, true, cancellationToken);
+                               Model.BasicReject(deliveryTag, true);
                            }
                            catch (Exception ex)
                            {
                                logger.LogError(ex, "Message {EventName} reject error. [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}", eventName, consumerTag, exchange, routingKey);
                            }
-                       });
+                       }, CancellationToken.None);
         }
 
-        return Channel.BasicRejectAsync(deliveryTag, false, cancellationToken).AsTask();
+        Model.BasicReject(deliveryTag, false);
+        return Task.CompletedTask;
     }
 
     /// <summary>

@@ -15,18 +15,25 @@ public class MessageConsumeDispatcher : IMessageConsumeDispatcher
 {
     #region Protected 属性
 
+    /// <summary>
+    /// 消费描述
+    /// </summary>
     protected ImmutableDictionary<string, MessageConsumeDescriptor> ConsumeDescriptors { get; }
 
+    /// <inheritdoc cref="IWorkflowDiagnosticSource"/>
     protected IWorkflowDiagnosticSource DiagnosticSource { get; }
 
+    /// <inheritdoc cref="ILogger"/>
     protected ILogger Logger { get; }
 
+    /// <inheritdoc cref="IServiceScopeFactory"/>
     protected IServiceScopeFactory ServiceScopeFactory { get; }
 
     #endregion Protected 属性
 
     #region Public 构造函数
 
+    /// <inheritdoc cref="MessageConsumeDispatcher"/>
     public MessageConsumeDispatcher(IServiceScopeFactory serviceScopeFactory,
                                     IWorkflowDiagnosticSource diagnosticSource,
                                     WorkflowBuildStateCollection workflowBuildStates,
@@ -124,11 +131,11 @@ public class MessageConsumeDispatcher : IMessageConsumeDispatcher
 
     [StackTraceHidden]
     [DebuggerStepThrough]
-    private async Task InnerInvokeAsync(object message, WorkflowEventInvokerDescriptor invokerDescriptor, IServiceProvider serviceProvider, CancellationToken cancellationToken)
+    private static Task InnerInvokeAsync(object message, WorkflowEventInvokerDescriptor invokerDescriptor, IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var handler = serviceProvider.GetRequiredService(invokerDescriptor.TargetHandlerType);
 
-        await invokerDescriptor.HandlerInvokeDelegate(handler, message, cancellationToken);
+        return invokerDescriptor.HandlerInvokeDelegate(handler, message, cancellationToken);
     }
 
     #endregion Private 方法

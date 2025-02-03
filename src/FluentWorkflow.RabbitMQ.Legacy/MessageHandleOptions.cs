@@ -8,11 +8,6 @@ public class MessageHandleOptions
     #region Public 属性
 
     /// <summary>
-    /// 消息的Qos，默认为 0 不限制
-    /// </summary>
-    public ushort Qos { get; set; } = 0;
-
-    /// <summary>
     /// 消息重入队列的延时
     /// </summary>
     public TimeSpan RequeueDelay { get; set; } = RabbitMQOptions.MessageRequeueDelay;

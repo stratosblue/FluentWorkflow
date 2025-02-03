@@ -1,12 +1,12 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
+using FluentWorkflow.Abstractions;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Handler;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using FluentWorkflow.Abstractions;
 
 namespace FluentWorkflow;
 
