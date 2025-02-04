@@ -91,8 +91,6 @@ public class MessageConsumeDispatcher : IMessageConsumeDispatcher
         Exception? exception = null;
         try
         {
-            DiagnosticSource.MessageReceived(message);
-
             var invokerDescriptors = consumeDescriptor.InvokerDescriptors;
 
             if (consumeDescriptor.SingleWorkflowEventInvoker)

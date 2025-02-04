@@ -1,8 +1,10 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
+using FluentWorkflow.Diagnostics;
 using FluentWorkflow.MessageDispatch;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.Logging;
@@ -19,6 +21,7 @@ namespace FluentWorkflow.RabbitMQ;
 /// <param name="messageTransmissionTypes">消息传输类型字典</param>
 /// <param name="messageHandleOptions">消息处理选项字典</param>
 /// <param name="targetEventNames">目标消息名称集合</param>
+/// <param name="diagnosticSource"></param>
 /// <param name="logger"></param>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public class EventMessageConsumer(IChannel channel,
@@ -27,6 +30,7 @@ public class EventMessageConsumer(IChannel channel,
                                   ImmutableDictionary<string, Type> messageTransmissionTypes,
                                   ImmutableDictionary<string, MessageHandleOptions> messageHandleOptions,
                                   ImmutableHashSet<string> targetEventNames,
+                                  IWorkflowDiagnosticSource diagnosticSource,
                                   ILogger logger)
     : AsyncDefaultBasicConsumer(channel)
 {
@@ -35,13 +39,15 @@ public class EventMessageConsumer(IChannel channel,
     /// <inheritdoc/>
     public override async Task HandleBasicDeliverAsync(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body, CancellationToken cancellationToken)
     {
-        using var activity = ConsumerActivitySource.StartActivity("ConsumeWorkflowEventMessage", ActivityKind.Consumer);
+        string? traceId = null;
+        TryGetHeaderStringValue(properties?.Headers, RabbitMQDefinedHeaders.TraceId, ref traceId);
+        using var activity = ConsumerActivitySource.StartActivity("ConsumeWorkflowEventMessage", ActivityKind.Consumer, parentId: traceId);
         var eventName = "UnknownEventName";
 
         try
         {
             if (properties?.Headers is { } headers
-                && TryGetEventName(headers, ref eventName))
+                && TryGetHeaderStringValue(headers, RabbitMQDefinedHeaders.EventName, ref eventName))
             {
                 if (!targetEventNames.Contains(eventName))
                 {
@@ -59,13 +65,14 @@ public class EventMessageConsumer(IChannel channel,
                 {
                     var dataTransmissionModel = objectSerializer.Deserialize(body.Span, transmissionType) as IDataTransmissionModel<object>
                                                 ?? throw new InvalidDataException($"Deserialize message \"{eventName}\" [{transmissionType}] failed.");
+
+                    diagnosticSource.MessageReceived(dataTransmissionModel);
+
                     var message = dataTransmissionModel.Message;
                     if (activity is not null
                         && dataTransmissionModel.TracingContext is { } tracingContext)
                     {
                         var activityContext = tracingContext.RestoreActivityContext(true);
-
-                        activity.SetParentId(activityContext.TraceId, activityContext.SpanId, activityContext.TraceFlags);
                         activity.AddBaggages(tracingContext.Baggage);
                     }
 
@@ -179,18 +186,19 @@ public class EventMessageConsumer(IChannel channel,
     }
 
     /// <summary>
-    /// 尝试获取事件名称
+    /// 尝试获取Header的字符串值
     /// </summary>
     /// <param name="headers"></param>
-    /// <param name="eventName"></param>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected virtual bool TryGetEventName(IDictionary<string, object?> headers, ref string eventName)
+    protected virtual bool TryGetHeaderStringValue(IDictionary<string, object?>? headers, string key, [NotNullWhen(true)][NotNullIfNotNull(nameof(value))] ref string? value)
     {
-        if (headers.TryGetValue(RabbitMQOptions.EventNameHeaderKey, out var eventNameValue)
-            && eventNameValue is byte[] eventNameBytes)
+        if (headers?.TryGetValue(key, out var valueValue) == true
+            && valueValue is byte[] valueBytes)
         {
-            eventName = Encoding.UTF8.GetString(eventNameBytes);
+            value = Encoding.UTF8.GetString(valueBytes);
             return true;
         }
         return false;

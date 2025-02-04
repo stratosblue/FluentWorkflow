@@ -71,10 +71,11 @@ public class RabbitMQWorkflowMessageDispatcher
         var basicProperties = new BasicProperties
         {
             DeliveryMode = DeliveryModes.Persistent,
-            Headers = new Dictionary<string, object?>(2)
+            Headers = new Dictionary<string, object?>(3)
             {
-                { RabbitMQOptions.EventNameHeaderKey, TMessage.EventName },
-                { RabbitMQOptions.WorkflowIdHeaderKey, dataTransmissionModel.Message.Context.Id }
+                { RabbitMQDefinedHeaders.EventName, TMessage.EventName },
+                { RabbitMQDefinedHeaders.WorkflowId, dataTransmissionModel.Message.Context.Id },
+                { RabbitMQDefinedHeaders.TraceId, dataTransmissionModel.TracingContext?.TraceId },
             }
         };
 

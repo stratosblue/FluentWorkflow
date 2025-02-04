@@ -1,5 +1,4 @@
-﻿using FluentWorkflow.Abstractions;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;
 
@@ -14,16 +13,6 @@ public class RabbitMQOptions
     /// 默认交换机名称
     /// </summary>
     public const string DefaultExchangeName = "fwf.exchanger.default";
-
-    /// <summary>
-    /// EventName在Header中的Key名称
-    /// </summary>
-    public const string EventNameHeaderKey = "fwf.message.eventname";
-
-    /// <summary>
-    /// 工作流程ID在Header中的Key名称
-    /// </summary>
-    public const string WorkflowIdHeaderKey = "fwf.workflow.id";
 
     /// <summary>
     /// 默认消息重入队列的延时

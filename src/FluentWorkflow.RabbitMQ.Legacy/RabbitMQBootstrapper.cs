@@ -227,6 +227,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                                                     messageTransmissionTypes: messageTransmissionTypes,
                                                     messageHandleOptions: messageHandleOptions,
                                                     targetEventNames: targetEventNames,
+                                                    diagnosticSource: _diagnosticSource,
                                                     logger: _consumeLogger,
                                                     runningCancellationToken: _runningCancellationToken);
 

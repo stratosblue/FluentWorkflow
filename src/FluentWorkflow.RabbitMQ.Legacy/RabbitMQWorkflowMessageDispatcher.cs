@@ -91,10 +91,11 @@ public class RabbitMQWorkflowMessageDispatcher
     {
         var basicProperties = channel.CreateBasicProperties();
         basicProperties.DeliveryMode = 2;
-        basicProperties.Headers = new Dictionary<string, object>(2)
+        basicProperties.Headers = new Dictionary<string, object>(3)
         {
-            { RabbitMQOptions.EventNameHeaderKey, TMessage.EventName },
-            { RabbitMQOptions.WorkflowIdHeaderKey, dataTransmissionModel.Message.Context.Id }
+            { RabbitMQDefinedHeaders.EventName, TMessage.EventName },
+            { RabbitMQDefinedHeaders.WorkflowId, dataTransmissionModel.Message.Context.Id },
+            { RabbitMQDefinedHeaders.TraceId, dataTransmissionModel.TracingContext?.TraceId ?? string.Empty },
         };
 
         var exchange = ExchangeSelector.GetExchange(dataTransmissionModel.Message, cancellationToken);
