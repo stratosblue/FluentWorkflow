@@ -78,7 +78,7 @@ public class RabbitMQWorkflowMessageDispatcher
             }
         };
 
-        var exchange = await ExchangeSelector.GetExchangeAsync(dataTransmissionModel.Message, cancellationToken);
+        var exchange = await ExchangeSelector.GetExchangeAsync(dataTransmissionModel, cancellationToken);
 
         var data = ObjectSerializer.SerializeToBytes(dataTransmissionModel);
 

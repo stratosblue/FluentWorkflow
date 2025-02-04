@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using FluentWorkflow.Abstractions;
+using FluentWorkflow.MessageDispatch;
 using Microsoft.Extensions.Options;
 
 namespace FluentWorkflow.RabbitMQ;
@@ -12,13 +13,13 @@ public interface IRabbitMQExchangeSelector
     #region Public 方法
 
     /// <summary>
-    /// 获取消息 <paramref name="message"/> 应该使用的交换机
+    /// 获取消息 <paramref name="dataTransmissionModel"/> 应该使用的交换机
     /// </summary>
     /// <typeparam name="TMessage"></typeparam>
-    /// <param name="message"></param>
+    /// <param name="dataTransmissionModel"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    ValueTask<string> GetExchangeAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration;
+    ValueTask<string> GetExchangeAsync<TMessage>(DataTransmissionModel<TMessage> dataTransmissionModel, CancellationToken cancellationToken = default) where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration;
 
     #endregion Public 方法
 }
@@ -32,7 +33,7 @@ public sealed class OptionsBasedRabbitMQExchangeSelector(IOptionsMonitor<RabbitM
     #region Public 方法
 
     /// <inheritdoc/>
-    public ValueTask<string> GetExchangeAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
+    public ValueTask<string> GetExchangeAsync<TMessage>(DataTransmissionModel<TMessage> dataTransmissionModel, CancellationToken cancellationToken)
         where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration
     {
         return ValueTask.FromResult(optionsMonitor.CurrentValue.ExchangeName ?? RabbitMQOptions.DefaultExchangeName);
