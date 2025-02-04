@@ -1,14 +1,14 @@
-﻿//#pragma warning disable CS1591
+﻿#pragma warning disable CS1591
 
-//using FluentWorkflow;
-//using FluentWorkflow.SharedSample;
+using FluentWorkflow;
+using FluentWorkflow.SharedSample;
 
-//[assembly: GenerateWorkflowCodes<SharedXXWorkflowDeclaration>]
-//namespace FluentWorkflow.SharedSample;
+[assembly: GenerateWorkflowCodes<SharedXXWorkflowDeclaration>]
+namespace FluentWorkflow.SharedSample;
 
-//public partial class SharedXXWorkflow
-//{
-//    public SharedXXWorkflow(SharedXXWorkflowContext context, IServiceProvider serviceProvider) : base(context, serviceProvider)
-//    {
-//    }
-//}
+public partial class SharedXXWorkflow
+{
+    public SharedXXWorkflow(SharedXXWorkflowContext context, IServiceProvider serviceProvider) : base(context, serviceProvider)
+    {
+    }
+}

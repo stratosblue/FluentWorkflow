@@ -79,7 +79,7 @@ public sealed partial class {WorkflowContextName}
     , IKeyValuesConvertable<{WorkflowContextName}>
 {{
     /// <inheritdoc cref=""{WorkflowContextName}""/>
-    public {WorkflowContextName}() : this(Guid.NewGuid().ToString())
+    public {WorkflowContextName}() : this(Guid.NewGuid().ToString(""N""))
     {{
     }}
 

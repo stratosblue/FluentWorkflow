@@ -49,10 +49,10 @@ internal class WorkflowDeclarationAnalyzer : CSharpSyntaxWalker
         _classDeclarationSyntax = classDeclarationSyntax;
         _semanticModel = semanticModel;
 
-        var typeSymbol = semanticModel.GetDeclaredSymbol(classDeclarationSyntax)!;
-
         _declarationName = classDeclarationSyntax.Identifier.ValueText;
-        _nameSpace = typeSymbol.ContainingNamespace.ToDisplayString();
+        var namespaceNameSyntax = classDeclarationSyntax.FirstAncestorOrSelf<FileScopedNamespaceDeclarationSyntax>()?.Name
+                                  ?? classDeclarationSyntax.FirstAncestorOrSelf<NamespaceDeclarationSyntax>()?.Name;
+        _nameSpace = namespaceNameSyntax!.ToFullString();
     }
 
     #endregion Public 构造函数
@@ -61,13 +61,20 @@ internal class WorkflowDeclarationAnalyzer : CSharpSyntaxWalker
 
     public static bool TryGetWorkflowDeclaration(ClassDeclarationSyntax classDeclarationSyntax, SemanticModel semanticModel, out WorkflowDeclaration workflowDeclaration)
     {
-        var workflowDeclarationAnalyzer = new WorkflowDeclarationAnalyzer(classDeclarationSyntax, semanticModel);
-        workflowDeclarationAnalyzer.Visit(classDeclarationSyntax);
-
-        if (workflowDeclarationAnalyzer._workflowName is not null)
+        try
         {
-            workflowDeclaration = workflowDeclarationAnalyzer.WorkflowDeclaration;
-            return true;
+            var workflowDeclarationAnalyzer = new WorkflowDeclarationAnalyzer(classDeclarationSyntax, semanticModel);
+            workflowDeclarationAnalyzer.Visit(classDeclarationSyntax);
+
+            if (workflowDeclarationAnalyzer._workflowName is not null)
+            {
+                workflowDeclaration = workflowDeclarationAnalyzer.WorkflowDeclaration;
+                return true;
+            }
+        }
+        catch
+        {
+            //HACK 解决方案内项目引用时，有语法树，但无法通过语法树获取类型信息，静默所有异常
         }
         workflowDeclaration = default;
         return false;

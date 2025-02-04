@@ -232,6 +232,7 @@ public class WorkflowGenerator : IIncrementalGenerator
                 Enum.TryParse(modeValue, out generationMode);
             }
 
+            var hasProcessedBySyntax = false;
             var typeInfo = syntaxContext.SemanticModel.GetTypeInfo(typeSyntax);
             if (typeInfo.Type?.DeclaringSyntaxReferences.Length > 0)    //项目内定义，使用语法树解析
             {
@@ -240,12 +241,14 @@ public class WorkflowGenerator : IIncrementalGenerator
                     if (syntaxReference.GetSyntax() is ClassDeclarationSyntax classDeclarationSyntax
                         && WorkflowDeclarationAnalyzer.TryGetWorkflowDeclaration(classDeclarationSyntax, semanticModel, out var workflowDeclaration))
                     {
+                        hasProcessedBySyntax = true;
                         generationDescriptors.Add(new(workflowDeclaration, generationMode));
                         break;
                     }
                 }
             }
-            else    //项目外定义，使用反射
+
+            if (!hasProcessedBySyntax)   //项目外定义，使用反射
             {
                 //TODO 错误提示
                 var declarationType = typeInfo.ConvertedType;

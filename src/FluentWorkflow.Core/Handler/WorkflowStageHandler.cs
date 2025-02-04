@@ -332,7 +332,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
         {
             ThrowIfCommitted();
 
-            AwaitChildWorkflow<TWorkflow>(Guid.NewGuid().ToString(), workflow);
+            AwaitChildWorkflow<TWorkflow>(Guid.NewGuid().ToString("N"), workflow);
         }
 
         /// <summary>
