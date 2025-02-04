@@ -45,7 +45,7 @@ public static class {WorkflowName}StageHandlerDIExtensions
     public static {WorkflowClassName}Configuration AddStage{stage.Name}Handler<THandler>(this {WorkflowClassName}Configuration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where THandler : Stage{stage.Name}HandlerBase
     {{
-        return configuration.Add{stage.Name}StageHandler<THandler, Stage{stage.Name}Continuator>(serviceLifetime);
+        return configuration.AddStage{stage.Name}Handler<THandler, Stage{stage.Name}Continuator>(serviceLifetime);
     }}
 
     /// <summary>
@@ -56,7 +56,7 @@ public static class {WorkflowName}StageHandlerDIExtensions
     /// <param name=""configuration""></param>
     /// <param name=""serviceLifetime""></param>
     /// <returns></returns>
-    public static {WorkflowClassName}Configuration Add{stage.Name}StageHandler<THandler, TContinuator>(this {WorkflowClassName}Configuration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
+    public static {WorkflowClassName}Configuration AddStage{stage.Name}Handler<THandler, TContinuator>(this {WorkflowClassName}Configuration configuration, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         where THandler : Stage{stage.Name}HandlerBase
         where TContinuator : Stage{stage.Name}ContinuatorBase
     {{
