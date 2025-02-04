@@ -39,9 +39,7 @@ public class EventMessageConsumer(IChannel channel,
     /// <inheritdoc/>
     public override async Task HandleBasicDeliverAsync(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IReadOnlyBasicProperties properties, ReadOnlyMemory<byte> body, CancellationToken cancellationToken)
     {
-        string? traceId = null;
-        TryGetHeaderStringValue(properties?.Headers, RabbitMQDefinedHeaders.TraceId, ref traceId);
-        using var activity = ConsumerActivitySource.StartActivity("ConsumeWorkflowEventMessage", ActivityKind.Consumer, parentId: traceId);
+        Activity? activity = null;
         var eventName = "UnknownEventName";
 
         try
@@ -56,11 +54,6 @@ public class EventMessageConsumer(IChannel channel,
 
                 logger.LogDebug("Start consume message {EventName} From [{ConsumerTag}] by {Exchange} -> {RoutingKey}.", eventName, consumerTag, exchange, routingKey);
 
-                if (activity is not null)
-                {
-                    activity.DisplayName = $"ConsumeWorkflowEventMessage {eventName}";
-                }
-
                 if (messageTransmissionTypes.TryGetValue(eventName, out var transmissionType))
                 {
                     var dataTransmissionModel = objectSerializer.Deserialize(body.Span, transmissionType) as IDataTransmissionModel<object>
@@ -69,11 +62,13 @@ public class EventMessageConsumer(IChannel channel,
                     diagnosticSource.MessageReceived(dataTransmissionModel);
 
                     var message = dataTransmissionModel.Message;
-                    if (activity is not null
-                        && dataTransmissionModel.TracingContext is { } tracingContext)
+                    if (dataTransmissionModel.TracingContext is { } tracingContext)
                     {
                         var activityContext = tracingContext.RestoreActivityContext(true);
-                        activity.AddBaggages(tracingContext.Baggage);
+
+                        activity = ConsumerActivitySource.StartActivity($"ConsumeWorkflowEventMessage {eventName}", ActivityKind.Consumer, activityContext);
+
+                        activity?.AddBaggages(tracingContext.Baggage);
                     }
 
                     await messageConsumeDispatcher.DispatchAsync(eventName, message, cancellationToken);
@@ -115,6 +110,10 @@ public class EventMessageConsumer(IChannel channel,
             }
 
             await Channel.BasicRejectAsync(deliveryTag, requeue, cancellationToken);
+        }
+        finally
+        {
+            activity?.Dispose();
         }
     }
 

@@ -11,11 +11,6 @@ public static class RabbitMQDefinedHeaders
     public const string EventName = "fwf.message.eventname";
 
     /// <summary>
-    /// 链路追踪ID在Header中的Key名称
-    /// </summary>
-    public const string TraceId = "fwf.workflow.traceid";
-
-    /// <summary>
     /// 工作流程ID在Header中的Key名称
     /// </summary>
     public const string WorkflowId = "fwf.workflow.id";
