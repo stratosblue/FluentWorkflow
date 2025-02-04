@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using FluentWorkflow.Abstractions;
 using FluentWorkflow.Diagnostics;
+using FluentWorkflow.MessageDispatch;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow.Scheduler;

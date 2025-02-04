@@ -2,7 +2,7 @@
 
 using FluentWorkflow.Abstractions;
 
-namespace FluentWorkflow;
+namespace FluentWorkflow.MessageDispatch;
 
 /// <summary>
 /// 工作流程消息分发器

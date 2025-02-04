@@ -24,6 +24,7 @@ using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Extensions;
 using FluentWorkflow.Handler;
+using FluentWorkflow.MessageDispatch;
 using FluentWorkflow.Scheduler;
 using FluentWorkflow.Util;
 ";

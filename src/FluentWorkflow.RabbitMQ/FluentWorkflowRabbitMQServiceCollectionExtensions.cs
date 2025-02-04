@@ -1,5 +1,6 @@
 ﻿using FluentWorkflow.Build;
 using FluentWorkflow.RabbitMQ;
+using FluentWorkflow.MessageDispatch;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using RabbitMQ.Client;

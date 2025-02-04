@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
+using FluentWorkflow.MessageDispatch;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;

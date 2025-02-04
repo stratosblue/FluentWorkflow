@@ -4,6 +4,7 @@ using System.ComponentModel;
 using FluentWorkflow;
 using FluentWorkflow.Abstractions;
 using FluentWorkflow.Extensions;
+using FluentWorkflow.MessageDispatch;
 using FluentWorkflow.Scheduler;
 using TemplateNamespace.Template.Message;
 

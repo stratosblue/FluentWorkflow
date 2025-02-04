@@ -3,6 +3,7 @@
 using System.ComponentModel;
 using FluentWorkflow;
 using FluentWorkflow.Abstractions;
+using FluentWorkflow.MessageDispatch;
 using FluentWorkflow.Scheduler;
 using FluentWorkflow.Util;
 using Microsoft.Extensions.DependencyInjection;

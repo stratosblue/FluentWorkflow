@@ -4,6 +4,7 @@ using System.Diagnostics;
 using FluentWorkflow.Abstractions;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Handler;
+using FluentWorkflow.MessageDispatch;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

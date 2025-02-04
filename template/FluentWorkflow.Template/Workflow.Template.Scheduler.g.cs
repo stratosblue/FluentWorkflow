@@ -2,6 +2,7 @@
 
 using System.ComponentModel;
 using FluentWorkflow;
+using FluentWorkflow.MessageDispatch;
 using FluentWorkflow.Scheduler;
 
 namespace TemplateNamespace.Template.Internal;
