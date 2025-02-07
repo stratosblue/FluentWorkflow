@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FluentWorkflow.Tracing;
 
@@ -71,6 +72,22 @@ public static class ActivityExtensions
         }
         return activity;
     }
+
+    #region AddEvent
+
+    /// <summary>
+    /// 添加 <see cref="ActivityEvent"/>
+    /// </summary>
+    /// <param name="activity"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public static Activity AddEvent([NotNullWhen(true)] this Activity activity, string name)
+    {
+        return activity.AddEvent(new ActivityEvent(name));
+    }
+
+    #endregion AddEvent
 
     #endregion Public 方法
 

@@ -84,12 +84,16 @@ public class RabbitMQWorkflowMessageDispatcher
 
         cancellationToken.ThrowIfCancellationRequested();
 
+        Activity.Current?.AddEvent($"Basic Publish Message - {TMessage.EventName}");
+
         await channel.BasicPublishAsync(exchange: exchange,
                                         routingKey: TMessage.EventName,
                                         mandatory: false,
                                         basicProperties: basicProperties,
                                         body: data,
                                         cancellationToken: cancellationToken);
+
+        Activity.Current?.AddEvent($"Basic Publish Message - {TMessage.EventName} Finished");
     }
 
     private async Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken)

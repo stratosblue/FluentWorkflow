@@ -3,6 +3,7 @@ using System.Diagnostics;
 using FluentWorkflow.Abstractions;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.MessageDispatch;
+using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow.Scheduler;
@@ -59,7 +60,7 @@ public abstract class WorkflowScheduler<TWorkflow, TWorkflowStateMachine, TWorkf
     {
         if (Activity.Current is { } activity)
         {
-            activity.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.WorkflowStarting} - {TWorkflow.WorkflowName}"));
+            activity.AddEvent($"{DiagnosticConstants.ActivityNames.WorkflowStarting} - {TWorkflow.WorkflowName}");
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Context, PrettyJSONObject.Create(workflow.Context, ObjectSerializer));
         }
 

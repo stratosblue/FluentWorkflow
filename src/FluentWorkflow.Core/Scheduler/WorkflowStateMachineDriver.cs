@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentWorkflow.Abstractions;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.MessageDispatch;
+using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow.Scheduler;
@@ -63,7 +64,7 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
     {
         if (Activity.Current is { } activity)
         {
-            activity.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}"));
+            activity.AddEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}");
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "completed");
         }
@@ -75,7 +76,7 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
     {
         if (Activity.Current is { } activity)
         {
-            activity.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}"));
+            activity.AddEvent($"{DiagnosticConstants.ActivityNames.StageMoving} - {message.Stage}");
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "failure");
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.FailureMessage, message.Message);

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using FluentWorkflow.Abstractions;
 using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
+using FluentWorkflow.Tracing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -87,6 +88,8 @@ public class MessageConsumeDispatcher : IMessageConsumeDispatcher
     protected virtual async Task ConsumeMessageAsync(string eventName, object message, MessageConsumeDescriptor consumeDescriptor, CancellationToken cancellationToken)
     {
         Logger.LogDebug("Start consume message {EventName} - {Message}.", eventName, message);
+
+        Activity.Current?.AddEvent($"Invoke Message Handler - {eventName}");
 
         Exception? exception = null;
         try

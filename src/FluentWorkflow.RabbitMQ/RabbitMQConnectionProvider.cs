@@ -58,6 +58,8 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                 AutomaticRecoveryEnabled = true,
                 Uri = options.Uri,
                 ClientProvidedName = $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
+                TopologyRecoveryEnabled = true,
+                ConsumerDispatchConcurrency = ushort.MaxValue,  //避免阻塞执行，7.*客户端是确认线程安全的 https://github.com/rabbitmq/rabbitmq-dotnet-client/discussions/1721#discussioncomment-11215696
             };
         }
 

@@ -89,7 +89,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
         var activity = Activity.Current;
         if (activity is not null)
         {
-            activity.AddEvent(new ActivityEvent($"{DiagnosticConstants.ActivityNames.StageProcessing} - {stageMessage.Stage}"));
+            activity.AddEvent($"{DiagnosticConstants.ActivityNames.StageProcessing} - {stageMessage.Stage}");
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(stageMessage, ObjectSerializer));
         }
 
