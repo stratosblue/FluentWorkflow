@@ -59,7 +59,7 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                 Uri = options.Uri,
                 ClientProvidedName = $"fwf:{FluentWorkflowEnvironment.Description}-{ObjectTag}",
                 TopologyRecoveryEnabled = true,
-                ConsumerDispatchConcurrency = ushort.MaxValue,  //避免阻塞执行，7.*客户端是确认线程安全的 https://github.com/rabbitmq/rabbitmq-dotnet-client/discussions/1721#discussioncomment-11215696
+                ConsumerDispatchConcurrency = GetConsumerDispatchConcurrency(),
             };
         }
 
@@ -70,6 +70,19 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
         }
 
         _logger = logger;
+
+        static ushort GetConsumerDispatchConcurrency()
+        {
+            //避免阻塞执行，7.*客户端是确认线程安全的 https://github.com/rabbitmq/rabbitmq-dotnet-client/discussions/1721#discussioncomment-11215696
+            //7.0客户端内部由Task列表来控制并行数量，过大的值会导致Task过多，尝试在此控制输出一个较大的较为合理的值
+            //由于异步执行并不一定占用线程，所以考虑给出一个大于核心数的较大值
+            var concurrency = Environment.ProcessorCount * 3;
+            if (concurrency < 32)
+            {
+                return 32;
+            }
+            return (ushort)concurrency;
+        }
     }
 
     #endregion Public 构造函数
