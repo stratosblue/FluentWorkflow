@@ -103,14 +103,8 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                         _existedConnection = null;
                     }
                 }
-                var connection = _connectionFactory.CreateConnection();
-                _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
+                var connection = CreateNewConnection();
                 _existedConnection = connection;
-                if (connection is IAutorecoveringConnection autorecoveringConnection)
-                {
-                    autorecoveringConnection.ConnectionShutdown += OnConnectionShutdown;
-                    autorecoveringConnection.RecoverySucceeded += OnRecoverySucceeded;
-                }
                 return connection;
             }
             finally
@@ -120,14 +114,25 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
         }
         else
         {
-            var connection = _connectionFactory.CreateConnection();
-            _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
-            return connection;
+            return CreateNewConnection();
         }
     }
 
     /// <inheritdoc/>
     public override string ToString() => $"{nameof(RabbitMQConnectionProvider)}-{ObjectTag}";
+
+    private IConnection CreateNewConnection()
+    {
+        var connection = _connectionFactory.CreateConnection();
+        _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
+        if (connection is IAutorecoveringConnection autorecoveringConnection)
+        {
+            autorecoveringConnection.ConnectionShutdown += OnConnectionShutdown;
+            autorecoveringConnection.RecoverySucceeded += OnRecoverySucceeded;
+        }
+
+        return connection;
+    }
 
     #endregion Public 方法
 

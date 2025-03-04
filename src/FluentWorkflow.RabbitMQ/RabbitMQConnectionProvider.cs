@@ -117,14 +117,8 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                         _existedConnection = null;
                     }
                 }
-                var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
-                _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
+                var connection = await CreateNewConnectionAsync(cancellationToken);
                 _existedConnection = connection;
-                if (connection is IRecoverable recoverable)
-                {
-                    connection.ConnectionShutdownAsync += OnConnectionShutdownAsync;
-                    recoverable.RecoveryAsync += OnRecoverySucceededAsync;
-                }
                 return connection;
             }
             finally
@@ -134,14 +128,25 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
         }
         else
         {
-            var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
-            _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
-            return connection;
+            return await CreateNewConnectionAsync(cancellationToken); ;
         }
     }
 
     /// <inheritdoc/>
     public override string ToString() => $"{nameof(RabbitMQConnectionProvider)}-{ObjectTag}";
+
+    private async Task<IConnection> CreateNewConnectionAsync(CancellationToken cancellationToken)
+    {
+        var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+        _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
+        if (connection is IRecoverable recoverable)
+        {
+            connection.ConnectionShutdownAsync += OnConnectionShutdownAsync;
+            recoverable.RecoveryAsync += OnRecoverySucceededAsync;
+        }
+
+        return connection;
+    }
 
     #endregion Public 方法
 

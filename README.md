@@ -45,7 +45,7 @@ A message driven distributed asynchronous workflow framework. 消息驱动的分
 ### 3.1 引用 `FluentWorkflow.Core` 包
 ```xml
 <ItemGroup>
-  <PackageReference Include="FluentWorkflow.Core" Version="2.0.0-*" />
+  <PackageReference Include="FluentWorkflow.Core" Version="2.0.0" />
 </ItemGroup>
 ```
 
@@ -237,7 +237,7 @@ await workflow.StartAsync(default);
 #### 引用 `FluentWorkflow.RabbitMQ` 包
 ```xml
 <ItemGroup>
-    <PackageReference Include="FluentWorkflow.RabbitMQ" Version="2.0.0-*" />
+    <PackageReference Include="FluentWorkflow.RabbitMQ" Version="2.0.0" />
 </ItemGroup>
 ```
 #### 配置
