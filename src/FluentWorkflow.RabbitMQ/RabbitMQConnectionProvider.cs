@@ -155,13 +155,13 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
 
     private Task OnCallbackExceptionAsync(object sender, CallbackExceptionEventArgs eventArgs)
     {
-        _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ exception unhandled. {Detail}", PrettyJSONObject.Create(eventArgs.Detail));
+        _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ exception unhandled. {Connection} - {Detail}", sender, PrettyJSONObject.Create(eventArgs.Detail));
         return Task.CompletedTask;
     }
 
     private Task OnConnectionRecoveryErrorAsync(object sender, ConnectionRecoveryErrorEventArgs eventArgs)
     {
-        _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ connection recovery error.");
+        _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ connection recovery error. {Connection}", sender);
         return Task.CompletedTask;
     }
 
@@ -169,11 +169,11 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     {
         if (_isDisposed)
         {
-            _logger.LogInformation("Workflow RabbitMQ connection shutdown after dispatcher disposed. {EventArgs}", eventArgs);
+            _logger.LogInformation("Workflow RabbitMQ connection shutdown after dispatcher disposed. {Connection} - {EventArgs}", sender, eventArgs);
         }
         else
         {
-            _logger.LogCritical("Workflow RabbitMQ connection shutdown. {EventArgs}", eventArgs);
+            _logger.LogCritical("Workflow RabbitMQ connection shutdown. {Connection} - {EventArgs}", sender, eventArgs);
         }
 
         return Task.CompletedTask;
@@ -181,7 +181,7 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
 
     private Task OnRecoverySucceededAsync(object? sender, AsyncEventArgs eventArgs)
     {
-        _logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {EventArgs}", eventArgs);
+        _logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {Connection} - {EventArgs}", sender, eventArgs);
         return Task.CompletedTask;
     }
 

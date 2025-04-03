@@ -142,17 +142,17 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     {
         if (_isDisposed)
         {
-            _logger.LogInformation("Workflow RabbitMQ connection shutdown after dispatcher disposed. {EventArgs}", eventArgs);
+            _logger.LogInformation("Workflow RabbitMQ connection shutdown after dispatcher disposed. {Connection} - {EventArgs}", sender, eventArgs);
         }
         else
         {
-            _logger.LogCritical("Workflow RabbitMQ connection shutdown. {EventArgs}", eventArgs);
+            _logger.LogCritical("Workflow RabbitMQ connection shutdown. {Connection} - {EventArgs}", sender, eventArgs);
         }
     }
 
     private void OnRecoverySucceeded(object? sender, EventArgs eventArgs)
     {
-        _logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {EventArgs}", eventArgs);
+        _logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {Connection} - {EventArgs}", sender, eventArgs);
     }
 
     #endregion connection events
