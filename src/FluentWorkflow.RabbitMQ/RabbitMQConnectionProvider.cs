@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -139,11 +140,11 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     {
         var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
         _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
-        if (connection is IRecoverable recoverable)
-        {
-            connection.ConnectionShutdownAsync += OnConnectionShutdownAsync;
-            recoverable.RecoveryAsync += OnRecoverySucceededAsync;
-        }
+
+        connection.ConnectionShutdownAsync += OnConnectionShutdownAsync;
+        connection.RecoverySucceededAsync += OnRecoverySucceededAsync;
+        connection.ConnectionRecoveryErrorAsync += OnConnectionRecoveryErrorAsync;
+        connection.CallbackExceptionAsync += OnCallbackExceptionAsync;
 
         return connection;
     }
@@ -151,6 +152,18 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     #endregion Public 方法
 
     #region connection events
+
+    private Task OnCallbackExceptionAsync(object sender, CallbackExceptionEventArgs eventArgs)
+    {
+        _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ exception unhandled. {Detail}", PrettyJSONObject.Create(eventArgs.Detail));
+        return Task.CompletedTask;
+    }
+
+    private Task OnConnectionRecoveryErrorAsync(object sender, ConnectionRecoveryErrorEventArgs eventArgs)
+    {
+        _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ connection recovery error.");
+        return Task.CompletedTask;
+    }
 
     private Task OnConnectionShutdownAsync(object? sender, ShutdownEventArgs eventArgs)
     {

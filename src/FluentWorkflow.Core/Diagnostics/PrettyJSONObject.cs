@@ -1,11 +1,22 @@
-﻿namespace FluentWorkflow.Diagnostics;
+﻿using System.ComponentModel;
+
+namespace FluentWorkflow.Diagnostics;
 
 /// <summary>
 /// JSON展示对象
 /// </summary>
-internal static class PrettyJSONObject
+[EditorBrowsable(EditorBrowsableState.Never)]
+public static class PrettyJSONObject
 {
     #region Public 方法
+
+    /// <summary>
+    /// 创建对象
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static PrettyJSONObject<T>? Create<T>(T? value) => Create(value, IObjectSerializer.Default);
 
     /// <summary>
     /// 创建对象
@@ -23,7 +34,8 @@ internal static class PrettyJSONObject
 /// JSON展示对象
 /// </summary>
 /// <typeparam name="T"></typeparam>
-internal class PrettyJSONObject<T>
+[EditorBrowsable(EditorBrowsableState.Never)]
+public class PrettyJSONObject<T>
 {
     #region Private 字段
 
