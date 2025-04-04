@@ -12,6 +12,12 @@ public class InMemoryWorkflowFinishWaiter
 
     #endregion Public 属性
 
+    public InMemoryWorkflowFinishWaiter()
+    {
+        //避免测试资源管理器警告
+        CompletionSource.Task.ContinueWith(static task => task.Exception?.Flatten(), TaskContinuationOptions.OnlyOnFaulted);
+    }
+
     #region Public 方法
 
     public void SetException(Exception exception)

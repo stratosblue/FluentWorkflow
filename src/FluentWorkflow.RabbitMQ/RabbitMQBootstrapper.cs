@@ -83,11 +83,11 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
     #region Public 方法
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_disposed)
         {
-            return ValueTask.CompletedTask;
+            return;
         }
         _logger.LogInformation("Disposing workflow RabbitMQ message dispatcher.");
         try
@@ -101,15 +101,17 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         }
         catch { }
 
-        _connection?.Dispose();
+        if (_connection is { } connection)
+        {
+            await connection.DisposeAsync();
+        }
 
         foreach (var item in _channelScopes)
         {
-            item.Dispose();
+            await item.DisposeAsync();
         }
 
         _disposed = true;
-        return ValueTask.CompletedTask;
     }
 
     public async Task InitAsync(CancellationToken cancellationToken)

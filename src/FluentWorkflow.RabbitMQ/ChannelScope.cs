@@ -6,8 +6,8 @@ namespace FluentWorkflow.RabbitMQ;
 /// <see cref="IChannel"/> 域
 /// </summary>
 /// <param name="channel"></param>
-/// <param name="disposeCallback"></param>
-public sealed class ChannelScope(IChannel channel, Action disposeCallback) : IDisposable
+/// <param name="asyncDisposeCallback"></param>
+public sealed class ChannelScope(IChannel channel, Func<ValueTask> asyncDisposeCallback) : IAsyncDisposable
 {
     #region Public 属性
 
@@ -21,10 +21,10 @@ public sealed class ChannelScope(IChannel channel, Action disposeCallback) : IDi
     #region Public 方法
 
     /// <inheritdoc/>
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Channel.Dispose();
-        disposeCallback?.Invoke();
+        await Channel.DisposeAsync();
+        await asyncDisposeCallback();
     }
 
     #endregion Public 方法

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using FluentWorkflow.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,9 +26,9 @@ public abstract class TestServiceProviderProvider
 
     public virtual async Task CleanupProviderAsync()
     {
-        ServiceScope.Dispose();
+        await ServiceScope.DisposeAsync();
         await TestHost.StopAsync();
-        TestHost.Dispose();
+        await TestHost.DisposeAsync();
     }
 
     public virtual async Task InitializeProviderAsync(Action<IServiceCollection>? configureServices)

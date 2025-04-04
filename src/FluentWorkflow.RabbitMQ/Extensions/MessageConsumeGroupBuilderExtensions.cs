@@ -51,7 +51,7 @@ public static class MessageConsumeGroupBuildExtensions
             {
                 var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
                 await DeclareQosQueueAsync(channel, queueName, queueArguments, qos, cancellationToken);
-                var channelScope = new ChannelScope(channel, connection.Dispose);
+                var channelScope = new ChannelScope(channel, connection.DisposeAsync);
                 return MessageConsumeGroupInitializationResult.CreateByChannelScope(channelScope);
             }
             catch

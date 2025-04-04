@@ -7,7 +7,7 @@ using RabbitMQ.Client;
 namespace FluentWorkflow.RabbitMQ;
 
 /// <inheritdoc cref="IRabbitMQChannelPool"/>
-internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
+internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IAsyncDisposable
 {
     #region Private 字段
 
@@ -59,7 +59,7 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
     #region Public 方法
 
     /// <inheritdoc/>
-    public ValueTask<IChannel> RentAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<IChannel> RentAsync(CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
 
@@ -71,20 +71,20 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
 
                 Interlocked.Decrement(ref _currentPoolSize);
 
-                return ValueTask.FromResult(channel);
+                return channel;
             }
 
             _logger.LogDebug("Pooled channel {Channel} is invalid. Drop it.", channel);
 
-            channel.Dispose();
+            await channel.DisposeAsync();
             Interlocked.Decrement(ref _currentPoolSize);
 
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        return InnerRentAsync(cancellationToken);
+        return await InnerRentAsync(cancellationToken);
 
-        async ValueTask<IChannel> InnerRentAsync(CancellationToken cancellationToken = default)
+        async Task<IChannel> InnerRentAsync(CancellationToken cancellationToken = default)
         {
             var connection = await EnsureConnectionAsync(cancellationToken);
 
@@ -140,12 +140,12 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
 
         async ValueTask<IConnection> InnerEnsureConnectionAsync(CancellationToken cancellationToken)
         {
-            DisposeConnection();
+            await DisposeConnectionAsync();
             var connection = await _connectionProvider.GetAsync(cancellationToken);
             var existedConnection = Interlocked.CompareExchange(ref _connection, connection, null);
             if (existedConnection is not null)
             {
-                connection.Dispose();
+                await connection.DisposeAsync();
                 return existedConnection;
             }
             return await EnsureConnectionAsync(cancellationToken);
@@ -162,7 +162,7 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
     #region Dispose
 
     /// <inheritdoc/>
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         if (_disposed)
         {
@@ -176,19 +176,20 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
 
         while (_pooledChannels.TryDequeue(out var channel))
         {
-            channel.Dispose();
+            await channel.DisposeAsync();
         }
 
-        DisposeConnection();
+        await DisposeConnectionAsync();
     }
 
-    private void DisposeConnection()
+    private ValueTask DisposeConnectionAsync()
     {
         if (Interlocked.Exchange(ref _connection, null) is { } connection)
         {
             _logger.LogDebug("Dispose connection {Connection}.", connection);
-            connection.Dispose();
+            return connection.DisposeAsync();
         }
+        return ValueTask.CompletedTask;
     }
 
     #endregion Dispose
