@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using FluentWorkflow.Abstractions;
 using FluentWorkflow.Extensions;
+using FluentWorkflow.Tracing;
 using Microsoft.Extensions.Logging;
 
 namespace FluentWorkflow.Handler;
@@ -69,6 +70,7 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
         }
         catch (Exception exception)
         {
+            Activity.Current?.RecordException(exception);
             var currentAlias = childWorkflowFinishedMessage.Context.State.Alias ?? "Unknown";
             Logger.LogError(exception, "Await finished child workflow \"{Alias}\" failed.", currentAlias);
             parentWorkflowContext.SetFailureInformation(context.State.Stage, $"Await finished child workflow \"{currentAlias}\" failed: {exception.Message}", exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());

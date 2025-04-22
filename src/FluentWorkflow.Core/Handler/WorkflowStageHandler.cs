@@ -152,6 +152,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
             {
                 if (OnException(ex))
                 {
+                    activity?.RecordException(ex);
                     await StageHandleFailedAsync(stageMessage, ex, cancellationToken);
                     exception = ex;
                     Logger.LogError(ex, "Handle stage message {{{Id}}}[{Message}] failed", stageMessage.Id, stageMessage);
