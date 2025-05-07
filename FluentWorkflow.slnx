@@ -1,0 +1,41 @@
+<Solution>
+  <Folder Name="/benchmark/">
+    <Project Path="benchmark/FluentWorkflow.Benchmark/FluentWorkflow.Benchmark.csproj" />
+  </Folder>
+  <Folder Name="/sample/">
+    <Project Path="sample/FluentWorkflow.SharedSample/FluentWorkflow.SharedSample.csproj" />
+    <Project Path="sample/FluentWorkflow.SimpleSample/FluentWorkflow.SimpleSample.csproj" />
+  </Folder>
+  <Folder Name="/solution items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
+    <File Path="LICENSE.txt" />
+    <File Path="package.props" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/FluentWorkflow.Core/FluentWorkflow.Core.csproj" />
+    <Project Path="src/FluentWorkflow.Generator/FluentWorkflow.Generator.csproj" />
+    <Project Path="src/FluentWorkflow.RabbitMQ.Legacy/FluentWorkflow.RabbitMQ.Legacy.csproj" />
+    <Project Path="src/FluentWorkflow.RabbitMQ/FluentWorkflow.RabbitMQ.csproj" />
+  </Folder>
+  <Folder Name="/template/">
+    <Project Path="template/FluentWorkflow.Template/FluentWorkflow.Template.Basic.csproj" />
+    <Project Path="template/FluentWorkflow.Template/FluentWorkflow.Template.Extension.Abp.csproj" />
+    <Project Path="template/FluentWorkflow.Template/FluentWorkflow.Template.Extension.All.csproj" />
+    <Project Path="template/FluentWorkflow.Template/FluentWorkflow.Template.Extension.CAP.csproj" />
+    <Project Path="template/FluentWorkflow.Template/FluentWorkflow.Template.Extension.Redis.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/FluentWorkflow.SimpleSample.Test/FluentWorkflow.SimpleSample.Test.csproj" />
+    <Project Path="test/FluentWorkflow.SimpleSample.Test/FluentWorkflow.SimpleSample.Test.LegacyRabbitMQ.csproj" />
+    <Project Path="test/FluentWorkflow.Template.Test/FluentWorkflow.Template.Test.csproj" />
+    <Project Path="test/FluentWorkflow.Template.Test/FluentWorkflow.Template.Test.LegacyRabbitMQ.csproj" />
+    <Project Path="test/FluentWorkflow.Test.Base/FluentWorkflow.Test.Base.csproj" />
+    <Project Path="test/FluentWorkflow.Test.Base/FluentWorkflow.Test.Base.LegacyRabbitMQ.csproj" />
+    <Project Path="test/FluentWorkflow.Test/FluentWorkflow.Test.csproj" />
+    <Project Path="test/FluentWorkflow.Test/FluentWorkflow.Test.LegacyRabbitMQ.csproj" />
+  </Folder>
+</Solution>
