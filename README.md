@@ -17,7 +17,7 @@ A message driven distributed asynchronous workflow framework. 消息驱动的分
 
  - `2.0` 完全不兼容之前的代码
    - `消息`、`处理器`、相关`命名空间` 等，都需要按新的命名规则调整
- - 已在包 `FluentWorkflow.RabbitMQ` 启用 `RabbitMQ.Client` 的 `7.0` 版本支持，`6.*` 版本支持使用包 `FluentWorkflow.RabbitMQ.Legacy`
+ - 已在包 `FluentWorkflow.RabbitMQ` 启用 `RabbitMQ.Client` 的 `7.*` 版本支持，`6.*` 版本支持使用包 `FluentWorkflow.RabbitMQ.Legacy`
 
 -------
 
@@ -318,6 +318,23 @@ internal class StageSampleStage1Handler : StageSampleStage1HandlerBase
 ### 5.4 启用`Diagnostic`支持
 ```C#
 services.AddFluentWorkFlow().EnableDiagnostic();
+```
+
+-------
+
+### 5.5 使用`IWorkflowDebugRunner`进行调试运行
+ - 在DI中添加支持
+```C#
+services.AddFluentWorkflow().AddDebugRunner();
+```
+
+ - 使用`IWorkflowDebugRunner`进行消息的执行
+```C#
+var transmissionModelRawData = """
+                               //MessageJson
+                               """u8.ToArray();
+var debugRunner = ServiceProvider.GetRequiredService<IWorkflowDebugRunner>();
+debugRunner.RunAsync(transmissionModelRawData);
 ```
 
 -------

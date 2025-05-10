@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using FluentWorkflow.Abstractions;
 
@@ -57,6 +58,16 @@ public class WorkflowBuildStateCollection : IEnumerable<WorkflowBuildState>
 
     /// <inheritdoc/>
     public IEnumerator<WorkflowBuildState> GetEnumerator() => _workflowBuildStates.Values.GetEnumerator();
+
+    /// <summary>
+    /// 获取平铺后的事件执行描述映射
+    /// </summary>
+    /// <returns></returns>
+    public ImmutableDictionary<string, ImmutableArray<WorkflowEventInvokerDescriptor>> GetEventInvokeMap()
+    {
+        return this.SelectMany(static m => m)
+                   .ToImmutableDictionary(static m => m.EventName, static m => m.ToImmutableArray());
+    }
 
     /// <inheritdoc/>
     public override string ToString()

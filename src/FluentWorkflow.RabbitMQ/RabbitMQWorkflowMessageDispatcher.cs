@@ -99,7 +99,7 @@ public class RabbitMQWorkflowMessageDispatcher
     private async Task SendMessageAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
         where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration
     {
-        var dataTransmissionModel = new DataTransmissionModel<TMessage>(message, TracingContext.TryCapture());
+        var dataTransmissionModel = new DataTransmissionModel<TMessage>(TMessage.EventName, message, TracingContext.TryCapture());
         using var activity = PublisherActivitySource.StartActivity($"PublishWorkflowEventMessage {TMessage.EventName}", ActivityKind.Producer);
 
         IChannel? channel = null;

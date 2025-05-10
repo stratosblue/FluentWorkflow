@@ -69,8 +69,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         _diagnosticSource = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
         _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _options = optionsAccessor?.Value ?? throw new ArgumentNullException(nameof(optionsAccessor));
-        _eventSubscribeDescriptors = workflowBuildStates.SelectMany(m => m)
-                                                        .ToImmutableDictionary(m => m.EventName, m => m.ToImmutableArray());
+        _eventSubscribeDescriptors = workflowBuildStates.GetEventInvokeMap();
         _runningCancellationTokenSource = new();
         _runningCancellationToken = _runningCancellationTokenSource.Token;
         _logger = loggerFactory.CreateLogger<RabbitMQBootstrapper>();

@@ -3,6 +3,7 @@ using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Handler;
 using FluentWorkflow.MessageDispatch;
+using FluentWorkflow.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -14,6 +15,20 @@ namespace FluentWorkflow;
 public static class FluentWorkflowServiceCollectionExtensions
 {
     #region Public 方法
+
+    /// <summary>
+    /// 添加 Debug 运行器，以使用 <see cref="IWorkflowDebugRunner"/> 进行流程调试
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    public static IFluentWorkflowBuilder AddDebugRunner(this IFluentWorkflowBuilder builder)
+    {
+        builder.Services.TryAddSingleton<IWorkflowDebugRunner, WorkflowDebugRunner>();
+
+        FluentWorkflowDebugUtil.EnableDebugActivityListen();
+
+        return builder;
+    }
 
     /// <summary>
     /// 添加 FluentWorkflow 基础组件
@@ -53,10 +68,18 @@ public static class FluentWorkflowServiceCollectionExtensions
     /// 使用基于内存的 <see cref="IWorkflowMessageDispatcher"/>
     /// </summary>
     /// <param name="builder"></param>
+    /// <param name="optionsSetup"></param>
     /// <returns></returns>
-    public static IFluentWorkflowBuilder UseInMemoryWorkflowMessageDispatcher(this IFluentWorkflowBuilder builder)
+    public static IFluentWorkflowBuilder UseInMemoryWorkflowMessageDispatcher(this IFluentWorkflowBuilder builder, Action<InMemoryWorkflowMessageDispatcherOptions>? optionsSetup = null)
     {
         builder.Services.Replace(ServiceDescriptor.Singleton<IWorkflowMessageDispatcher, InMemoryWorkflowMessageDispatcher>());
+
+        builder.Services.AddOptions<InMemoryWorkflowMessageDispatcherOptions>();
+        if (optionsSetup != null)
+        {
+            builder.Services.Configure(optionsSetup);
+        }
+
         return builder;
     }
 
