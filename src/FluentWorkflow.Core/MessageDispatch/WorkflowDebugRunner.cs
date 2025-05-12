@@ -25,6 +25,8 @@ internal sealed class WorkflowDebugRunner(IMessageConsumeDispatcher messageConsu
     {
         ArgumentNullException.ThrowIfNull(eventName);
 
+        eventName = eventName.Trim();
+
         if (!_eventSubscribeDescriptors.TryGetValue(eventName, out var descriptors))
         {
             throw new ArgumentException($"No subscribe info for \"{eventName}\"");
@@ -39,7 +41,8 @@ internal sealed class WorkflowDebugRunner(IMessageConsumeDispatcher messageConsu
         var dataTransmissionModel = objectSerializer.Deserialize(transmissionModelRawData.Span, transmissionType) as IDataTransmissionModel<object>
                                     ?? throw new InvalidDataException($"Deserialize message \"{eventName}\" [{transmissionType}] failed.");
 
-        if (!eventName.Equals(dataTransmissionModel.EventName, StringComparison.Ordinal))
+        if (string.IsNullOrWhiteSpace(dataTransmissionModel.EventName)  //不存在此字段时不进行校验
+            && !eventName.Equals(dataTransmissionModel.EventName, StringComparison.Ordinal))
         {
             throw new ArgumentException($"The input data has event name \"{dataTransmissionModel.EventName}\" not match input event name \"{eventName}\"");
         }
