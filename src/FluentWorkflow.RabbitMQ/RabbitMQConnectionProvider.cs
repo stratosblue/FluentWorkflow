@@ -100,27 +100,16 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
             await _connectionGetSemaphore.WaitAsync(cancellationToken);
             try
             {
-                if (_existedConnection is { } existedConnection)
+                // 7.0后连接默认可恢复，因为当前版本客户端连接并没有标记可恢复标识，无法在此处进行判断
+                _existedConnection ??= await CreateNewConnectionAsync(cancellationToken);
+                var existedConnection = _existedConnection;
+
+                //循环等待当前链接可用
+                while (!existedConnection.IsOpen)
                 {
-                    try
-                    {
-                        var shutdownEventArgs = existedConnection.CloseReason;
-                        if (shutdownEventArgs is null
-                            || existedConnection is IRecoverable)
-                        {
-                            _logger.LogDebug("Provide existed rabbitmq connection {Connection}.", existedConnection);
-                            return existedConnection;
-                        }
-                        _existedConnection = null;
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        _existedConnection = null;
-                    }
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
                 }
-                var connection = await CreateNewConnectionAsync(cancellationToken);
-                _existedConnection = connection;
-                return connection;
+                return existedConnection;
             }
             finally
             {

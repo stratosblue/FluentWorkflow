@@ -8,7 +8,7 @@ public class InMemoryWorkflowFinishWaiter
 {
     #region Public 属性
 
-    public TaskCompletionSource CompletionSource { get; } = new();
+    public TaskCompletionSource CompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     #endregion Public 属性
 
