@@ -100,11 +100,22 @@ public class EventMessageConsumer(IModel channel,
         {
             activity?.RecordException(ex);
 
+            var requeue = false;
+
+            //异常如果关联于消费者繁忙，直接进行重入队列，尝试进行重新负载，不进行其它判断
+            if (ex is IBusyConsumer)
+            {
+                requeue = true;
+                logger.LogWarning(ex, "Error at rabbitmq HandleBasicDeliver because of BusyConsumer. EventName: {EventName} DeliveryTag {DeliveryTag} [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}. [Requeue:{Requeue}].", eventName, deliveryTag, consumerTag, exchange, routingKey, requeue);
+            }
+
             messageHandleOptions.TryGetValue(eventName, out var handleOptions);
 
-            var requeue = CheckShouldRequeue(handleOptions?.RequeuePolicy ?? MessageRequeuePolicy.Unlimited, redelivered);
-
-            logger.LogError(ex, "Error at rabbitmq HandleBasicDeliver. EventName: {EventName} DeliveryTag {DeliveryTag} [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}. [Requeue:{Requeue}].", eventName, deliveryTag, consumerTag, exchange, routingKey, requeue);
+            if (!requeue)
+            {
+                requeue = CheckShouldRequeue(handleOptions?.RequeuePolicy ?? MessageRequeuePolicy.Unlimited, redelivered);
+                logger.LogError(ex, "Error at rabbitmq HandleBasicDeliver. EventName: {EventName} DeliveryTag {DeliveryTag} [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}. [Requeue:{Requeue}].", eventName, deliveryTag, consumerTag, exchange, routingKey, requeue);
+            }
 
             if (requeue)
             {

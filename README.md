@@ -45,7 +45,7 @@ A message driven distributed asynchronous workflow framework. 消息驱动的分
 ### 3.1 引用 `FluentWorkflow.Core` 包
 ```xml
 <ItemGroup>
-  <PackageReference Include="FluentWorkflow.Core" Version="2.0.0" />
+  <PackageReference Include="FluentWorkflow.Core" Version="2.1.1" />
 </ItemGroup>
 ```
 
@@ -237,7 +237,7 @@ await workflow.StartAsync(default);
 #### 引用 `FluentWorkflow.RabbitMQ` 包
 ```xml
 <ItemGroup>
-    <PackageReference Include="FluentWorkflow.RabbitMQ" Version="2.0.0" />
+    <PackageReference Include="FluentWorkflow.RabbitMQ" Version="2.1.1" />
 </ItemGroup>
 ```
 #### 配置
@@ -270,6 +270,9 @@ services.Configure<RabbitMQOptions>(options =>
 RabbitMQ消息的消费ack超时时间默认为30分钟，进行长时间处理时可能会出现意外情况，可参照 [acknowledgement-timeout](https://www.rabbitmq.com/docs/consumers#acknowledgement-timeout) 进行调整
  - 框架已默认尝试设置队列参数 `x-consumer-timeout` 为 1 小时（如果RabbitMQ版本支持的话）；
  - 可使用 `RabbitMQOptions.QueueArgumentsSetup` 对队列的 `x-consumer-timeout` 参数进行调整；
+
+#### *阶段消息重试
+默认情况下，当抛出的异常继承接口 `IBusyConsumer` 时，流程不会立即失败，而是将消息重新返回消息队列
 
 -------
 

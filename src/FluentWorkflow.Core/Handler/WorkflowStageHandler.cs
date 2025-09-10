@@ -203,7 +203,8 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
     /// </returns>
     protected virtual bool OnException(Exception exception)
     {
-        return true;
+        //异常如果关联于消费者繁忙，不认为工作流程已经失败
+        return exception is not IBusyConsumer;
     }
 
     /// <summary>
