@@ -64,9 +64,9 @@ public class WorkflowContextTest
     public void Should_Throw_For_Set_ProtectedKey()
     {
         var context = new SampleWorkflowContext(Guid.NewGuid().ToString());
-        Assert.ThrowsException<InvalidOperationException>(() => context.SetValue(FluentWorkflowConstants.ContextKeys.Metadata, "value"));
-        Assert.ThrowsException<InvalidOperationException>(() => context.SetValue(FluentWorkflowConstants.ContextKeys.State, "value"));
-        Assert.ThrowsException<InvalidOperationException>(() => context.SetValue(FluentWorkflowConstants.ContextKeys.ParentWorkflow, "value"));
+        Assert.ThrowsExactly<InvalidOperationException>(() => context.SetValue(FluentWorkflowConstants.ContextKeys.Metadata, "value"));
+        Assert.ThrowsExactly<InvalidOperationException>(() => context.SetValue(FluentWorkflowConstants.ContextKeys.State, "value"));
+        Assert.ThrowsExactly<InvalidOperationException>(() => context.SetValue(FluentWorkflowConstants.ContextKeys.ParentWorkflow, "value"));
     }
 
     #endregion Public 方法

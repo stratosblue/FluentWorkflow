@@ -32,7 +32,7 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
 
         await workflow.StartAsync(default);
 
-        await Assert.ThrowsExceptionAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
+        await Assert.ThrowsExactlyAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
 
         Assert.AreEqual(exceptionStep, executeLogger.Stages.Count);
     }

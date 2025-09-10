@@ -52,7 +52,7 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         await workflow.StartAsync(default);
 
-        await Assert.ThrowsExceptionAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
+        await Assert.ThrowsExactlyAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
     }
 
     [DataRow(3, 2, 3)]
@@ -113,7 +113,7 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         await workflow.StartAsync(default);
 
-        await Assert.ThrowsExceptionAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
+        await Assert.ThrowsExactlyAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
 
         //TODO 确认异常时位置正确？
         //Assert.AreEqual(TemplateWorkflowStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages.Count);
@@ -184,7 +184,7 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         await workflow.StartAsync(default);
 
-        await Assert.ThrowsExceptionAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
+        await Assert.ThrowsExactlyAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
     }
 
     #endregion Public 方法
