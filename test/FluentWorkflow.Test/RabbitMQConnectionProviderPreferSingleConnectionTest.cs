@@ -31,10 +31,8 @@ public class RabbitMQConnectionProviderPreferSingleConnectionTest : TestServiceP
         services.AddFluentWorkflow()
                 .UseRabbitMQMessageDispatcher(options =>
                 {
-                    var testId = $"{Environment.Version.Major}_{Environment.Version.Minor}-{DateTime.Now:HH.mm.ss.FFFFFFF}@{Guid.NewGuid().ToString()[..6]}";
-
-                    options.ExchangeName = $"fwf-test-{testId}";
-                    options.ConsumeQueueName = $"FWFTestQueue-{testId}";
+                    options.ExchangeName = $"fwf-test-exchange-{Environment.Version.Major}_{Environment.Version.Minor}";
+                    options.ConsumeQueueName = $"FWFTestQueue-{Environment.Version.Major}_{Environment.Version.Minor}-{DateTime.Now:HH.mm.ss.ffff}@{Guid.NewGuid().ToString()[..6]}";
                     options.Uri = new Uri(context.Configuration.GetRequiredSection("RabbitMQ").Value!);
                     options.PreferSingleConnection = true;
                     options.PublisherConfirms = false;

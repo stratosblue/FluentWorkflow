@@ -130,7 +130,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         //global Channel
         var channel = connection.CreateModel();
         //声明交换机
-        channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Topic, durable: durable, autoDelete: !durable, arguments: null);
+        channel.ExchangeDeclare(exchange: exchangeName, type: ExchangeType.Topic, durable: true, autoDelete: false, arguments: null);
 
         var defaultConsumeQueueName = NormalizConsumeQueueName(_options.ConsumeQueueName ?? Assembly.GetEntryAssembly()?.GetName().Name?.ToLowerInvariant());
 

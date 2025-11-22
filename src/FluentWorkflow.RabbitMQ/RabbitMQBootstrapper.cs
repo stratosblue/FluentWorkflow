@@ -132,7 +132,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         //global Channel
         var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
         //声明交换机
-        await channel.ExchangeDeclareAsync(exchange: exchangeName, type: ExchangeType.Topic, durable: durable, autoDelete: !durable, arguments: null, noWait: false, cancellationToken: cancellationToken);
+        await channel.ExchangeDeclareAsync(exchange: exchangeName, type: ExchangeType.Topic, durable: true, autoDelete: false , arguments: null, noWait: false, cancellationToken: cancellationToken);
 
         var defaultConsumeQueueName = NormalizConsumeQueueName(_options.ConsumeQueueName ?? Assembly.GetEntryAssembly()?.GetName().Name?.ToLowerInvariant());
 
