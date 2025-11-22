@@ -119,7 +119,7 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
         }
 
         var currentAlias = finishedMessage.Context.State.Alias ?? throw new InvalidOperationException("The context has not alias.");
-        var currentMarkField = AliasMarkField(currentAlias);
+        var currentMarkField = RedisWorkflowAwaitProcessor.AliasMarkField(currentAlias);
 
         //设置当前完成工作流程的上下文
         await _database.HashSetAsync(primaryKey, currentAlias, PureCurrentContext(context));
@@ -207,7 +207,7 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
         foreach (var (alias, workflow) in childWorkflows)
         {
             hashFields[index++] = new HashEntry(alias, s_emptyValue);
-            hashFields[index++] = new HashEntry(AliasMarkField(alias), s_emptyValue);
+            hashFields[index++] = new HashEntry(RedisWorkflowAwaitProcessor.AliasMarkField(alias), s_emptyValue);
         }
 
         _logger.LogDebug("Register [{ChildWorkflowCount}] for workflow [{ParentWorkflowId}].", childWorkflows.Count, parentWorkflowContext.Id);
@@ -259,7 +259,7 @@ internal sealed class RedisWorkflowAwaitProcessor : IWorkflowAwaitProcessor
 
     #region key
 
-    private string AliasMarkField(string alias) => $"MK_{alias}";
+    private static string AliasMarkField(string alias) => $"MK_{alias}";
 
     private RedisKey PrimaryKey(string id) => $"{_keyPrefix}FWF:{id}";
 

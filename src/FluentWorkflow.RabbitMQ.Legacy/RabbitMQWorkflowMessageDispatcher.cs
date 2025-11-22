@@ -72,6 +72,8 @@ public class RabbitMQWorkflowMessageDispatcher
         {
             _optionsMonitorDisposer?.Dispose();
             _disposed = true;
+
+            GC.SuppressFinalize(this);
         }
     }
 

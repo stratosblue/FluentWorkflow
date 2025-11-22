@@ -163,7 +163,10 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
             if (initializationResult.CustomHandled)
             {
-                _logger.LogInformation("Message group {GroupName}'s message will handle by user.", groupName);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Message group {GroupName}'s message will handle by user.", groupName);
+                }
                 continue;
             }
 
@@ -183,7 +186,7 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
                 channel.QueueBind(queue: groupQueueName, exchange: exchangeName, routingKey: eventName, arguments: null);
             }
 
-            BindChannelConsumer(groupChannel, groupQueueName, groupEventNames.ToImmutableHashSet());
+            BindChannelConsumer(groupChannel, groupQueueName, groupEventNames);
         }
 
         var defaultConsumeEventNames = new HashSet<string>();
@@ -203,7 +206,10 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
 
         if (defaultConsumeEventNames.Count > 0)
         {
-            _logger.LogInformation("Use default Channel consume workflow messages. Consumer count: {ConsumerCount}.", defaultConsumeEventNames.Count);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Use default Channel consume workflow messages. Consumer count: {ConsumerCount}.", defaultConsumeEventNames.Count);
+            }
             BindChannelConsumer(channel, defaultConsumeQueueName, defaultConsumeEventNames.ToImmutableHashSet());
         }
 

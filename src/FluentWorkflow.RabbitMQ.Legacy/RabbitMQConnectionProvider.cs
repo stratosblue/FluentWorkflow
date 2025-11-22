@@ -93,7 +93,10 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
                         if (shutdownEventArgs is null
                             || existedConnection is IAutorecoveringConnection)
                         {
-                            _logger.LogDebug("Provide existed rabbitmq connection {Connection}.", existedConnection);
+                            if (_logger.IsEnabled(LogLevel.Debug))
+                            {
+                                _logger.LogDebug("Provide existed rabbitmq connection {Connection}.", existedConnection);
+                            }
                             return existedConnection;
                         }
                         _existedConnection = null;
@@ -124,7 +127,10 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     private IConnection CreateNewConnection()
     {
         var connection = _connectionFactory.CreateConnection();
-        _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
+        }
         if (connection is IAutorecoveringConnection autorecoveringConnection)
         {
             autorecoveringConnection.ConnectionShutdown += OnConnectionShutdown;
@@ -142,17 +148,26 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     {
         if (_isDisposed)
         {
-            _logger.LogInformation("Workflow RabbitMQ connection shutdown after dispatcher disposed. {Connection} - {EventArgs}", sender, eventArgs);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Workflow RabbitMQ connection shutdown after dispatcher disposed. {Connection} - {EventArgs}", sender, eventArgs);
+            }
         }
         else
         {
-            _logger.LogCritical("Workflow RabbitMQ connection shutdown. {Connection} - {EventArgs}", sender, eventArgs);
+            if (_logger.IsEnabled(LogLevel.Critical))
+            {
+                _logger.LogCritical("Workflow RabbitMQ connection shutdown. {Connection} - {EventArgs}", sender, eventArgs);
+            }
         }
     }
 
     private void OnRecoverySucceeded(object? sender, EventArgs eventArgs)
     {
-        _logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {Connection} - {EventArgs}", sender, eventArgs);
+        if (_logger.IsEnabled(LogLevel.Warning))
+        {
+            _logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {Connection} - {EventArgs}", sender, eventArgs);
+        }
     }
 
     #endregion connection events
@@ -164,17 +179,17 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     /// </summary>
     ~RabbitMQConnectionProvider()
     {
-        Dispose(disposing: false);
+        DoDispose();
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        Dispose(disposing: true);
+        DoDispose();
         GC.SuppressFinalize(this);
     }
 
-    private void Dispose(bool disposing)
+    private void DoDispose()
     {
         if (!_isDisposed)
         {

@@ -3,16 +3,9 @@ using FluentWorkflow.Generator.Model;
 
 namespace FluentWorkflow.Generator.Providers.Workflow;
 
-internal class StageContinuatorsSourceProvider : WorkflowSourceProvider
+internal class StageContinuatorsSourceProvider(GenerateContext context)
+    : WorkflowSourceProvider(context)
 {
-    #region Public 构造函数
-
-    public StageContinuatorsSourceProvider(GenerateContext context) : base(context)
-    {
-    }
-
-    #endregion Public 构造函数
-
     #region Public 方法
 
     public override IEnumerable<GeneratedSource?>? Generate()

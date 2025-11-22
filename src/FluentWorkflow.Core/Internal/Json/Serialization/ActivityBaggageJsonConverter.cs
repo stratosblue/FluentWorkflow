@@ -1,6 +1,4 @@
-﻿#pragma warning disable IDE0130
-
-namespace System.Text.Json.Serialization;
+﻿namespace System.Text.Json.Serialization;
 
 internal sealed class ActivityBaggageJsonConverter : JsonConverter<IEnumerable<KeyValuePair<string, string?>>>
 {

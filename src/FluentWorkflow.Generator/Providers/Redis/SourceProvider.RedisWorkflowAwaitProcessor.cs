@@ -3,23 +3,9 @@ using FluentWorkflow.Generator.Model;
 
 namespace FluentWorkflow.Generator.Providers;
 
-internal class RedisWorkflowAwaitProcessorSourceProvider : SourceProvider
+internal class RedisWorkflowAwaitProcessorSourceProvider(string nameSpacePostFix)
+    : SourceProvider
 {
-    #region Private 字段
-
-    private readonly string _nameSpacePostFix;
-
-    #endregion Private 字段
-
-    #region Public 构造函数
-
-    public RedisWorkflowAwaitProcessorSourceProvider(string nameSpacePostFix)
-    {
-        _nameSpacePostFix = nameSpacePostFix;
-    }
-
-    #endregion Public 构造函数
-
     #region Public 方法
 
     public override IEnumerable<GeneratedSource?>? Generate()
@@ -32,7 +18,7 @@ internal class RedisWorkflowAwaitProcessorSourceProvider : SourceProvider
 
 using StackExchange.Redis;
 
-namespace FluentWorkflow.GenericExtension{_nameSpacePostFix};
+namespace FluentWorkflow.GenericExtension{nameSpacePostFix};
 
 /// <summary>
 /// 基于 Redis 的 <see cref=""IWorkflowAwaitProcessor""/> 连接提供器
@@ -104,7 +90,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace FluentWorkflow.GenericExtension{_nameSpacePostFix};
+namespace FluentWorkflow.GenericExtension{nameSpacePostFix};
 
 /// <summary>
 /// 基于 Redis 的 <inheritdoc cref=""IWorkflowAwaitProcessor""/>
@@ -409,7 +395,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using StackExchange.Redis;
 
-namespace FluentWorkflow.GenericExtension{_nameSpacePostFix};
+namespace FluentWorkflow.GenericExtension{nameSpacePostFix};
 
 /// <summary>
 /// 基于 Redis 的 <see cref=""IWorkflowAwaitProcessor""/> 配置

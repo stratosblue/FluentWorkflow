@@ -1,6 +1,4 @@
-﻿#pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
-
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -28,7 +26,7 @@ public static class IWorkflowDebugRunnerExtensions
                                         nodeOptions: new JsonNodeOptions() { PropertyNameCaseInsensitive = true },
                                         documentOptions: new JsonDocumentOptions() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip }) as JsonObject
                          ?? throw new ArgumentException("Can not parse the input data");
-        if (!jsonObject.TryGetPropertyValue(nameof(IDataTransmissionModel<object>.EventName), out var eventNameNode)
+        if (!jsonObject.TryGetPropertyValue(nameof(IDataTransmissionModel<>.EventName), out var eventNameNode)
             || eventNameNode?.GetValue<string>() is not string eventName
             || string.IsNullOrWhiteSpace(eventName))
         {

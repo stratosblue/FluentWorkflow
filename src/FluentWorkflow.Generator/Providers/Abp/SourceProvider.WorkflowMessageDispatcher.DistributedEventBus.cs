@@ -3,23 +3,9 @@ using FluentWorkflow.Generator.Model;
 
 namespace FluentWorkflow.Generator.Providers;
 
-internal class AbpDistributedEventBusWorkflowMessageDispatcherSourceProvider : SourceProvider
+internal class AbpDistributedEventBusWorkflowMessageDispatcherSourceProvider(string nameSpacePostFix)
+    : SourceProvider
 {
-    #region Private 字段
-
-    private readonly string _nameSpacePostFix;
-
-    #endregion Private 字段
-
-    #region Public 构造函数
-
-    public AbpDistributedEventBusWorkflowMessageDispatcherSourceProvider(string nameSpacePostFix)
-    {
-        _nameSpacePostFix = nameSpacePostFix;
-    }
-
-    #endregion Public 构造函数
-
     #region Public 方法
 
     public override IEnumerable<GeneratedSource?>? Generate()
@@ -33,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Volo.Abp.EventBus.Distributed;
 
-namespace FluentWorkflow.GenericExtension{_nameSpacePostFix};
+namespace FluentWorkflow.GenericExtension{nameSpacePostFix};
 
 /// <summary>
 /// 基于 abp 的 <inheritdoc cref=""IWorkflowMessageDispatcher""/> 默认实现

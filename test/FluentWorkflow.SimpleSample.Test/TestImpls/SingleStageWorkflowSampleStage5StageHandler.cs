@@ -57,7 +57,7 @@ internal class SingleStageWorkflowSampleStage5StageHandler : StageSampleStage5Ha
 
         if (context.MaxStageDelay > 0)
         {
-            await Task.Delay(Random.Shared.Next(context.MaxStageDelay));
+            await Task.Delay(Random.Shared.Next(context.MaxStageDelay), cancellationToken);
         }
     }
 

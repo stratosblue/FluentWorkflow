@@ -50,8 +50,9 @@ public class RabbitMQWorkflowMessageDispatcher
     #region Public 方法
 
     /// <inheritdoc/>
-    public void Dispose()
+    public virtual void Dispose()
     {
+        GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc/>

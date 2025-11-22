@@ -7,13 +7,13 @@ namespace FluentWorkflow;
 /// 工作流程上下文快照
 /// </summary>
 [JsonConverter(typeof(KeyValuesConvertableJsonConverter<WorkflowContextSnapshot>))]
-public sealed class WorkflowContextSnapshot
-    : IWorkflowContext
+public sealed class WorkflowContextSnapshot(IEnumerable<KeyValuePair<string, string>> values)
+        : IWorkflowContext
     , IKeyValuesConvertable<WorkflowContextSnapshot>
 {
     #region Private 字段
 
-    private readonly PropertyMapObject _rawValues;
+    private readonly PropertyMapObject _rawValues = new(values, StringComparer.Ordinal);
 
     #endregion Private 字段
 
@@ -37,16 +37,6 @@ public sealed class WorkflowContextSnapshot
     public string WorkflowName => Metadata.WorkflowName;
 
     #endregion Public 属性
-
-    #region Public 构造函数
-
-    /// <inheritdoc cref="WorkflowContextSnapshot"/>
-    public WorkflowContextSnapshot(IEnumerable<KeyValuePair<string, string>> values)
-    {
-        _rawValues = new(values, StringComparer.Ordinal);
-    }
-
-    #endregion Public 构造函数
 
     #region Private 方法
 

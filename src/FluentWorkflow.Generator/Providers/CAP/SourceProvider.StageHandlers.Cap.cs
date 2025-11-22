@@ -3,16 +3,9 @@ using FluentWorkflow.Generator.Model;
 
 namespace FluentWorkflow.Generator.Providers;
 
-internal class CapStageHandlersSourceProvider : WorkflowSourceProvider
+internal class CapStageHandlersSourceProvider(GenerateContext generateContext)
+    : WorkflowSourceProvider(generateContext)
 {
-    #region Public 构造函数
-
-    public CapStageHandlersSourceProvider(GenerateContext generateContext) : base(generateContext)
-    {
-    }
-
-    #endregion Public 构造函数
-
     #region Public 方法
 
     public override IEnumerable<GeneratedSource?>? Generate()

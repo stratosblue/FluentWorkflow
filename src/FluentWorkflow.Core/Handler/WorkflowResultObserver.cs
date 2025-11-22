@@ -11,7 +11,7 @@ namespace FluentWorkflow.Handler;
 /// <typeparam name="TWorkflowFinishedMessage"></typeparam>
 /// <typeparam name="TWorkflowBoundary">工作流程边界（限定工作流程）</typeparam>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract class WorkflowResultObserver<TWorkflow, TWorkflowFinishedMessage, TWorkflowBoundary>
+public abstract class WorkflowResultObserver<TWorkflow, TWorkflowFinishedMessage, TWorkflowBoundary>(IServiceProvider serviceProvider)
     : IWorkflowResultObserver<TWorkflow>
     , IWorkflowFinishedHandler<TWorkflowFinishedMessage>
     where TWorkflow : IWorkflow, TWorkflowBoundary
@@ -20,19 +20,9 @@ public abstract class WorkflowResultObserver<TWorkflow, TWorkflowFinishedMessage
     #region Protected 属性
 
     /// <inheritdoc cref="IServiceProvider"/>
-    protected IServiceProvider ServiceProvider { get; }
+    protected IServiceProvider ServiceProvider { get; } = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
     #endregion Protected 属性
-
-    #region Public 构造函数
-
-    /// <inheritdoc cref="WorkflowResultObserver{TWorkflow, TWorkflowFinishedMessage, TWorkflowBoundary}"/>
-    public WorkflowResultObserver(IServiceProvider serviceProvider)
-    {
-        ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-    }
-
-    #endregion Public 构造函数
 
     #region Public 方法
 

@@ -1,6 +1,4 @@
-﻿#pragma warning disable IDE0130 // 命名空间方便使用
-
-using FluentWorkflow.Abstractions;
+﻿using FluentWorkflow.Abstractions;
 
 namespace FluentWorkflow.MessageDispatch;
 

@@ -58,7 +58,7 @@ internal static class TypeSymbolExtensions
         }
         return $"{typeSymbol.ContainingNamespace.ToFullCodeString()}.{typeSymbol.Name}<{GetCommas(namedTypeSymbol.TypeArguments.Length)}>";
 
-        string GetCommas(int argumentCount)
+        static string GetCommas(int argumentCount)
         {
             return argumentCount switch
             {
@@ -68,7 +68,7 @@ internal static class TypeSymbolExtensions
                 3 => ",,",
                 4 => ",,,",
                 5 => ",,,,",
-                _ => new string(Enumerable.Repeat(',', argumentCount - 1).ToArray()),
+                _ => new string([.. Enumerable.Repeat(',', argumentCount - 1)]),
             };
         }
     }

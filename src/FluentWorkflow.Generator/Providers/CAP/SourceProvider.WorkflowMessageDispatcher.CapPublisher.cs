@@ -3,23 +3,9 @@ using FluentWorkflow.Generator.Model;
 
 namespace FluentWorkflow.Generator.Providers;
 
-internal class CapPublisherWorkflowMessageDispatcherSourceProvider : SourceProvider
+internal class CapPublisherWorkflowMessageDispatcherSourceProvider(string nameSpacePostFix)
+    : SourceProvider
 {
-    #region Private 字段
-
-    private readonly string _nameSpacePostFix;
-
-    #endregion Private 字段
-
-    #region Public 构造函数
-
-    public CapPublisherWorkflowMessageDispatcherSourceProvider(string nameSpacePostFix)
-    {
-        _nameSpacePostFix = nameSpacePostFix;
-    }
-
-    #endregion Public 构造函数
-
     #region Public 方法
 
     public override IEnumerable<GeneratedSource?>? Generate()
@@ -31,7 +17,7 @@ internal class CapPublisherWorkflowMessageDispatcherSourceProvider : SourceProvi
 using DotNetCore.CAP;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace FluentWorkflow.GenericExtension{_nameSpacePostFix};
+namespace FluentWorkflow.GenericExtension{nameSpacePostFix};
 
 /// <summary>
 /// 基于 cap 的 <inheritdoc cref=""IWorkflowMessageDispatcher""/> 默认实现

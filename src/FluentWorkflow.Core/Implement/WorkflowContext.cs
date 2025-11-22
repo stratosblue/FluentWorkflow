@@ -156,11 +156,8 @@ public abstract class WorkflowContext
     [return: NotNull]
     protected internal TValue RequiredInnerGet<TValue>([CallerMemberName] string propName = null!)
     {
-        var value = InnerGet<TValue>(default, propName);
-        if (value == null)
-        {
-            throw new InvalidOperationException($"Can not get \"{propName}\" as \"{typeof(TValue)}\" in context.");
-        }
+        var value = InnerGet<TValue>(default, propName)
+                    ?? throw new InvalidOperationException($"Can not get \"{propName}\" as \"{typeof(TValue)}\" in context.");
         return value;
     }
 

@@ -128,7 +128,11 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     private async Task<IConnection> CreateNewConnectionAsync(CancellationToken cancellationToken)
     {
         var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
-        _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
+
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Created new rabbitmq connection {Connection}.", connection);
+        }
 
         connection.ConnectionShutdownAsync += OnConnectionShutdownAsync;
         connection.RecoverySucceededAsync += OnRecoverySucceededAsync;
@@ -144,13 +148,19 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
 
     private Task OnCallbackExceptionAsync(object sender, CallbackExceptionEventArgs eventArgs)
     {
-        _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ exception unhandled. {Connection} - {Detail}", sender, PrettyJSONObject.Create(eventArgs.Detail));
+        if (_logger.IsEnabled(LogLevel.Critical))
+        {
+            _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ exception unhandled. {Connection} - {Detail}", sender, PrettyJSONObject.Create(eventArgs.Detail));
+        }
         return Task.CompletedTask;
     }
 
     private Task OnConnectionRecoveryErrorAsync(object sender, ConnectionRecoveryErrorEventArgs eventArgs)
     {
-        _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ connection recovery error. {Connection}", sender);
+        if (_logger.IsEnabled(LogLevel.Critical))
+        {
+            _logger.LogCritical(eventArgs.Exception, "Workflow RabbitMQ connection recovery error. {Connection}", sender);
+        }
         return Task.CompletedTask;
     }
 
@@ -158,11 +168,17 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     {
         if (_isDisposed)
         {
-            _logger.LogInformation("Workflow RabbitMQ connection shutdown after dispatcher disposed. {Connection} - {EventArgs}", sender, eventArgs);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Workflow RabbitMQ connection shutdown after dispatcher disposed. {Connection} - {EventArgs}", sender, eventArgs);
+            }
         }
         else
         {
-            _logger.LogCritical("Workflow RabbitMQ connection shutdown. {Connection} - {EventArgs}", sender, eventArgs);
+            if (_logger.IsEnabled(LogLevel.Critical))
+            {
+                _logger.LogCritical("Workflow RabbitMQ connection shutdown. {Connection} - {EventArgs}", sender, eventArgs);
+            }
         }
 
         return Task.CompletedTask;
@@ -170,7 +186,10 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
 
     private Task OnRecoverySucceededAsync(object? sender, AsyncEventArgs eventArgs)
     {
-        _logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {Connection} - {EventArgs}", sender, eventArgs);
+        if (_logger.IsEnabled(LogLevel.Warning))
+        {
+            _logger.LogWarning("Workflow RabbitMQ connection recovery succeeded. {Connection} - {EventArgs}", sender, eventArgs);
+        }
         return Task.CompletedTask;
     }
 
@@ -183,17 +202,17 @@ internal sealed class RabbitMQConnectionProvider : IRabbitMQConnectionProvider, 
     /// </summary>
     ~RabbitMQConnectionProvider()
     {
-        Dispose(disposing: false);
+        DoDispose();
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        Dispose(disposing: true);
+        DoDispose();
         GC.SuppressFinalize(this);
     }
 
-    private void Dispose(bool disposing)
+    private void DoDispose()
     {
         if (!_isDisposed)
         {

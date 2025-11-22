@@ -11,31 +11,16 @@ namespace FluentWorkflow;
 /// <summary>
 /// <inheritdoc cref="IWorkflowMessageDispatcher"/>
 /// </summary>
-public abstract class WorkflowMessageDispatcher : IWorkflowMessageDispatcher
+/// <inheritdoc cref="WorkflowMessageDispatcher"/>
+public abstract class WorkflowMessageDispatcher(IWorkflowDiagnosticSource diagnosticSource, ILogger? logger)
+    : IWorkflowMessageDispatcher
 {
     #region Protected 字段
 
     /// <inheritdoc cref="ILogger"/>
-    protected readonly ILogger Logger;
+    protected readonly ILogger Logger = logger ?? NullLogger.Instance;
 
     #endregion Protected 字段
-
-    #region Private 字段
-
-    private readonly IWorkflowDiagnosticSource _diagnosticSource;
-
-    #endregion Private 字段
-
-    #region Public 构造函数
-
-    /// <inheritdoc cref="WorkflowMessageDispatcher"/>
-    public WorkflowMessageDispatcher(IWorkflowDiagnosticSource diagnosticSource, ILogger? logger)
-    {
-        _diagnosticSource = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
-        Logger = logger ?? NullLogger.Instance;
-    }
-
-    #endregion Public 构造函数
 
     #region Public 方法
 
@@ -43,8 +28,12 @@ public abstract class WorkflowMessageDispatcher : IWorkflowMessageDispatcher
     public virtual Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken)
         where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration
     {
-        _diagnosticSource.MessagePublish(message);
-        Logger.LogTrace("Publish [{EventName}] message - {{{Id}}}[{Message}].", TMessage.EventName, message.Id, message);
+        diagnosticSource.MessagePublish(message);
+
+        if (Logger.IsEnabled(LogLevel.Trace))
+        {
+            Logger.LogTrace("Publish [{EventName}] message - {{{Id}}}[{Message}].", TMessage.EventName, message.Id, message);
+        }
 
         message.Context.State.StageState = WorkflowStageState.Scheduled;
         message.Context.AppendForwarded();

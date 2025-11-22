@@ -148,7 +148,10 @@ public class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error at handle message - {{{Id}}}\"{EventName}\"", message.Id, TMessage.EventName);
+            if (Logger.IsEnabled(LogLevel.Error))
+            {
+                Logger.LogError(ex, "Error at handle message - {{{Id}}}\"{EventName}\"", message.Id, TMessage.EventName);
+            }
         }
         finally
         {

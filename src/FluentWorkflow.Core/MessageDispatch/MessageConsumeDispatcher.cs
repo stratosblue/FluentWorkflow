@@ -87,7 +87,10 @@ public class MessageConsumeDispatcher : IMessageConsumeDispatcher
     /// <returns></returns>
     protected virtual async Task ConsumeMessageAsync(string eventName, object message, MessageConsumeDescriptor consumeDescriptor, CancellationToken cancellationToken)
     {
-        Logger.LogDebug("Start consume message {EventName} - {Message}.", eventName, message);
+        if (Logger.IsEnabled(LogLevel.Debug))
+        {
+            Logger.LogDebug("Start consume message {EventName} - {Message}.", eventName, message);
+        }
 
         Activity.Current?.AddEvent($"Invoke Message Handler - {eventName}");
 
@@ -123,7 +126,11 @@ public class MessageConsumeDispatcher : IMessageConsumeDispatcher
         {
             DiagnosticSource.MessageHandleFinished(message, exception);
         }
-        Logger.LogDebug("Consume message {EventName} - {Message} successfully.", eventName, message);
+
+        if (Logger.IsEnabled(LogLevel.Debug))
+        {
+            Logger.LogDebug("Consume message {EventName} - {Message} successfully.", eventName, message);
+        }
     }
 
     #endregion Protected 方法

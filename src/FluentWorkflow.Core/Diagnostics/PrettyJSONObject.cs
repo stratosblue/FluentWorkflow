@@ -34,34 +34,18 @@ public static class PrettyJSONObject
 /// JSON展示对象
 /// </summary>
 /// <typeparam name="T"></typeparam>
+/// <inheritdoc cref="PrettyJSONObject{T}"/>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public class PrettyJSONObject<T>
+public class PrettyJSONObject<T>(T? value, IObjectSerializer objectSerializer)
 {
-    #region Private 字段
-
-    private readonly IObjectSerializer _objectSerializer;
-
-    #endregion Private 字段
-
     #region Public 属性
 
     /// <summary>
     /// 要展示的值
     /// </summary>
-    public T? Value { get; }
+    public T? Value { get; } = value;
 
     #endregion Public 属性
-
-    #region Public 构造函数
-
-    /// <inheritdoc cref="PrettyJSONObject{T}"/>
-    public PrettyJSONObject(T? value, IObjectSerializer objectSerializer)
-    {
-        Value = value;
-        _objectSerializer = objectSerializer;
-    }
-
-    #endregion Public 构造函数
 
     #region Public 方法
 
@@ -70,7 +54,7 @@ public class PrettyJSONObject<T>
     {
         try
         {
-            return _objectSerializer.PrettySerialize(Value);
+            return objectSerializer.PrettySerialize(Value);
         }
         catch (Exception ex)
         {

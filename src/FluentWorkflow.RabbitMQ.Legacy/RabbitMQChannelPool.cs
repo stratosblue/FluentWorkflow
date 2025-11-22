@@ -67,14 +67,19 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
         {
             if (channel.IsOpen)
             {
-                _logger.LogDebug("Provide existed channel {Channel}.", channel);
-
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Provide existed channel {Channel}.", channel);
+                }
                 Interlocked.Decrement(ref _currentPoolSize);
 
                 return ValueTask.FromResult(channel);
             }
 
-            _logger.LogDebug("Poold channel {Channel} is invalid. Drop it.", channel);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Poold channel {Channel} is invalid. Drop it.", channel);
+            }
 
             channel.Dispose();
             Interlocked.Decrement(ref _currentPoolSize);
@@ -93,7 +98,10 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
                 channel.ConfirmSelect();
             }
 
-            _logger.LogInformation("Created new channel {Channel}.", channel);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Created new channel {Channel}.", channel);
+            }
 
             return channel;
         }
@@ -106,14 +114,20 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
             && currentPoolSize <= _channelPoolMaxSize
             && channel.IsOpen)
         {
-            _logger.LogDebug("Return channel {Channel} into pool success. CurrentPoolSize: {PoolSize}.", channel, currentPoolSize);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Return channel {Channel} into pool success. CurrentPoolSize: {PoolSize}.", channel, currentPoolSize);
+            }
             _pooledChannels.Enqueue(channel);
             return;
         }
 
         currentPoolSize = Interlocked.Decrement(ref _currentPoolSize);
 
-        _logger.LogDebug("Return channel {Channel} into pool fail. Drop it. CurrentPoolSize: {PoolSize}.", channel, currentPoolSize);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Return channel {Channel} into pool fail. Drop it. CurrentPoolSize: {PoolSize}.", channel, currentPoolSize);
+        }
 
         channel.Dispose();
 
@@ -184,7 +198,10 @@ internal sealed class RabbitMQChannelPool : IRabbitMQChannelPool, IDisposable
     {
         if (Interlocked.Exchange(ref _connection, null) is { } connection)
         {
-            _logger.LogDebug("Dispose connection {Connection}.", connection);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Dispose connection {Connection}.", connection);
+            }
             connection.Dispose();
         }
     }

@@ -61,7 +61,7 @@ public class RabbitMQTestServiceProviderProviderWithActivity : TestServiceProvid
             ShouldListenTo = source => source.Name.StartsWith(Diagnostics.DiagnosticConstants.ActivityNames.RootActivitySourceName),
             ActivityStarted = activity => ActivityQueue.Enqueue(new(activity, true)),
             ActivityStopped = activity => ActivityQueue.Enqueue(new(activity, false)),
-            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData,
+            Sample = (ref _) => ActivitySamplingResult.AllData,
         };
         ActivitySource.AddActivityListener(_activityListener);
 

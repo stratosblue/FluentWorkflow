@@ -102,7 +102,10 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
 
             ThrowIfStageNotMatch(stageMessage.Context);
 
-            Logger.LogTrace("Start handle stage message {{{Id}}}[{Message}]", stageMessage.Id, stageMessage);
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.LogTrace("Start handle stage message {{{Id}}}[{Message}]", stageMessage.Id, stageMessage);
+            }
 
             var processContext = new ProcessContext(ServiceProvider);
 
@@ -155,7 +158,12 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
                     activity?.RecordException(ex);
                     await StageHandleFailedAsync(stageMessage, ex, cancellationToken);
                     exception = ex;
-                    Logger.LogError(ex, "Handle stage message {{{Id}}}[{Message}] failed", stageMessage.Id, stageMessage);
+
+                    if (Logger.IsEnabled(LogLevel.Error))
+                    {
+                        Logger.LogError(ex, "Handle stage message {{{Id}}}[{Message}] failed", stageMessage.Id, stageMessage);
+                    }
+
                     return;
                 }
                 throw;
@@ -274,11 +282,12 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
     /// <summary>
     /// 处理上下文
     /// </summary>
-    protected sealed class ProcessContext
+    /// <inheritdoc cref="ProcessContext"/>
+    protected sealed class ProcessContext(IServiceProvider serviceProvider)
     {
         #region Private 字段
 
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
         private ImmutableDictionary<string, IWorkflowStarter> _awaitChildWorkflows = ImmutableDictionary.Create<string, IWorkflowStarter>();
 
@@ -311,16 +320,6 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
         private IServiceProviderIsService ServiceProviderIsService => _serviceProviderIsService ??= _serviceProvider.GetRequiredService<IServiceProviderIsService>();
 
         #endregion Private 属性
-
-        #region Public 构造函数
-
-        /// <inheritdoc cref="ProcessContext"/>
-        public ProcessContext(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-        }
-
-        #endregion Public 构造函数
 
         #region Public 方法
 
@@ -355,7 +354,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
             //检查当前服务是否有对应工作流程的结果观察器，否则不允许启动
             if (!ServiceProviderIsService.IsService(typeof(IWorkflowResultObserver<TWorkflow>)))
             {
-                throw new WorkflowInvalidOperationException($"There is no {nameof(IWorkflowResultObserver<TWorkflow>)} for \"{typeof(TWorkflow)}\" in serviceProvider. Can not await child workflow.");
+                throw new WorkflowInvalidOperationException($"There is no {nameof(IWorkflowResultObserver<>)} for \"{typeof(TWorkflow)}\" in serviceProvider. Can not await child workflow.");
             }
             _awaitChildWorkflows = _awaitChildWorkflows.Add(alias, workflow);
         }

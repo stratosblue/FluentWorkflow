@@ -2,17 +2,18 @@
 
 namespace FluentWorkflow.Generator.Providers;
 
-internal abstract class WorkflowSourceProvider : SourceProvider
+internal abstract class WorkflowSourceProvider(GenerateContext context)
+    : SourceProvider
 {
     #region Protected 字段
 
-    protected readonly WorkflowDeclaration WorkflowDeclaration;
+    protected readonly WorkflowDeclaration WorkflowDeclaration = context.WorkflowDeclaration;
 
     #endregion Protected 字段
 
     #region Protected 属性
 
-    protected GenerateContext Context { get; }
+    protected GenerateContext Context { get; } = context;
 
     protected GenerateNames Names => Context.GenerateNames;
 
@@ -25,14 +26,4 @@ internal abstract class WorkflowSourceProvider : SourceProvider
     protected string WorkflowName => WorkflowDeclaration.WorkflowName;
 
     #endregion Protected 属性
-
-    #region Public 构造函数
-
-    public WorkflowSourceProvider(GenerateContext context)
-    {
-        Context = context;
-        WorkflowDeclaration = context.WorkflowDeclaration;
-    }
-
-    #endregion Public 构造函数
 }

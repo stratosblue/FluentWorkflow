@@ -8,6 +8,6 @@
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
 
-    <NoWarn>$(NoWaring);CS8669</NoWarn>
+    <NoWarn>$(NoWaring);CS8669;IDE0130</NoWarn>
   </PropertyGroup>
 </Project>

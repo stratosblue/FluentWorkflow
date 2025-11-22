@@ -12,35 +12,26 @@ namespace FluentWorkflow.Handler;
 /// </summary>
 /// <typeparam name="TWorkflowStageFinalizer"></typeparam>
 /// <typeparam name="TWorkflowBoundary">工作流程边界（限定工作流程）</typeparam>
+/// <inheritdoc/>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoundary>
+public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoundary>(IWorkflowAwaitProcessor workflowAwaitProcessor,
+                                                                                      ILogger logger,
+                                                                                      IServiceProvider serviceProvider)
     : IWorkflowContinuator
     where TWorkflowStageFinalizer : IWorkflowStageFinalizer, TWorkflowBoundary
 {
     #region Protected 字段
 
     /// <inheritdoc cref="ILogger"/>
-    protected readonly ILogger Logger;
+    protected readonly ILogger Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <inheritdoc cref="IServiceProvider"/>
-    protected readonly IServiceProvider ServiceProvider;
+    protected readonly IServiceProvider ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
     /// <inheritdoc cref="IWorkflowAwaitProcessor"/>
-    protected readonly IWorkflowAwaitProcessor WorkflowAwaitProcessor;
+    protected readonly IWorkflowAwaitProcessor WorkflowAwaitProcessor = workflowAwaitProcessor ?? throw new ArgumentNullException(nameof(workflowAwaitProcessor));
 
     #endregion Protected 字段
-
-    #region Public 构造函数
-
-    /// <inheritdoc/>
-    public WorkflowContinuator(IWorkflowAwaitProcessor workflowAwaitProcessor, ILogger logger, IServiceProvider serviceProvider)
-    {
-        WorkflowAwaitProcessor = workflowAwaitProcessor ?? throw new ArgumentNullException(nameof(workflowAwaitProcessor));
-        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-    }
-
-    #endregion Public 构造函数
 
     #region Public 方法
 
@@ -72,7 +63,10 @@ public abstract class WorkflowContinuator<TWorkflowStageFinalizer, TWorkflowBoun
         {
             Activity.Current?.RecordException(exception);
             var currentAlias = childWorkflowFinishedMessage.Context.State.Alias ?? "Unknown";
-            Logger.LogError(exception, "Await finished child workflow \"{Alias}\" failed.", currentAlias);
+            if (Logger.IsEnabled(LogLevel.Error))
+            {
+                Logger.LogError(exception, "Await finished child workflow \"{Alias}\" failed.", currentAlias);
+            }
             parentWorkflowContext.SetFailureInformation(context.State.Stage, $"Await finished child workflow \"{currentAlias}\" failed: {exception.Message}", exception.StackTrace ?? new StackTrace(1, fNeedFileInfo: true).ToString());
 
             //执行等待失败，直接失败

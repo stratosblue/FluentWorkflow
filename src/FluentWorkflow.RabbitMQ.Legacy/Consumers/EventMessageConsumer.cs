@@ -54,7 +54,10 @@ public class EventMessageConsumer(IModel channel,
                     throw new InvalidDataException($"Received non target message {eventName} From [{consumerTag}] by {exchange} -> {routingKey}. If changed the channel for the message, you may need to manually unbind the routing key of the queue.");
                 }
 
-                logger.LogDebug("Start consume message {EventName} From [{ConsumerTag}] by {Exchange} -> {RoutingKey}.", eventName, consumerTag, exchange, routingKey);
+                if (logger.IsEnabled(LogLevel.Debug))
+                {
+                    logger.LogDebug("Start consume message {EventName} From [{ConsumerTag}] by {Exchange} -> {RoutingKey}.", eventName, consumerTag, exchange, routingKey);
+                }
 
                 if (messageTransmissionTypes.TryGetValue(eventName, out var transmissionType))
                 {
@@ -106,7 +109,10 @@ public class EventMessageConsumer(IModel channel,
             if (ex is IBusyConsumer)
             {
                 requeue = true;
-                logger.LogWarning(ex, "Error at rabbitmq HandleBasicDeliver because of BusyConsumer. EventName: {EventName} DeliveryTag {DeliveryTag} [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}. [Requeue:{Requeue}].", eventName, deliveryTag, consumerTag, exchange, routingKey, requeue);
+                if (logger.IsEnabled(LogLevel.Warning))
+                {
+                    logger.LogWarning(ex, "Error at rabbitmq HandleBasicDeliver because of BusyConsumer. EventName: {EventName} DeliveryTag {DeliveryTag} [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}. [Requeue:{Requeue}].", eventName, deliveryTag, consumerTag, exchange, routingKey, requeue);
+                }
             }
 
             messageHandleOptions.TryGetValue(eventName, out var handleOptions);
@@ -114,7 +120,10 @@ public class EventMessageConsumer(IModel channel,
             if (!requeue)
             {
                 requeue = CheckShouldRequeue(handleOptions?.RequeuePolicy ?? MessageRequeuePolicy.Unlimited, redelivered);
-                logger.LogError(ex, "Error at rabbitmq HandleBasicDeliver. EventName: {EventName} DeliveryTag {DeliveryTag} [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}. [Requeue:{Requeue}].", eventName, deliveryTag, consumerTag, exchange, routingKey, requeue);
+                if (logger.IsEnabled(LogLevel.Error))
+                {
+                    logger.LogError(ex, "Error at rabbitmq HandleBasicDeliver. EventName: {EventName} DeliveryTag {DeliveryTag} [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}. [Requeue:{Requeue}].", eventName, deliveryTag, consumerTag, exchange, routingKey, requeue);
+                }
             }
 
             if (requeue)
@@ -176,7 +185,10 @@ public class EventMessageConsumer(IModel channel,
     {
         var requeue = CheckShouldRequeue(policy, redelivered);
 
-        logger.LogWarning("Consume message error on received {EventName}. Not found consumer for it. If changed the qos for the message, you may need to manually unbind the routing key of the queue. [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey} [Requeue:{Requeue}].", eventName, consumerTag, exchange, routingKey, requeue);
+        if (logger.IsEnabled(LogLevel.Warning))
+        {
+            logger.LogWarning("Consume message error on received {EventName}. Not found consumer for it. If changed the qos for the message, you may need to manually unbind the routing key of the queue. [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey} [Requeue:{Requeue}].", eventName, consumerTag, exchange, routingKey, requeue);
+        }
 
         if (requeue)
         {
@@ -189,7 +201,10 @@ public class EventMessageConsumer(IModel channel,
                            }
                            catch (Exception ex)
                            {
-                               logger.LogError(ex, "Message {EventName} reject error. [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}", eventName, consumerTag, exchange, routingKey);
+                               if (logger.IsEnabled(LogLevel.Error))
+                               {
+                                   logger.LogError(ex, "Message {EventName} reject error. [{ConsumerTag}] Routing: {Exchange} -> {RoutingKey}", eventName, consumerTag, exchange, routingKey);
+                               }
                            }
                        }, CancellationToken.None);
         }

@@ -86,8 +86,8 @@ public static class FluentWorkflowDebugUtil
         var activityListener = new ActivityListener
         {
             ShouldListenTo = source => source.Name.StartsWith(DiagnosticConstants.ActivityNames.RootActivitySourceName, StringComparison.Ordinal),
-            SampleUsingParentId = (ref ActivityCreationOptions<string> activityOptions) => ActivitySamplingResult.AllData,
-            Sample = (ref ActivityCreationOptions<ActivityContext> activityOptions) => ActivitySamplingResult.AllData
+            SampleUsingParentId = (ref activityOptions) => ActivitySamplingResult.AllData,
+            Sample = (ref activityOptions) => ActivitySamplingResult.AllData
         };
 
         return activityListener;

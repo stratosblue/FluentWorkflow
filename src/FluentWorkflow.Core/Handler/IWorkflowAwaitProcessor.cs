@@ -32,43 +32,31 @@ public interface IWorkflowAwaitProcessor
 /// <summary>
 /// 工作流程等待状态
 /// </summary>
-public sealed class WorkflowAwaitState
+/// <param name="parentWorkflowContext">父工作流程上下文</param>
+/// <param name="isFinished">是否已结束（失败或成功）</param>
+/// <param name="childWorkflowContexts">所有子工作流程的上下文字典</param>
+public sealed class WorkflowAwaitState(WorkflowContextSnapshot parentWorkflowContext,
+                                       bool isFinished,
+                                       IReadOnlyDictionary<string, IWorkflowContext?> childWorkflowContexts)
 {
     #region Public 属性
 
     /// <summary>
     /// 子工作流程上下文
     /// </summary>
-    public IReadOnlyDictionary<string, IWorkflowContext?> ChildWorkflowContexts { get; }
+    public IReadOnlyDictionary<string, IWorkflowContext?> ChildWorkflowContexts { get; } = childWorkflowContexts ?? throw new ArgumentNullException(nameof(childWorkflowContexts));
 
     /// <summary>
     /// 是否已结束
     /// </summary>
-    public bool IsFinished { get; }
+    public bool IsFinished { get; } = isFinished;
 
     /// <summary>
     /// 父工作流程上下文
     /// </summary>
-    public WorkflowContextSnapshot ParentWorkflowContext { get; }
+    public WorkflowContextSnapshot ParentWorkflowContext { get; } = parentWorkflowContext ?? throw new ArgumentNullException(nameof(parentWorkflowContext));
 
     #endregion Public 属性
-
-    #region Public 构造函数
-
-    /// <summary>
-    /// <inheritdoc cref="WorkflowAwaitState"/>
-    /// </summary>
-    /// <param name="parentWorkflowContext">父工作流程上下文</param>
-    /// <param name="isFinished">是否已结束（失败或成功）</param>
-    /// <param name="childWorkflowContexts">所有子工作流程的上下文字典</param>
-    public WorkflowAwaitState(WorkflowContextSnapshot parentWorkflowContext, bool isFinished, IReadOnlyDictionary<string, IWorkflowContext?> childWorkflowContexts)
-    {
-        ParentWorkflowContext = parentWorkflowContext ?? throw new ArgumentNullException(nameof(parentWorkflowContext));
-        IsFinished = isFinished;
-        ChildWorkflowContexts = childWorkflowContexts ?? throw new ArgumentNullException(nameof(childWorkflowContexts));
-    }
-
-    #endregion Public 构造函数
 
     #region Public 方法
 

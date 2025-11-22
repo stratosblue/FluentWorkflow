@@ -51,7 +51,7 @@ public class WorkflowGenerator : IIncrementalGenerator
             configOptions.GlobalOptions.TryGetValue("build_property.rootnamespace", out var rootNameSpace);
 
             return new CompilationProperties(RootNameSpace: rootNameSpace ?? string.Empty,
-                                             GeneratorAdditionals: generatorAdditionals.ToList());
+                                             GeneratorAdditionals: [.. generatorAdditionals]);
         });
 
         //生成声明信息

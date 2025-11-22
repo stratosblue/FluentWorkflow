@@ -4,16 +4,9 @@ using Microsoft.CodeAnalysis;
 
 namespace FluentWorkflow.Generator.Providers.Workflow;
 
-internal class ContextSourceProvider : WorkflowSourceProvider
+internal class ContextSourceProvider(GenerateContext context)
+    : WorkflowSourceProvider(context)
 {
-    #region Public 构造函数
-
-    public ContextSourceProvider(GenerateContext context) : base(context)
-    {
-    }
-
-    #endregion Public 构造函数
-
     #region Public 方法
 
     public override IEnumerable<GeneratedSource?>? Generate()
