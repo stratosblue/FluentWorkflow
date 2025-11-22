@@ -34,7 +34,6 @@ public abstract class RedisSingleChildWorkflowExecuteTest : SingleChildWorkflowE
 
     #region Public 方法
 
-    [Ignore]
     public override Task Should_Throw_With_Nest_Multi_ChildWorkflow(int subflowCount)
     {
         return base.Should_Throw_With_Nest_Multi_ChildWorkflow(subflowCount);

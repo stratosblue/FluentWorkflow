@@ -30,7 +30,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.EventBus" Version="9.0.4" />
+    <PackageReference Include="Volo.Abp.EventBus" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>

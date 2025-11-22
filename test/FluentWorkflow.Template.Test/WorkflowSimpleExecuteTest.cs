@@ -34,7 +34,7 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
 
         await Assert.ThrowsExactlyAsync<WorkflowFailureException>(() => FinishWaiterContainer[id].WaitAsync());
 
-        Assert.AreEqual(exceptionStep, executeLogger.Stages.Count);
+        Assert.HasCount(exceptionStep, executeLogger.Stages);
     }
 
     [TestMethod]
@@ -53,7 +53,7 @@ public abstract class WorkflowSimpleExecuteTest : FluentWorkflowTestBase
 
         await FinishWaiterContainer[id].WaitAsync();
 
-        Assert.AreEqual(TemplateStages.OrderedStageIds.Length, executeLogger.Stages.Count);
+        Assert.HasCount(TemplateStages.OrderedStageIds.Length, executeLogger.Stages);
 
         for (int i = 0; i < executeLogger.Stages.Count; i++)
         {

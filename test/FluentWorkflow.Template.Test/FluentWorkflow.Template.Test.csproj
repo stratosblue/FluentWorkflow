@@ -8,7 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="8.3.2" />
+    <AssemblyAttribute Include="Microsoft.VisualStudio.TestTools.UnitTesting.DoNotParallelizeAttribute" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="8.4.1" />
     <PackageReference Include="Savorboard.CAP.InMemoryMessageQueue" Version="8.2.1" />
   </ItemGroup>
 

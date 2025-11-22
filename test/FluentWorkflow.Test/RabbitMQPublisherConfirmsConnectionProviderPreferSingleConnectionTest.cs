@@ -32,7 +32,7 @@ public class RabbitMQPublisherConfirmsConnectionProviderPreferSingleConnectionTe
                 .UseRabbitMQMessageDispatcher(options =>
                 {
                     options.ExchangeName = $"fwf-test-exchange-{Environment.Version.Major}_{Environment.Version.Minor}";
-                    options.ConsumeQueueName = $"RabbitMQTestQueue-{DateTime.Now:yyyy:MM:dd:HH.mm.ss.ffff}";
+                    options.ConsumeQueueName = $"FWFTestQueue-{DateTime.Now:yyyy:MM:dd:HH.mm.ss.ffff}";
                     options.Uri = new Uri(context.Configuration.GetRequiredSection("RabbitMQ").Value!);
                     options.PreferSingleConnection = true;
                     options.PublisherConfirms = true;

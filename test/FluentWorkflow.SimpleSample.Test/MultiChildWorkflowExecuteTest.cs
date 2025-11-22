@@ -186,7 +186,7 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         var baseLength = SampleStages.OrderedStageIds.Length;
         var expected = baseLength + baseLength * (depth * subflowCount);
-        Assert.AreEqual(expected, executeLogger.Stages.Count);
+        Assert.HasCount(expected, executeLogger.Stages);
     }
 
     [DataRow(3, 2)]
@@ -225,7 +225,7 @@ public abstract class MultiChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         await FinishWaiterContainer[id].WaitAsync();
 
-        Assert.AreEqual(SampleStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages.Count);
+        Assert.HasCount(SampleStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages);
     }
 
     #endregion Public 方法

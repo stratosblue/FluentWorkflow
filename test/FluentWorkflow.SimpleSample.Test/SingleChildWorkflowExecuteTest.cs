@@ -155,7 +155,7 @@ public abstract class SingleChildWorkflowExecuteTest : FluentWorkflowTestBase
 
         await FinishWaiterContainer[id].WaitAsync();
 
-        Assert.AreEqual(SampleStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages.Count);
+        Assert.HasCount(SampleStages.OrderedStageIds.Length * (depth + 1), executeLogger.Stages);
     }
 
     [DataRow(9)]

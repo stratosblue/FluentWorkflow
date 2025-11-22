@@ -10,12 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AssemblyAttribute Include="Microsoft.VisualStudio.TestTools.UnitTesting.DoNotParallelizeAttribute" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="**\*.cs" />
     <Compile Include="**\*RabbitMQ*.cs;*.cs;TestImpls\**\*.cs" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="8.3.2" />
+    <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="8.4.1" />
     <PackageReference Include="Savorboard.CAP.InMemoryMessageQueue" Version="8.2.1" />
   </ItemGroup>
 

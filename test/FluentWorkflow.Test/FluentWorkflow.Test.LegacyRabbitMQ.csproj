@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AssemblyAttribute Include="Microsoft.VisualStudio.TestTools.UnitTesting.DoNotParallelizeAttribute"/>
+  </ItemGroup>
+  
+  <ItemGroup>
     <Compile Remove="**\*.cs" />
     <Compile Include="**\*RabbitMQ*.cs" />
   </ItemGroup>
