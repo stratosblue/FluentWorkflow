@@ -53,10 +53,17 @@ public class RabbitMQTestServiceProviderProvider : TestServiceProviderProvider
         services.AddFluentWorkflow()
                 .UseRabbitMQMessageDispatcher(options =>
                 {
-                    options.ExchangeName = $"fwf-test-exchange-{Environment.Version.Major}_{Environment.Version.Minor}";
-                    options.ConsumeQueueName = $"FWFTestQueue-{DateTime.Now:yyyy:MM:dd:HH.mm.ss.ffff}";
+                    var testId = $"{Environment.Version.Major}_{Environment.Version.Minor}-{DateTime.Now:HH.mm.ss.FFFFFFF}@{Guid.NewGuid().ToString()[..6]}";
+
+                    options.ExchangeName = $"fwf-test-{testId}";
+                    options.ConsumeQueueName = $"FWFTestQueue-{testId}";
                     options.Uri = new Uri(context.Configuration.GetRequiredSection("RabbitMQ").Value!);
                     options.PublisherConfirms = false;
+
+#pragma warning disable CS0618 // 类型或成员已过时
+                    //测试时不持久化，提升一点测试速度
+                    options.Durable = false;
+#pragma warning restore CS0618 // 类型或成员已过时
                 });
 
         _servicesSetup?.Invoke(services);

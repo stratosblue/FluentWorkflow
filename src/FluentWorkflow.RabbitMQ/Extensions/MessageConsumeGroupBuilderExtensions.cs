@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using FluentWorkflow.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;
@@ -19,11 +20,12 @@ public static class MessageConsumeGroupBuildExtensions
     /// <param name="queueName"></param>
     /// <param name="queueArguments"></param>
     /// <param name="qos"></param>
+    /// <param name="durable"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async Task DeclareQosQueueAsync(IChannel channel, string queueName, Dictionary<string, object> queueArguments, ushort qos, CancellationToken cancellationToken)
+    public static async Task DeclareQosQueueAsync(IChannel channel, string queueName, Dictionary<string, object> queueArguments, ushort qos, bool durable, CancellationToken cancellationToken)
     {
-        await channel.QueueDeclareAsync(queue: queueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArguments!, noWait: false, cancellationToken: cancellationToken);
+        await channel.QueueDeclareAsync(queue: queueName, durable: durable, exclusive: false, autoDelete: !durable, arguments: queueArguments!, noWait: false, cancellationToken: cancellationToken);
         await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: qos, global: false, cancellationToken: cancellationToken);
     }
 
@@ -50,7 +52,12 @@ public static class MessageConsumeGroupBuildExtensions
             try
             {
                 var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
-                await DeclareQosQueueAsync(channel, queueName, queueArguments, qos, cancellationToken);
+
+#pragma warning disable CS0618 // 类型或成员已过时
+                var durable = serviceProvider.GetService<IOptions<RabbitMQOptions>>()?.Value?.Durable ?? true;
+#pragma warning restore CS0618 // 类型或成员已过时
+
+                await DeclareQosQueueAsync(channel, queueName, queueArguments, qos, durable, cancellationToken);
                 var channelScope = new ChannelScope(channel, connection.DisposeAsync);
                 return MessageConsumeGroupInitializationResult.CreateByChannelScope(channelScope);
             }

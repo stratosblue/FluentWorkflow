@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using System.ComponentModel;
+using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;
 
@@ -45,6 +46,14 @@ public class RabbitMQOptions
     /// 消费队列名称规范化委托
     /// </summary>
     public Func<string, string?>? ConsumeQueueNameNormalizer { get; set; }
+
+    /// <summary>
+    /// 设置所使用的交换机和队列的持久化选项
+    /// <br/><see langword="null"/> 或 <see langword="true"/> 都会进行持久化，默认为 <see langword="true"/>
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("该属性通常不应该被修改，除非明确了解修改后的影响")]
+    public bool? Durable { get; set; } = true;
 
     /// <summary>
     /// 错误消息重入队列的延时

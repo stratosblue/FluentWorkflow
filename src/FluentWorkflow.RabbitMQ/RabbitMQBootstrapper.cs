@@ -117,6 +117,10 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
     {
         _logger.LogInformation("Start initializing workflow RabbitMQ message dispatcher.");
 
+#pragma warning disable CS0618 // 类型或成员已过时
+        var durable = _options.Durable ?? true;
+#pragma warning restore CS0618 // 类型或成员已过时
+
         GetMessageOptions(out var messageTransmissionTypes, out var messageHandleOptions);
 
         var connection = await _connectionProvider.GetAsync(cancellationToken);
@@ -128,14 +132,14 @@ internal sealed class RabbitMQBootstrapper : IFluentWorkflowBootstrapper
         //global Channel
         var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
         //声明交换机
-        await channel.ExchangeDeclareAsync(exchange: exchangeName, type: ExchangeType.Topic, durable: true, autoDelete: false, arguments: null, noWait: false, cancellationToken: cancellationToken);
+        await channel.ExchangeDeclareAsync(exchange: exchangeName, type: ExchangeType.Topic, durable: durable, autoDelete: !durable, arguments: null, noWait: false, cancellationToken: cancellationToken);
 
         var defaultConsumeQueueName = NormalizConsumeQueueName(_options.ConsumeQueueName ?? Assembly.GetEntryAssembly()?.GetName().Name?.ToLowerInvariant());
 
         var queueArguments = GetQueueArguments(defaultConsumeQueueName);
 
         //声明默认队列
-        await channel.QueueDeclareAsync(queue: defaultConsumeQueueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArguments!, noWait: false, cancellationToken: cancellationToken);
+        await channel.QueueDeclareAsync(queue: defaultConsumeQueueName, durable: durable, exclusive: false, autoDelete: !durable, arguments: queueArguments!, noWait: false, cancellationToken: cancellationToken);
 
         if (_options.GlobalQos > 0)
         {

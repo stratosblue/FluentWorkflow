@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using FluentWorkflow.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace FluentWorkflow.RabbitMQ;
@@ -19,10 +20,11 @@ public static class MessageConsumeGroupBuildExtensions
     /// <param name="queueName"></param>
     /// <param name="queueArguments"></param>
     /// <param name="qos"></param>
+    /// <param name="durable"></param>
     /// <returns></returns>
-    public static void DeclareQosQueue(IModel channel, string queueName, Dictionary<string, object> queueArguments, ushort qos)
+    public static void DeclareQosQueue(IModel channel, string queueName, Dictionary<string, object> queueArguments, ushort qos, bool durable)
     {
-        channel.QueueDeclare(queue: queueName, durable: true, exclusive: false, autoDelete: false, arguments: queueArguments!);
+        channel.QueueDeclare(queue: queueName, durable: durable, exclusive: false, autoDelete: !durable, arguments: queueArguments!);
         channel.BasicQos(prefetchSize: 0, prefetchCount: qos, global: false);
     }
 
@@ -49,7 +51,12 @@ public static class MessageConsumeGroupBuildExtensions
             try
             {
                 var channel = connection.CreateModel();
-                DeclareQosQueue(channel, queueName, queueArguments, qos);
+
+#pragma warning disable CS0618 // 类型或成员已过时
+                var durable = serviceProvider.GetService<IOptions<RabbitMQOptions>>()?.Value?.Durable ?? true;
+#pragma warning restore CS0618 // 类型或成员已过时
+
+                DeclareQosQueue(channel, queueName, queueArguments, qos, durable);
                 var channelScope = new ChannelScope(channel, connection.Dispose);
                 return MessageConsumeGroupInitializationResult.CreateByChannelScope(channelScope);
             }
