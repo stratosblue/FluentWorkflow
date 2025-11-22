@@ -134,7 +134,7 @@ public abstract partial class {WorkflowName}StageHandler<TStage, TStageMessage, 
     #endregion IWorkflowStageFinalizer
 }}
 ");
-        var allStageflowDesc = string.Join(" -><br/> ", Context.Stages.Select(m => $"<see cref=\"{WorkflowName}Stages.{m.Name}\"/>"));
+        var allStageflowDesc = GetAllStageflowDescription();
 
         foreach (var stage in Context.Stages)
         {

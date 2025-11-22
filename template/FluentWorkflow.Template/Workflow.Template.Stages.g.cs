@@ -7,6 +7,7 @@ namespace TemplateNamespace.Template;
 
 /// <summary>
 /// <see cref="TemplateWorkflow"/> 的阶段定义
+/// <br/><br/>工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
 /// </summary>
 public static class TemplateStages
 {

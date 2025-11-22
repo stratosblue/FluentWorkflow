@@ -11,6 +11,9 @@ internal class BaseSourceProvider(GenerateContext generateContext)
     public override IEnumerable<GeneratedSource?>? Generate()
     {
         var builder = new StringBuilder(2048);
+
+        var allStageflowDesc = GetAllStageflowDescription();
+
         builder.AppendLine($@"{FluentWorkflowGeneratorConstants.CodeHeader}
 
 {Context.Usings}
@@ -19,6 +22,7 @@ namespace {NameSpace}
 {{
 /// <summary>
 /// <see cref=""{WorkflowClassName}""/> 基类
+/// <br/><br/>工作流程阶段顺序：<br/>{allStageflowDesc}
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 public abstract partial class {WorkflowClassName}Base
@@ -73,6 +77,7 @@ public abstract partial class {WorkflowClassName}Base
         {
             builder.AppendLine($@"    /// <summary>
     /// 在阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 发起前
+    /// <br/><br/>工作流程阶段顺序：<br/>{allStageflowDesc}
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""fireMessage"">执行消息后续处理的委托 (分发消息)</param>
@@ -85,6 +90,7 @@ public abstract partial class {WorkflowClassName}Base
 
     /// <summary>
     /// 在阶段 <see cref=""{WorkflowName}Stages.{stage.Name}""/> 完成时
+    /// <br/><br/>工作流程阶段顺序：<br/>{allStageflowDesc}
     /// </summary>
     /// <param name=""message""></param>
     /// <param name=""fireMessage"">执行消息后续处理的委托 (更新上下文状态，并分发下阶段消息)</param>
@@ -121,6 +127,10 @@ public abstract partial class {WorkflowClassName}Base
     }}
 }}
 
+/// <summary>
+/// 工作流程定义 <see cref=""{WorkflowDeclaration.DeclarationName}""/> 的实现
+/// <br/><br/>工作流程阶段顺序：<br/>{allStageflowDesc}
+/// </summary>
 partial class {WorkflowClassName}
     : {WorkflowClassName}Base
     , IWorkflowStarter

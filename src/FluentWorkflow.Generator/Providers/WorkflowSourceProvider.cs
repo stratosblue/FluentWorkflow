@@ -26,4 +26,14 @@ internal abstract class WorkflowSourceProvider(GenerateContext context)
     protected string WorkflowName => WorkflowDeclaration.WorkflowName;
 
     #endregion Protected 属性
+
+    #region Protected 方法
+
+    protected string GetAllStageflowDescription()
+    {
+        var allStageflowDesc = string.Join(" -><br/> ", Context.Stages.Select(m => $"<see cref=\"{WorkflowName}Stages.{m.Name}\"/>"));
+        return allStageflowDesc;
+    }
+
+    #endregion Protected 方法
 }

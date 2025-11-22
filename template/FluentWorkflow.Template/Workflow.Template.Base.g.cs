@@ -15,6 +15,7 @@ namespace TemplateNamespace
 {
     /// <summary>
     /// <see cref="TemplateWorkflow"/> 基类
+    /// <br/><br/>工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public abstract partial class TemplateWorkflowBase
@@ -65,6 +66,7 @@ namespace TemplateNamespace
 
         /// <summary>
         /// 在阶段 <see cref="TemplateStages.Stage1CAUK"/> 发起前
+        /// <br/><br/>工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
         /// </summary>
         /// <param name="message"></param>
         /// <param name="fireMessage">执行消息后续处理的委托 (分发消息)</param>
@@ -77,6 +79,7 @@ namespace TemplateNamespace
 
         /// <summary>
         /// 在阶段 <see cref="TemplateStages.Stage1CAUK"/> 完成时
+        /// <br/><br/>工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
         /// </summary>
         /// <param name="message"></param>
         /// <param name="fireMessage">执行消息后续处理的委托 (更新上下文状态，并分发下阶段消息)</param>
@@ -89,6 +92,7 @@ namespace TemplateNamespace
 
         /// <summary>
         /// 在阶段 <see cref="TemplateStages.Stage2BPTG"/> 发起前
+        /// <br/><br/>工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
         /// </summary>
         /// <param name="message"></param>
         /// <param name="fireMessage">执行消息后续处理的委托 (分发消息)</param>
@@ -101,6 +105,7 @@ namespace TemplateNamespace
 
         /// <summary>
         /// 在阶段 <see cref="TemplateStages.Stage2BPTG"/> 完成时
+        /// <br/><br/>工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
         /// </summary>
         /// <param name="message"></param>
         /// <param name="fireMessage">执行消息后续处理的委托 (更新上下文状态，并分发下阶段消息)</param>
@@ -113,6 +118,7 @@ namespace TemplateNamespace
 
         /// <summary>
         /// 在阶段 <see cref="TemplateStages.Stage3AWBN"/> 发起前
+        /// <br/><br/>工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
         /// </summary>
         /// <param name="message"></param>
         /// <param name="fireMessage">执行消息后续处理的委托 (分发消息)</param>
@@ -125,6 +131,7 @@ namespace TemplateNamespace
 
         /// <summary>
         /// 在阶段 <see cref="TemplateStages.Stage3AWBN"/> 完成时
+        /// <br/><br/>工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
         /// </summary>
         /// <param name="message"></param>
         /// <param name="fireMessage">执行消息后续处理的委托 (更新上下文状态，并分发下阶段消息)</param>
@@ -160,7 +167,8 @@ namespace TemplateNamespace
     }
 
     /// <summary>
-    /// 
+    /// 工作流程定义 <see cref="TemplateWorkflowDeclaration"/> 的实现
+    /// <br/><br/>工作流程阶段顺序：<br/><see cref="TemplateStages.Stage1CAUK"/> -><br/> <see cref="TemplateStages.Stage2BPTG"/> -><br/> <see cref="TemplateStages.Stage3AWBN"/>
     /// </summary>
     partial class TemplateWorkflow
         : TemplateWorkflowBase

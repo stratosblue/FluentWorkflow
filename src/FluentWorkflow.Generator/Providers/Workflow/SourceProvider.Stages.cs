@@ -11,6 +11,9 @@ internal class StagesSourceProvider(GenerateContext generateContext)
     public override IEnumerable<GeneratedSource?>? Generate()
     {
         var builder = new StringBuilder(1024);
+
+        var allStageflowDesc = GetAllStageflowDescription();
+
         builder.AppendLine($@"{FluentWorkflowGeneratorConstants.CodeHeader}
 
 {Context.Usings}
@@ -19,6 +22,7 @@ namespace {NameSpace}.{WorkflowName};
 
 /// <summary>
 /// <see cref=""{WorkflowClassName}""/> 的阶段定义
+/// <br/><br/>工作流程阶段顺序：<br/>{allStageflowDesc}
 /// </summary>
 public static class {WorkflowName}Stages
 {{

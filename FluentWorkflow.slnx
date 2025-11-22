@@ -15,6 +15,10 @@
     <File Path="package.props" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/solution items/.github/" />
+  <Folder Name="/solution items/.github/workflows/">
+    <File Path=".github/workflows/PublishNugetPackage.yml" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/FluentWorkflow.Core/FluentWorkflow.Core.csproj" />
     <Project Path="src/FluentWorkflow.Generator/FluentWorkflow.Generator.csproj" />
