@@ -66,19 +66,32 @@ public class EventMessageConsumer(IModel channel,
 
                     diagnosticSource.MessageReceived(dataTransmissionModel);
 
-                    var message = dataTransmissionModel.Message;
-                    if (dataTransmissionModel.TracingContext is { } tracingContext)
+                    Exception? exception = null;
+                    try
                     {
-                        var activityContext = tracingContext.RestoreActivityContext(true);
+                        var message = dataTransmissionModel.Message;
+                        if (dataTransmissionModel.TracingContext is { } tracingContext)
+                        {
+                            var activityContext = tracingContext.RestoreActivityContext(true);
 
-                        activity = ConsumerActivitySource.StartActivity($"ConsumeWorkflowEventMessage {eventName}", ActivityKind.Consumer, activityContext);
+                            activity = ConsumerActivitySource.StartActivity($"ConsumeWorkflowEventMessage {eventName}", ActivityKind.Consumer, activityContext);
 
-                        activity?.AddBaggages(tracingContext.Baggage);
+                            activity?.AddBaggages(tracingContext.Baggage);
+                        }
+
+                        await messageConsumeDispatcher.DispatchAsync(eventName, message, runningCancellationToken);
+
+                        Model.BasicAck(deliveryTag, false);
                     }
-
-                    await messageConsumeDispatcher.DispatchAsync(eventName, message, runningCancellationToken);
-
-                    Model.BasicAck(deliveryTag, false);
+                    catch (Exception ex)
+                    {
+                        exception = ex;
+                        throw;
+                    }
+                    finally
+                    {
+                        diagnosticSource.MessageHandleFinished(dataTransmissionModel, exception);
+                    }
                 }
                 else
                 {

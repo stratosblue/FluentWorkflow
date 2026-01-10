@@ -51,7 +51,7 @@ public class WorkflowContextTest
         var rawkvs = icontext.GetSnapshot();
         var rawkvsn = icontextn.GetSnapshot();
 
-        Assert.AreEqual(rawkvs.Count, rawkvsn.Count);
+        Assert.HasCount(rawkvs.Count, rawkvsn);
 
         foreach (var kv in rawkvs)
         {

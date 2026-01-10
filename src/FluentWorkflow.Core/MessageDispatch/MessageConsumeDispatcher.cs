@@ -94,37 +94,24 @@ public class MessageConsumeDispatcher : IMessageConsumeDispatcher
 
         Activity.Current?.AddEvent($"Invoke Message Handler - {eventName}");
 
-        Exception? exception = null;
-        try
-        {
-            var invokerDescriptors = consumeDescriptor.InvokerDescriptors;
+        var invokerDescriptors = consumeDescriptor.InvokerDescriptors;
 
-            if (consumeDescriptor.SingleWorkflowEventInvoker)
+        if (consumeDescriptor.SingleWorkflowEventInvoker)
+        {
+            await using var serviceScope = ServiceScopeFactory.CreateAsyncScope();
+            var serviceProvider = serviceScope.ServiceProvider;
+            await InnerInvokeAsync(message, invokerDescriptors[0], serviceProvider, cancellationToken);
+        }
+        else
+        {
+            var tasks = invokerDescriptors.Select([StackTraceHidden][DebuggerStepThrough] async (invokerDescriptor) =>
             {
                 await using var serviceScope = ServiceScopeFactory.CreateAsyncScope();
                 var serviceProvider = serviceScope.ServiceProvider;
-                await InnerInvokeAsync(message, invokerDescriptors[0], serviceProvider, cancellationToken);
-            }
-            else
-            {
-                var tasks = invokerDescriptors.Select([StackTraceHidden][DebuggerStepThrough] async (invokerDescriptor) =>
-                {
-                    await using var serviceScope = ServiceScopeFactory.CreateAsyncScope();
-                    var serviceProvider = serviceScope.ServiceProvider;
-                    await InnerInvokeAsync(message, invokerDescriptor, serviceProvider, cancellationToken);
-                }).ToList();
+                await InnerInvokeAsync(message, invokerDescriptor, serviceProvider, cancellationToken);
+            }).ToList();
 
-                await Task.WhenAll(tasks);
-            }
-        }
-        catch (Exception ex)
-        {
-            exception = ex;
-            throw;
-        }
-        finally
-        {
-            DiagnosticSource.MessageHandleFinished(message, exception);
+            await Task.WhenAll(tasks);
         }
 
         if (Logger.IsEnabled(LogLevel.Debug))

@@ -6,8 +6,7 @@ namespace FluentWorkflow.MessageDispatch;
 /// <summary>
 /// 数据传输模型
 /// </summary>
-/// <typeparam name="TMessage"></typeparam>
-public interface IDataTransmissionModel<out TMessage>
+public interface IDataTransmissionModel
 {
     #region Public 属性
 
@@ -17,14 +16,25 @@ public interface IDataTransmissionModel<out TMessage>
     public string EventName { get; }
 
     /// <summary>
-    /// 消息内容
-    /// </summary>
-    public TMessage Message { get; }
-
-    /// <summary>
     /// 追踪上下文
     /// </summary>
     public TracingContext? TracingContext { get; }
+
+    #endregion Public 属性
+}
+
+/// <summary>
+/// 数据传输模型
+/// </summary>
+/// <typeparam name="TMessage"></typeparam>
+public interface IDataTransmissionModel<out TMessage> : IDataTransmissionModel
+{
+    #region Public 属性
+
+    /// <summary>
+    /// 消息内容
+    /// </summary>
+    public TMessage Message { get; }
 
     #endregion Public 属性
 }
