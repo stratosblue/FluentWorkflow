@@ -30,7 +30,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="DotNetCore.CAP" Version="8.4.1" />
+    <PackageReference Include="DotNetCore.CAP" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>

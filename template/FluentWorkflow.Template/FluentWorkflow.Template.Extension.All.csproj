@@ -26,9 +26,9 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="DotNetCore.CAP" Version="8.4.1" />
+    <PackageReference Include="DotNetCore.CAP" Version="10.0.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.10.1" />
-    <PackageReference Include="Volo.Abp.EventBus" Version="10.0.0" />
+    <PackageReference Include="Volo.Abp.EventBus" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup>
