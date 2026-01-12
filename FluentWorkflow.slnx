@@ -20,10 +20,16 @@
     <File Path=".github/workflows/PublishNugetPackage.yml" />
   </Folder>
   <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
     <Project Path="src/FluentWorkflow.Core/FluentWorkflow.Core.csproj" />
     <Project Path="src/FluentWorkflow.Generator/FluentWorkflow.Generator.csproj" />
     <Project Path="src/FluentWorkflow.RabbitMQ.Legacy/FluentWorkflow.RabbitMQ.Legacy.csproj" />
     <Project Path="src/FluentWorkflow.RabbitMQ/FluentWorkflow.RabbitMQ.csproj" />
+  </Folder>
+  <Folder Name="/src/management/">
+    <File Path="src/management/Directory.Build.props" />
+    <Project Path="src/management/FluentWorkflow.Management.Cluster/FluentWorkflow.Management.Cluster.csproj" Id="af44b57b-b09d-44f2-b5d6-7a75090838ce" />
+    <Project Path="src/management/FluentWorkflow.Management/FluentWorkflow.Management.csproj" Id="685b2fb9-4e81-4536-8a45-cf4e6478ed00" />
   </Folder>
   <Folder Name="/template/">
     <Project Path="template/FluentWorkflow.Template/FluentWorkflow.Template.Basic.csproj" />

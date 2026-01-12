@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <VersionSuffix>preview-0001</VersionSuffix>
+  </PropertyGroup>
+
+</Project>

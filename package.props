@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>2.2.0</Version>
+    <VersionPrefix>2.2.0</VersionPrefix>
 
     <Description>A message driven distributed asynchronous workflow framework. 消息驱动的分布式异步工作流程处理框架。</Description>
 
@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="/" />
+    <None Include="$(MSBuildThisFileDirectory)\README.md" Link="README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Release'">

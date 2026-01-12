@@ -9,6 +9,8 @@
 		<CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
 		<IsRoslynComponent>true</IsRoslynComponent>
     <DefineConstants>$(DefineConstants);GENERATOR</DefineConstants>
+
+    <IsPackable>false</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>

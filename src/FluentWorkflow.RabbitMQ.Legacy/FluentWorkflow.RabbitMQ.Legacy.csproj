@@ -1,12 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="../../package.props" />
-
   <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-
     <RootNamespace>FluentWorkflow.RabbitMQ</RootNamespace>
-    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
