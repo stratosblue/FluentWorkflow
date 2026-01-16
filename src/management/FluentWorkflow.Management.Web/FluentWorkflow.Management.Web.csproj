@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
+
+    <ManagementUIProjectPath>../fluent-workflow-management-ui</ManagementUIProjectPath>
+    <ManagementUIDistPath>$(ManagementUIProjectPath)/build</ManagementUIDistPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ResourceCompressor" Version="1.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--<ProjectReference Include="..\FluentWorkflow.Management.Cluster\FluentWorkflow.Management.Cluster.csproj" />-->
+    <ProjectReference Include="..\FluentWorkflow.Management\FluentWorkflow.Management.csproj" />
+  </ItemGroup>
+
+  <Target Name="__CheckUIFilesBeforeBuild" BeforeTargets="Build;ResourceCompressorCompressingFiles">
+    <Error Condition="!Exists('$(ManagementUIDistPath)\index.html')"
+           Text="Error: 未找到ui的构建文件，需要构建ui项目'$(ManagementUIProjectPath)'" />
+  </Target>
+
+  <ItemGroup>
+    <CompressedEmbeddedResource Include="$(ManagementUIDistPath)\index.html" Link="dist\index.html" Pack="false" />
+  </ItemGroup>
+</Project>

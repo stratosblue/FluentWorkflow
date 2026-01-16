@@ -6,6 +6,11 @@
     <Project Path="sample/FluentWorkflow.SharedSample/FluentWorkflow.SharedSample.csproj" />
     <Project Path="sample/FluentWorkflow.SimpleSample/FluentWorkflow.SimpleSample.csproj" />
   </Folder>
+  <Folder Name="/sample/management/">
+    <File Path="sample/management/Directory.Build.props" />
+    <Project Path="sample/management/ManagementWebSample/ManagementWebSample.csproj" />
+    <Project Path="sample/management/WorkerSample/WorkerSample.csproj" Id="83affb84-e4f1-4084-b7a9-6631648e867f" />
+  </Folder>
   <Folder Name="/solution items/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
@@ -29,6 +34,7 @@
   <Folder Name="/src/management/">
     <File Path="src/management/Directory.Build.props" />
     <Project Path="src/management/FluentWorkflow.Management.Cluster/FluentWorkflow.Management.Cluster.csproj" Id="af44b57b-b09d-44f2-b5d6-7a75090838ce" />
+    <Project Path="src/management/FluentWorkflow.Management.Web/FluentWorkflow.Management.Web.csproj" Id="14525c21-6143-4d14-9d15-11debbc0b651" />
     <Project Path="src/management/FluentWorkflow.Management/FluentWorkflow.Management.csproj" Id="685b2fb9-4e81-4536-8a45-cf4e6478ed00" />
   </Folder>
   <Folder Name="/template/">
@@ -39,6 +45,7 @@
     <Project Path="template/FluentWorkflow.Template/FluentWorkflow.Template.Extension.Redis.csproj" />
   </Folder>
   <Folder Name="/test/">
+    <File Path="test/Directory.Build.props" />
     <Project Path="test/FluentWorkflow.SimpleSample.Test/FluentWorkflow.SimpleSample.Test.csproj" />
     <Project Path="test/FluentWorkflow.SimpleSample.Test/FluentWorkflow.SimpleSample.Test.LegacyRabbitMQ.csproj" />
     <Project Path="test/FluentWorkflow.Template.Test/FluentWorkflow.Template.Test.csproj" />
@@ -47,5 +54,8 @@
     <Project Path="test/FluentWorkflow.Test.Base/FluentWorkflow.Test.Base.LegacyRabbitMQ.csproj" />
     <Project Path="test/FluentWorkflow.Test/FluentWorkflow.Test.csproj" />
     <Project Path="test/FluentWorkflow.Test/FluentWorkflow.Test.LegacyRabbitMQ.csproj" />
+  </Folder>
+  <Folder Name="/test/management/">
+    <Project Path="test/management/FluentWorkflow.Management.Test/FluentWorkflow.Management.Test.csproj" Id="d58e59cb-e8ad-4c93-8805-c126a420a49c" />
   </Folder>
 </Solution>

@@ -15,8 +15,16 @@ namespace FluentWorkflow.MessageDispatch;
 /// 基于内存的 <inheritdoc cref="IWorkflowMessageDispatcher"/>
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
+public class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher, IDisposable
 {
+    #region Private 字段
+
+    private readonly CancellationTokenSource _cancellationTokenSource;
+
+    private bool _isDisposed;
+
+    #endregion Private 字段
+
     #region Protected 属性
 
     /// <summary>
@@ -35,6 +43,11 @@ public class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
 
     /// <inheritdoc cref="InMemoryWorkflowMessageDispatcherOptions"/>
     protected InMemoryWorkflowMessageDispatcherOptions Options { get; }
+
+    /// <summary>
+    /// 运行令牌
+    /// </summary>
+    protected CancellationToken RunningToken { get; }
 
     /// <inheritdoc cref="IServiceScopeFactory"/>
     protected IServiceScopeFactory ServiceScopeFactory { get; }
@@ -66,6 +79,9 @@ public class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
         Options = options.Value;
         EventSubscribeDescriptors = workflowBuildStates.GetEventInvokeMap();
         Logger = logger;
+
+        _cancellationTokenSource = new();
+        RunningToken = _cancellationTokenSource.Token;
     }
 
     #endregion Public 构造函数
@@ -96,11 +112,8 @@ public class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
         //默认异步执行
         _ = Task.Run(async () =>
         {
-            if (await OnConsumeMessageAsync(message, tracingContext, CancellationToken.None))
-            {
-                await ConsumeDispatchAsync(message, tracingContext, CancellationToken.None);
-            }
-        }, CancellationToken.None);
+            await InternalConsumeDispatchAsync(message, tracingContext, RunningToken);
+        }, RunningToken);
     }
 
     #endregion Public 方法
@@ -145,6 +158,14 @@ public class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
 
             await MessageConsumeDispatcher.DispatchAsync(TMessage.EventName, message, cancellationToken);
         }
+        catch (RunningWorkEvictedException ex)
+        {
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation("Message {{{Id}}}\"{EventName}\" evicted: {Reason} ", message.Id, TMessage.EventName, ex.EvictionReason);
+            }
+            _ = InternalConsumeDispatchAsync(message, tracingContext, cancellationToken);
+        }
         catch (Exception ex)
         {
             if (Logger.IsEnabled(LogLevel.Error))
@@ -155,6 +176,23 @@ public class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
         finally
         {
             activity?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 进行消费调度
+    /// </summary>
+    /// <typeparam name="TMessage"></typeparam>
+    /// <param name="message"></param>
+    /// <param name="tracingContext"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task InternalConsumeDispatchAsync<TMessage>(TMessage message, TracingContext? tracingContext, CancellationToken cancellationToken)
+        where TMessage : class, IWorkflowMessage, IWorkflowContextCarrier<IWorkflowContext>, IEventNameDeclaration
+    {
+        if (await OnConsumeMessageAsync(message, tracingContext, cancellationToken))
+        {
+            await ConsumeDispatchAsync(message, tracingContext, cancellationToken);
         }
     }
 
@@ -197,4 +235,44 @@ public class InMemoryWorkflowMessageDispatcher : IWorkflowMessageDispatcher
     }
 
     #endregion Protected 方法
+
+    #region Dispose
+
+    /// <summary>
+    ///
+    /// </summary>
+    ~InMemoryWorkflowMessageDispatcher()
+    {
+        Dispose(disposing: false);
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="disposing"></param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                try
+                {
+                    _cancellationTokenSource.Cancel();
+                }
+                catch { }
+            }
+            _cancellationTokenSource.Dispose();
+            _isDisposed = true;
+        }
+    }
+
+    #endregion Dispose
 }

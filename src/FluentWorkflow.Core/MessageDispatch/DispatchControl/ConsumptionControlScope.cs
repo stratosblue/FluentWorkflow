@@ -55,7 +55,8 @@ internal sealed class ConsumptionControlScope : IConsumptionControlScope
 
     #region Public 方法
 
-    public void AbortWorkflow(object reason) => InternalCancel(ConsumptionControlType.AbortWorkflow, reason);
+    /// <inheritdoc/>
+    public void AbortWorkflow(object? reason) => InternalCancel(ConsumptionControlType.AbortWorkflow, reason);
 
     /// <inheritdoc/>
     public ValueTask DisposeAsync()
@@ -69,7 +70,8 @@ internal sealed class ConsumptionControlScope : IConsumptionControlScope
         return ValueTask.CompletedTask;
     }
 
-    public void EvictRunningWork(object reason) => InternalCancel(ConsumptionControlType.EvictRunningWork, reason);
+    /// <inheritdoc/>
+    public void EvictRunningWork(object? reason) => InternalCancel(ConsumptionControlType.EvictRunningWork, reason);
 
     /// <inheritdoc/>
     public void TryThrowWithControlException(Exception exception)
@@ -88,7 +90,7 @@ internal sealed class ConsumptionControlScope : IConsumptionControlScope
 
     #region Private 方法
 
-    private void InternalCancel(ConsumptionControlType type, object reason)
+    private void InternalCancel(ConsumptionControlType type, object? reason)
     {
         ObjectDisposedException.ThrowIf(_isDisposed != 0, this);
 

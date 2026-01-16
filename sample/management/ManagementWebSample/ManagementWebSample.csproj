@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <UserSecretsId>ManagementSample-9d487fff-81db-4bfd-8163-7d40c13d9f50</UserSecretsId>
+    <AotPublishing>true</AotPublishing>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AotPublishing)' == 'true'">
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+    <PackageReference Include="SwaggerUI.AspNetCore" Version="5.31.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\management\FluentWorkflow.Management.Web\FluentWorkflow.Management.Web.csproj" />
+    <ProjectReference Include="..\..\..\src\management\FluentWorkflow.Management\FluentWorkflow.Management.csproj" />
+  </ItemGroup>
+
+</Project>

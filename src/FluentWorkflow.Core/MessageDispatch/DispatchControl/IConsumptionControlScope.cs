@@ -27,6 +27,18 @@ public interface IConsumptionControlScope : IAsyncDisposable
     #region Public 方法
 
     /// <summary>
+    /// 中止工作流程
+    /// </summary>
+    /// <param name="reason"></param>
+    void AbortWorkflow(object? reason);
+
+    /// <summary>
+    /// 驱逐进行中的工作
+    /// </summary>
+    /// <param name="reason"></param>
+    void EvictRunningWork(object? reason);
+
+    /// <summary>
     /// 如果控制范围存在中止，则包裹 <paramref name="exception"/> 后重新抛出异常
     /// </summary>
     /// <param name="exception"></param>

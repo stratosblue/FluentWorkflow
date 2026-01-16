@@ -1,7 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionSuffix>preview-0001</VersionSuffix>
+    <!--<IsAotCompatible>true</IsAotCompatible>-->
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="LazyProperties" Version="1.0.4" PrivateAssets="all" />
+    <PackageReference Include="Hoarwell" Version="0.0.1-preview-014" />
+    <PackageReference Include="MessagePack" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Condition="'$(TargetFramework)' == 'net8.0'" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Condition="'$(TargetFramework)' == 'net9.0'" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Condition="'$(TargetFramework)' == 'net10.0'" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\FluentWorkflow.Core\FluentWorkflow.Core.csproj" />
+  </ItemGroup>
+
+  <!--LazyProperty-->
+  <PropertyGroup>
+    <LazyPropertyGlobalGetterTemplate>$FieldName$ ??= GetRequiredKeyedService&lt;$Type$&gt;()</LazyPropertyGlobalGetterTemplate>
+  </PropertyGroup>
 </Project>

@@ -3,6 +3,8 @@
 
   <PropertyGroup>
     <VersionSuffix>preview-0001</VersionSuffix>
+
+    <Description>FluentWorkflow management support package</Description>
   </PropertyGroup>
 
 </Project>

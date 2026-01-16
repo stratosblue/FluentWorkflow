@@ -10,6 +10,8 @@
 		<IsRoslynComponent>true</IsRoslynComponent>
     <DefineConstants>$(DefineConstants);GENERATOR</DefineConstants>
 
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
     <IsPackable>false</IsPackable>
 	</PropertyGroup>
 

@@ -10,4 +10,10 @@
 
     <NoWarn>$(NoWaring);CS8669;IDE0130</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(UserSecretsId)' != '' and Exists('$(AppData)/Microsoft/UserSecrets/$(UserSecretsId)/secrets.json')">
+    <None Include="$(AppData)/Microsoft/UserSecrets/$(UserSecretsId)/secrets.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>

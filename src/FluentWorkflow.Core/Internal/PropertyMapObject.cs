@@ -83,7 +83,14 @@ public class PropertyMapObject
     /// <returns></returns>
     protected internal IReadOnlyDictionary<string, string> GetSnapshot()
     {
-        var snapshot = new Dictionary<string, string>((DataContainer.Count + ObjectContainer.Count) / 2, DataContainer.Comparer);
+        var count = DataContainer.Count + ObjectContainer.Count;
+
+        if (count == 0)
+        {
+            return ImmutableDictionary<string, string>.Empty;
+        }
+
+        var snapshot = new Dictionary<string, string>(count / 2, DataContainer.Comparer);
         //先存放对象数据
         foreach (var (key, value) in ObjectContainer)
         {

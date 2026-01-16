@@ -1,0 +1,6 @@
+@FluentWorkflow.Management.Sample_HostAddress = http://localhost:5269
+
+GET {{FluentWorkflow.Management.Sample_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

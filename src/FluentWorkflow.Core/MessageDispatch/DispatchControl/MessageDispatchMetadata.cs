@@ -32,6 +32,12 @@ public sealed class MessageDispatchMetadata(IEnumerable<KeyValuePair<string, str
     /// <param name="name"></param>
     public void Set<T>(T? value, [CallerArgumentExpression(nameof(value))] string name = null!) => InnerSet(value, name);
 
+    /// <summary>
+    /// 创建一个数据快照
+    /// </summary>
+    /// <returns></returns>
+    public IReadOnlyDictionary<string, string> Snapshot() => GetSnapshot();
+
     #endregion Public 方法
 
     #region IKeyValuesConvertable

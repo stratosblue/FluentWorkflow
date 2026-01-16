@@ -30,7 +30,17 @@ internal sealed class NullConsumptionControlScope(CancellationToken cancellation
     }
 
     /// <inheritdoc/>
+    public void AbortWorkflow(object? reason)
+    {
+    }
+
+    /// <inheritdoc/>
     public ValueTask DisposeAsync() => default;
+
+    /// <inheritdoc/>
+    public void EvictRunningWork(object? reason)
+    {
+    }
 
     /// <inheritdoc/>
     public void TryThrowWithControlException(Exception exception)
