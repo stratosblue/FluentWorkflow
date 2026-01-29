@@ -27,13 +27,10 @@ public partial class {WorkflowName}StartRequestHandler<TWorkflow>
     , I{WorkflowClassName}
     where TWorkflow : {WorkflowClassName}
 {{
-    /// <inheritdoc cref=""IServiceProvider""/>
-    public IServiceProvider ServiceProvider {{ get; }}
-
     /// <inheritdoc cref=""{WorkflowName}StartRequestHandler{{TWorkflow}}""/>
-    public {WorkflowName}StartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider) : base(workflowBuilder, workflowScheduler)
+    public {WorkflowName}StartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider)
+        : base(workflowBuilder, workflowScheduler, serviceProvider)
     {{
-        ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }}
 }}
 ");

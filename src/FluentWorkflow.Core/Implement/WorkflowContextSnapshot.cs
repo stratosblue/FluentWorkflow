@@ -8,7 +8,7 @@ namespace FluentWorkflow;
 /// </summary>
 [JsonConverter(typeof(KeyValuesConvertableJsonConverter<WorkflowContextSnapshot>))]
 public sealed class WorkflowContextSnapshot(IEnumerable<KeyValuePair<string, string>> values)
-        : IWorkflowContext
+    : IWorkflowContext
     , IKeyValuesConvertable<WorkflowContextSnapshot>
 {
     #region Private 字段
@@ -42,7 +42,7 @@ public sealed class WorkflowContextSnapshot(IEnumerable<KeyValuePair<string, str
 
     private TValue GetRequiredKey<TValue>(string key)
     {
-        return _rawValues.InnerGet<TValue>(default, key) ?? throw new InvalidOperationException($"Not found require \"{key}\"");
+        return _rawValues.InnerGet<TValue>(default, key) ?? throw new InvalidOperationException($"Required key \"{key}\" not found");
     }
 
     #endregion Private 方法

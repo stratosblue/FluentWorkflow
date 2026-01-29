@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using FluentWorkflow.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FluentWorkflow.Scheduler;
 
@@ -25,13 +26,21 @@ public abstract class WorkflowStartRequestHandler<TWorkflow, TWorkflowContext, T
 
     #endregion Private 字段
 
+    #region Public 属性
+
+    /// <inheritdoc cref="IServiceProvider"/>
+    public IServiceProvider ServiceProvider { get; }
+
+    #endregion Public 属性
+
     #region Public 构造函数
 
     /// <inheritdoc cref="WorkflowStartRequestHandler{TWorkflow, TWorkflowContext, TStartRequestMessage, TWorkflowBoundary}"/>
-    public WorkflowStartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler)
+    public WorkflowStartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider)
     {
         _workflowBuilder = workflowBuilder ?? throw new ArgumentNullException(nameof(workflowBuilder));
         _workflowScheduler = workflowScheduler ?? throw new ArgumentNullException(nameof(workflowScheduler));
+        ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }
 
     #endregion Public 构造函数
@@ -39,11 +48,23 @@ public abstract class WorkflowStartRequestHandler<TWorkflow, TWorkflowContext, T
     #region Public 方法
 
     /// <inheritdoc/>
-    public virtual Task HandleAsync(TStartRequestMessage requestMessage, CancellationToken cancellationToken)
+    public virtual async Task HandleAsync(TStartRequestMessage requestMessage, CancellationToken cancellationToken)
     {
-        var workflow = _workflowBuilder.Build(requestMessage.Context);
+        await using var consumptionControlScope = await ServiceProvider.GetWorkingController().ConsumptionControlAsync(TStartRequestMessage.EventName, requestMessage, cancellationToken);
 
-        return _workflowScheduler.StartAsync(workflow, cancellationToken);
+        cancellationToken = consumptionControlScope.CancellationToken;
+
+        try
+        {
+            var workflow = _workflowBuilder.Build(requestMessage.Context);
+
+            await _workflowScheduler.StartAsync(workflow, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            consumptionControlScope.TryThrowWithControlException(ex);
+            throw;
+        }
     }
 
     #endregion Public 方法

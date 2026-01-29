@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.MessageDispatch;
+using FluentWorkflow.MessageDispatch.DispatchControl;
 using FluentWorkflow.Tracing;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -44,8 +45,17 @@ public class EventMessageConsumer(IModel channel,
         Activity? activity = null;
         var eventName = "UnknownEventName";
 
+        using var messageDispatchScope = MessageDispatchContext.BeginScope();
+
         try
         {
+            var dispatchMetadata = messageDispatchScope.Context.Metadata;
+            dispatchMetadata.Set(consumerTag);
+            dispatchMetadata.Set(exchange);
+            dispatchMetadata.Set(routingKey);
+
+            dispatchMetadata.RawMessageData = body;
+
             if (properties?.Headers is { } headers
                 && TryGetHeaderStringValue(headers, RabbitMQDefinedHeaders.EventName, ref eventName))
             {

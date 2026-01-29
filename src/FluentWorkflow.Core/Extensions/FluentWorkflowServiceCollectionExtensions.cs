@@ -3,6 +3,7 @@ using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Handler;
 using FluentWorkflow.MessageDispatch;
+using FluentWorkflow.MessageDispatch.DispatchControl;
 using FluentWorkflow.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -97,6 +98,33 @@ public static class FluentWorkflowServiceCollectionExtensions
         builder.Services.Add(ServiceDescriptor.Describe(typeof(IWorkflowAwaitProcessor), typeof(TWorkflowAwaitProcessor), serviceLifetime));
         return builder;
     }
+
+    #region WorkingController
+
+    /// <summary>
+    /// 使用默认工作控制器
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    public static IFluentWorkflowBuilder UseWorkingController(this IFluentWorkflowBuilder builder)
+    {
+        return builder.UseWorkingController<DefaultWorkingController>();
+    }
+
+    /// <summary>
+    /// 使用工作控制器
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    public static IFluentWorkflowBuilder UseWorkingController<TController>(this IFluentWorkflowBuilder builder)
+        where TController : class, IWorkingController
+    {
+        builder.Services.RemoveAll<IWorkingController>();
+        builder.Services.AddSingleton<IWorkingController, TController>();
+        return builder;
+    }
+
+    #endregion WorkingController
 
     #endregion Public 方法
 }

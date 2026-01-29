@@ -17,12 +17,9 @@ public partial class TemplateStartRequestHandler<TWorkflow>
     , ITemplateWorkflow
     where TWorkflow : TemplateWorkflow
 {
-    /// <inheritdoc cref="IServiceProvider"/>
-    public IServiceProvider ServiceProvider { get; }
-
     /// <inheritdoc cref="TemplateStartRequestHandler{TWorkflow}"/>
-    public TemplateStartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider) : base(workflowBuilder, workflowScheduler)
+    public TemplateStartRequestHandler(IWorkflowBuilder<TWorkflow> workflowBuilder, IWorkflowScheduler<TWorkflow> workflowScheduler, IServiceProvider serviceProvider)
+        : base(workflowBuilder, workflowScheduler, serviceProvider)
     {
-        ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }
 }

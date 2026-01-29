@@ -94,7 +94,7 @@ public abstract partial class TemplateStageMessageBase : ITemplateStageMessage
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName(TemplateWorkflow.WorkflowName)]
-public abstract partial class TemplateStageCompletedMessageBase : ITemplateStageCompletedMessage
+public abstract partial class TemplateStageCompletedMessageBase : ITemplateStageCompletedMessage, IEventName
 {
     /// <inheritdoc/>
     public string Id { get; }
@@ -105,6 +105,13 @@ public abstract partial class TemplateStageCompletedMessageBase : ITemplateStage
 
     /// <inheritdoc/>
     public TemplateWorkflowContext Context { get; }
+
+    /// <inheritdoc/>
+    string IEventName.EventName => MessageEventName;
+
+    /// <inheritdoc cref="IEventName.EventName"/>
+    [JsonIgnore]
+    protected abstract string MessageEventName { get; }
 
     /// <inheritdoc cref="TemplateStageCompletedMessageBase"/>
     protected TemplateStageCompletedMessageBase(string id, TemplateWorkflowContext context)
@@ -280,6 +287,9 @@ public sealed partial class StageStage1CAUKCompletedMessage : TemplateStageCompl
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
 
+    /// <inheritdoc/>
+    protected override string MessageEventName => EventName;
+
     /// <inheritdoc cref="StageStage1CAUKCompletedMessage"/>
     public StageStage1CAUKCompletedMessage(string id, TemplateWorkflowContext context) : base(id, context)
     {
@@ -322,6 +332,9 @@ public sealed partial class StageStage2BPTGCompletedMessage : TemplateStageCompl
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
 
+    /// <inheritdoc/>
+    protected override string MessageEventName => EventName;
+
     /// <inheritdoc cref="StageStage2BPTGCompletedMessage"/>
     public StageStage2BPTGCompletedMessage(string id, TemplateWorkflowContext context) : base(id, context)
     {
@@ -363,6 +376,9 @@ public sealed partial class StageStage3AWBNCompletedMessage : TemplateStageCompl
 
     /// <inheritdoc cref="EventName"/>
     static string IEventNameDeclaration.EventName { get; } = EventName;
+
+    /// <inheritdoc/>
+    protected override string MessageEventName => EventName;
 
     /// <inheritdoc cref="StageStage3AWBNCompletedMessage"/>
     public StageStage3AWBNCompletedMessage(string id, TemplateWorkflowContext context) : base(id, context)

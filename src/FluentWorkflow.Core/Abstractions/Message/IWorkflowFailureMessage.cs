@@ -3,7 +3,7 @@
 /// <summary>
 /// 工作流程失败消息
 /// </summary>
-public interface IWorkflowFailureMessage : IWorkflowStageMessage
+public interface IWorkflowFailureMessage : IWorkflowStageMessage, IEventNameDeclaration
 {
     #region Public 属性
 

@@ -52,6 +52,7 @@ public class RabbitMQTestServiceProviderProviderWithActivity : TestServiceProvid
         await base.CleanupProviderAsync();
         _activityListener?.Dispose();
         _activityListener = null;
+        ActivityQueue.Clear();
     }
 
     protected override void ConfigureServices(HostBuilderContext context, IServiceCollection services)

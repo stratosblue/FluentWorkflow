@@ -29,17 +29,29 @@ public abstract class WorkflowResultObserver<TWorkflow, TWorkflowFinishedMessage
     /// <inheritdoc/>
     public virtual async Task HandleAsync(TWorkflowFinishedMessage finishedMessage, CancellationToken cancellationToken = default)
     {
-        var context = finishedMessage.Context;
+        await using var consumptionControlScope = await ServiceProvider.GetWorkingController().ConsumptionControlAsync(TWorkflowFinishedMessage.EventName, finishedMessage, cancellationToken);
 
-        if (context.Flag.HasFlag(WorkflowFlag.HasParentWorkflow | WorkflowFlag.IsBeenAwaited)
-            && context.Parent is { } parentContextSnapshot
-            && ServiceProvider.GetService<IWorkflowContinuatorHub>() is { } workflowContinuatorHub
-            && workflowContinuatorHub.TryGet(parentContextSnapshot.WorkflowName, parentContextSnapshot.Stage, out var workflowContinuator))
+        cancellationToken = consumptionControlScope.CancellationToken;
+
+        try
         {
-            await workflowContinuator.ContinueAsync(finishedMessage, cancellationToken);
-        }
+            var context = finishedMessage.Context;
 
-        await OnFinishedAsync(finishedMessage, cancellationToken);
+            if (context.Flag.HasFlag(WorkflowFlag.HasParentWorkflow | WorkflowFlag.IsBeenAwaited)
+                && context.Parent is { } parentContextSnapshot
+                && ServiceProvider.GetService<IWorkflowContinuatorHub>() is { } workflowContinuatorHub
+                && workflowContinuatorHub.TryGet(parentContextSnapshot.WorkflowName, parentContextSnapshot.Stage, out var workflowContinuator))
+            {
+                await workflowContinuator.ContinueAsync(finishedMessage, cancellationToken);
+            }
+
+            await OnFinishedAsync(finishedMessage, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            consumptionControlScope.TryThrowWithControlException(ex);
+            throw;
+        }
     }
 
     #endregion Public 方法

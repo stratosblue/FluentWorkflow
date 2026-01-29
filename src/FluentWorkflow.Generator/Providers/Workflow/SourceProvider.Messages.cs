@@ -105,7 +105,7 @@ public abstract partial class {WorkflowName}StageMessageBase : I{WorkflowName}St
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [WorkflowName({WorkflowClassName}.WorkflowName)]
-public abstract partial class {WorkflowName}StageCompletedMessageBase : I{WorkflowName}StageCompletedMessage
+public abstract partial class {WorkflowName}StageCompletedMessageBase : I{WorkflowName}StageCompletedMessage, IEventName
 {{
     /// <inheritdoc/>
     public string Id {{ get; }}
@@ -116,6 +116,13 @@ public abstract partial class {WorkflowName}StageCompletedMessageBase : I{Workfl
 
     /// <inheritdoc/>
     public {WorkflowClassName}Context Context {{ get; }}
+
+    /// <inheritdoc/>
+    string IEventName.EventName => MessageEventName;
+
+    /// <inheritdoc cref=""IEventName.EventName""/>
+    [JsonIgnore]
+    protected abstract string MessageEventName {{ get; }}
 
     /// <inheritdoc cref=""{WorkflowName}StageCompletedMessageBase""/>
     protected {WorkflowName}StageCompletedMessageBase(string id, {WorkflowClassName}Context context)
@@ -295,6 +302,9 @@ public sealed partial class Stage{stage.Name}CompletedMessage : {WorkflowName}St
 
     /// <inheritdoc cref=""EventName""/>
     static string IEventNameDeclaration.EventName {{ get; }} = EventName;
+
+    /// <inheritdoc/>
+    protected override string MessageEventName => EventName;
 
     /// <inheritdoc cref=""Stage{stage.Name}CompletedMessage""/>
     public Stage{stage.Name}CompletedMessage(string id, {WorkflowClassName}Context context) : base(id, context)

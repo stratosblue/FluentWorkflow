@@ -5,7 +5,6 @@ using FluentWorkflow.Abstractions;
 using FluentWorkflow.Build;
 using FluentWorkflow.Diagnostics;
 using FluentWorkflow.Tracing;
-using FluentWorkflow.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

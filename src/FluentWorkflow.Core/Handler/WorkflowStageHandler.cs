@@ -86,6 +86,10 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
     /// <returns></returns>
     public virtual async Task HandleAsync(TStageMessage stageMessage, CancellationToken cancellationToken)
     {
+        await using var consumptionControlScope = await ServiceProvider.GetWorkingController().ConsumptionControlAsync(TStageMessage.EventName, stageMessage, cancellationToken);
+
+        cancellationToken = consumptionControlScope.CancellationToken;
+
         var activity = Activity.Current;
         if (activity is not null)
         {
@@ -153,6 +157,9 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
             }
             catch (Exception ex)
             {
+                //中止异常直接跳过处理逻辑
+                consumptionControlScope.TryThrowWithControlException(ex);
+
                 if (OnException(ex))
                 {
                     activity?.RecordException(ex);
@@ -177,6 +184,9 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
         catch (Exception ex)
         {
             activity?.RecordException(ex);
+
+            consumptionControlScope.TryThrowWithControlException(ex);
+
             _diagnosticSource.StageMessageHandleEnd(stageMessage, false, ex);
             notFiredDiagnostic = false;
             throw;

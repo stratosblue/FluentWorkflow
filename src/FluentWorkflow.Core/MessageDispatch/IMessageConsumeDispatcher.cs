@@ -13,8 +13,8 @@ public interface IMessageConsumeDispatcher
     /// <summary>
     /// 调度消息
     /// </summary>
-    /// <param name="eventName"></param>
-    /// <param name="message"></param>
+    /// <param name="eventName">事件名称</param>
+    /// <param name="message">消息</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public Task DispatchAsync(string eventName, object message, CancellationToken cancellationToken);

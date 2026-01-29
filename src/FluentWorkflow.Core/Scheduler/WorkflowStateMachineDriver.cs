@@ -24,7 +24,7 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
     where TWorkflow : IWorkflow, TWorkflowBoundary
     where TWorkflowContext : IWorkflowContext, TWorkflowBoundary
     where TWorkflowStateMachine : IWorkflowStateMachine, TWorkflowBoundary
-    where TStageCompletedMessage : IWorkflowStageCompletedMessage, IWorkflowContextCarrier<TWorkflowContext>, TWorkflowBoundary
+    where TStageCompletedMessage : IWorkflowStageCompletedMessage, IEventName, IWorkflowContextCarrier<TWorkflowContext>, TWorkflowBoundary
     where TFailureMessage : IWorkflowFailureMessage, IWorkflowContextCarrier<TWorkflowContext>, TWorkflowBoundary
 {
     #region Protected 字段
@@ -60,7 +60,7 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
     #region Public 方法
 
     /// <inheritdoc/>
-    public virtual Task HandleAsync(TStageCompletedMessage message, CancellationToken cancellationToken)
+    public virtual async Task HandleAsync(TStageCompletedMessage message, CancellationToken cancellationToken)
     {
         if (Activity.Current is { } activity)
         {
@@ -68,11 +68,24 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.Message, PrettyJSONObject.Create(message, ObjectSerializer));
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "completed");
         }
-        return DoInputAsync(message, cancellationToken);
+
+        await using var consumptionControlScope = await ServiceProvider.GetWorkingController().ConsumptionControlAsync(message.EventName, message, cancellationToken);
+
+        cancellationToken = consumptionControlScope.CancellationToken;
+
+        try
+        {
+            await DoInputAsync(message, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            consumptionControlScope.TryThrowWithControlException(ex);
+            throw;
+        }
     }
 
     /// <inheritdoc/>
-    public virtual Task HandleAsync(TFailureMessage message, CancellationToken cancellationToken)
+    public virtual async Task HandleAsync(TFailureMessage message, CancellationToken cancellationToken)
     {
         if (Activity.Current is { } activity)
         {
@@ -81,7 +94,20 @@ public abstract class WorkflowStateMachineDriver<TWorkflow, TWorkflowContext, [D
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.StageState, "failure");
             activity.AddTag(DiagnosticConstants.ActivityNames.TagKeys.FailureMessage, message.Message);
         }
-        return DoInputAsync(message, cancellationToken);
+
+        await using var consumptionControlScope = await ServiceProvider.GetWorkingController().ConsumptionControlAsync(TFailureMessage.EventName, message, cancellationToken);
+
+        cancellationToken = consumptionControlScope.CancellationToken;
+
+        try
+        {
+            await DoInputAsync(message, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            consumptionControlScope.TryThrowWithControlException(ex);
+            throw;
+        }
     }
 
     #endregion Public 方法
