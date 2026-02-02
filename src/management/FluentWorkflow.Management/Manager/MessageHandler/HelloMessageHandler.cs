@@ -26,6 +26,12 @@ internal partial class HelloMessageHandler([ServiceKey] string appName,
 
     protected override async Task<Welcome> ProcessRequestAsync(IHoarwellContext context, Hello input, CancellationToken cancellationToken)
     {
+        //TODO 协议版本处理
+        //当前仅判断是否相同
+        if (input.ProtocolVersion != SharedConstants.ProtocolVersion)
+        {
+            throw new AbortConnectionException($"Unsupported protocol version: {input.ProtocolVersion}");
+        }
         if (string.Equals(input.Cookie.Required(), optionsMonitor.Get(AppName).Cookie.Required(), StringComparison.Ordinal))
         {
             if (input.Id == Guid.Empty)

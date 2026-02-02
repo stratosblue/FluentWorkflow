@@ -308,6 +308,7 @@ public class ManagementClusterConnector : IAsyncDisposable
             var hello = new Hello()
             {
                 Id = Id,
+                ProtocolVersion = SharedConstants.ProtocolVersion,
                 WhoIs = Name,
                 HostName = Environment.MachineName,
                 Cookie = _options.Cookie,

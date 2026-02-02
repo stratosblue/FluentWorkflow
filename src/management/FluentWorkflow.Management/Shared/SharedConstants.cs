@@ -7,6 +7,14 @@ internal class SharedConstants
 {
     #region Public 字段
 
+    /// <summary>
+    /// 协议版本
+    /// </summary>
+    public static readonly int ProtocolVersion = 1;
+
+    /// <summary>
+    /// 库版本
+    /// </summary>
     public static readonly string Version;
 
     #endregion Public 字段
