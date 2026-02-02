@@ -45,7 +45,7 @@ A message driven distributed asynchronous workflow framework. 消息驱动的分
 ### 3.1 引用 `FluentWorkflow.Core` 包
 ```xml
 <ItemGroup>
-  <PackageReference Include="FluentWorkflow.Core" Version="2.1.1" />
+  <PackageReference Include="FluentWorkflow.Core" Version="2.5.0" />
 </ItemGroup>
 ```
 
@@ -237,7 +237,7 @@ await workflow.StartAsync(default);
 #### 引用 `FluentWorkflow.RabbitMQ` 包
 ```xml
 <ItemGroup>
-    <PackageReference Include="FluentWorkflow.RabbitMQ" Version="2.1.1" />
+    <PackageReference Include="FluentWorkflow.RabbitMQ" Version="2.5.0" />
 </ItemGroup>
 ```
 #### 配置
@@ -363,6 +363,51 @@ await XXXXWorkflow.ResumeAsync(contextData, serviceProvider, cancellationToken)
 
 #### 注意:
 恢复流程将会再次调用序列化上下文时的方法，需要注意，小心再次被挂起
+
+-------
+
+## 7 管理界面(预览)
+### 7.1 Worker接入
+#### 引用 `FluentWorkflow.Management` 包
+```xml
+<ItemGroup>
+    <PackageReference Include="FluentWorkflow.Management" Version="2.5.0-*" />
+</ItemGroup>
+```
+#### 配置连接到管理器
+```C#
+services.AddFluentWorkflow()
+        .UseWorkingController();  //启用工作控制器
+
+//配置连接到服务
+//address 服务端监听地址
+//cookie 与服务端相同的值，用于允许连接
+services.AddFluentWorkflowManagementWorker(IPEndPoint.Parse(address), cookie);
+```
+
+### 7.2 管理端接入
+#### 引用 `FluentWorkflow.Management.Web` 包
+```xml
+<ItemGroup>
+    <PackageReference Include="FluentWorkflow.Management.Web" Version="2.5.0-*" />
+</ItemGroup>
+```
+#### 配置管理器
+```C#
+//添加管理器
+//address 服务端监听地址
+//cookie 与worker相同的值，用于允许连接
+services.AddFluentWorkflowManagementManager(IPEndPoint.Parse(address), cookie);
+//添加管理页面的api
+services.AddFluentWorkflowManagementApi();
+
+//映射管理页面的api
+app.MapFluentWorkflowManagementApi();
+//映射管理页面
+app.MapFluentWorkflowManagementUI();
+```
+
+- 使用路径 `/fwf` 即可访问管理页面
 
 -------
 

@@ -2,7 +2,7 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
   <PropertyGroup>
-    <VersionSuffix>preview-0001</VersionSuffix>
+    <VersionSuffix>preview-0002</VersionSuffix>
 
     <Description>FluentWorkflow management support package</Description>
   </PropertyGroup>
