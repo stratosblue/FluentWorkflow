@@ -88,7 +88,7 @@ internal class WorkflowDeclarationAnalyzer : CSharpSyntaxWalker
     {
         //TODO Report
 
-        if (node.Modifiers.Any(m => m.IsKind(SyntaxKind.OverrideKeyword))
+        if (node.Modifiers.Any(static m => m.IsKind(SyntaxKind.OverrideKeyword))
             && node.Identifier.ValueText.Equals("DeclareWorkflow")
             && node.Body is { } declareWorkflowBody)
         {
@@ -100,7 +100,7 @@ internal class WorkflowDeclarationAnalyzer : CSharpSyntaxWalker
                 invocationExpressionSyntax.Accept(workflowDeclarationExpressionAnalyzer);
             }
         }
-        else if (node.Modifiers.Any(m => m.IsKind(SyntaxKind.OverrideKeyword))
+        else if (node.Modifiers.Any(static m => m.IsKind(SyntaxKind.OverrideKeyword))
                  && node.Identifier.ValueText.Equals("DeclareContext")
                  && node.Body is { } declareContextBody)
         {

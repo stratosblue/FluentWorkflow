@@ -131,7 +131,7 @@ public abstract class WorkflowStageHandler<TStage, TWorkflowContext, TStageMessa
 
                     processContext.CommitChildWorkflow();
 
-                    await WorkflowAwaitProcessor.RegisterAsync(stageMessage.Context, childWorkflow.ToDictionary(m => m.Key, m => m.Value.Workflow), cancellationToken);
+                    await WorkflowAwaitProcessor.RegisterAsync(stageMessage.Context, childWorkflow.ToDictionary(static m => m.Key, static m => m.Value.Workflow), cancellationToken);
 
                     var childWorkflowFlag = childWorkflowCount == 1 ? WorkflowFlag.UniqueChildWorkflow : WorkflowFlag.None;
 

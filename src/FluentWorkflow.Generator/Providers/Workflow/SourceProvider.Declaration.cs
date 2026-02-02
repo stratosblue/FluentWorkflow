@@ -45,7 +45,7 @@ internal class DeclarationSourceProvider : SourceProvider
 namespace {_declaration.NameSpace};
 
 ");
-        builder.AppendLine($"[WorkflowDefine({(int)GeneratorVersion.Version2}, \"{_declaration.WorkflowName}\", {string.Join(", ", _declaration.Stages.Select(m => $"\"{m}\""))})]");
+        builder.AppendLine($"[WorkflowDefine({(int)GeneratorVersion.Version2}, \"{_declaration.WorkflowName}\", {string.Join(", ", _declaration.Stages.Select(static m => $"\"{m}\""))})]");
 
         foreach (var property in _declaration.ContextProperties)
         {

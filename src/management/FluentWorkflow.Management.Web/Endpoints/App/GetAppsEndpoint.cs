@@ -19,9 +19,9 @@ internal class GetAppsEndpoint : IStandardExportEndpoint<PagedResponseDto<AppsDe
     /// <inheritdoc/>
     public static RouteHandlerBuilder MapEndpoint(WebApplication app, RouteGroupBuilder builder)
     {
-        return builder.MapGet("/", (ManagementManagerHub managerHub, int page = 1, int pageSize = 20) =>
+        return builder.MapGet("/", static (ManagementManagerHub managerHub, int page = 1, int pageSize = 20) =>
         {
-            return managerHub.Managers.OrderBy(m => m.Key).GetPagedResponse(page, pageSize, m => new AppsDetailDto(m.Key, m.Value.WorkerContexts.Count));
+            return managerHub.Managers.OrderBy(static m => m.Key).GetPagedResponse(page, pageSize, static m => new AppsDetailDto(m.Key, m.Value.WorkerContexts.Count));
         });
     }
 

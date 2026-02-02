@@ -24,15 +24,15 @@ public class WorkflowGenerator : IIncrementalGenerator
         //声明提供器
         var declarationsProvider = context.SyntaxProvider.CreateSyntaxProvider(FilterWorkflowDeclarationSyntaxNode, TransformWorkflowDeclarationSyntaxNode)
                                                          .Collect()
-                                                         .SelectMany((items, _) => items.Distinct());
+                                                         .SelectMany(static (items, _) => items.Distinct());
 
         //生成定义提供器
         var generationsProvider = context.SyntaxProvider.CreateSyntaxProvider(FilterGenerationDeclarationSyntaxNode, TransformGenerationDeclarationSyntaxNode)
                                                  .Collect()
-                                                 .SelectMany((items, _) => items.Distinct());
+                                                 .SelectMany(static (items, _) => items.Distinct());
 
         //编译属性提供器
-        var compilationPropertiesProvider = context.AnalyzerConfigOptionsProvider.Select((configOptions, token) =>
+        var compilationPropertiesProvider = context.AnalyzerConfigOptionsProvider.Select(static (configOptions, token) =>
         {
             var generatorAdditionals = new HashSet<GeneratorAdditional>();
 
@@ -56,7 +56,7 @@ public class WorkflowGenerator : IIncrementalGenerator
 
         //生成声明信息
         context.RegisterSourceOutput(declarationsProvider,
-                                     (context, input) =>
+                                     static (context, input) =>
                                      {
                                          var workflowDeclaration = input;
 
@@ -66,7 +66,7 @@ public class WorkflowGenerator : IIncrementalGenerator
 
         //生成定义信息
         context.RegisterSourceOutput(generationsProvider.Combine(compilationPropertiesProvider),
-                                     (context, input) =>
+                                     static (context, input) =>
                                      {
                                          var workflowGenerationDescriptors = input.Left;
                                          var properties = input.Right;
@@ -134,7 +134,7 @@ public class WorkflowGenerator : IIncrementalGenerator
                                      });
 
         context.RegisterSourceOutput(compilationPropertiesProvider,
-                                     (context, properties) =>
+                                     static (context, properties) =>
                                      {
                                          var nameSpacePostFix = string.IsNullOrWhiteSpace(properties.RootNameSpace)
                                                                 ? string.Empty
@@ -183,7 +183,7 @@ public class WorkflowGenerator : IIncrementalGenerator
                 return false;
             }
             return types.OfType<SimpleBaseTypeSyntax>()
-                        .Any(m => m.Type is IdentifierNameSyntax identifierNameSyntax && string.Equals(identifierNameSyntax.Identifier.ValueText, "IWorkflowDeclaration", StringComparison.Ordinal));
+                        .Any(static m => m.Type is IdentifierNameSyntax identifierNameSyntax && string.Equals(identifierNameSyntax.Identifier.ValueText, "IWorkflowDeclaration", StringComparison.Ordinal));
         }
     }
 
@@ -203,7 +203,7 @@ public class WorkflowGenerator : IIncrementalGenerator
         if (node is AttributeListSyntax attributeListSyntax
             && attributeListSyntax.Attributes is { Count: > 0 } attributes
             && string.Equals("assembly", attributeListSyntax.Target?.Identifier.ValueText, StringComparison.Ordinal)
-            && attributes.Any(m => m.Name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1 && string.Equals("GenerateWorkflowCodes", genericNameSyntax.Identifier.ValueText)))
+            && attributes.Any(static m => m.Name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1 && string.Equals("GenerateWorkflowCodes", genericNameSyntax.Identifier.ValueText)))
         {
             return true;
         }
@@ -217,7 +217,7 @@ public class WorkflowGenerator : IIncrementalGenerator
         var attributes = attributeListSyntax.Attributes;
         HashSet<WorkflowGenerationDescriptor> generationDescriptors = [];
 
-        foreach (var attribute in attributes.Where(m => m.Name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1 && string.Equals("GenerateWorkflowCodes", genericNameSyntax.Identifier.ValueText)))
+        foreach (var attribute in attributes.Where(static m => m.Name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1 && string.Equals("GenerateWorkflowCodes", genericNameSyntax.Identifier.ValueText)))
         {
             var genericNameSyntax = (GenericNameSyntax)attribute.Name;
             var typeSyntax = genericNameSyntax.TypeArgumentList.Arguments[0];
@@ -254,7 +254,7 @@ public class WorkflowGenerator : IIncrementalGenerator
                 var declarationType = typeInfo.ConvertedType;
                 var attributeDatas = declarationType?.GetAttributes();
                 if (attributeDatas?.Length > 0
-                    && attributeDatas.Value.FirstOrDefault(m => m.AttributeClass?.Name == "WorkflowDefineAttribute") is { } defineAttributeData
+                    && attributeDatas.Value.FirstOrDefault(static m => m.AttributeClass?.Name == "WorkflowDefineAttribute") is { } defineAttributeData
                     && defineAttributeData.ConstructorArguments is { } arguments
                     && arguments.Length >= 3)
                 {
@@ -264,10 +264,10 @@ public class WorkflowGenerator : IIncrementalGenerator
                         throw new InvalidOperationException($"Declaration version \"{version}\" not supported.");
                     }
                     var workflowName = (string)arguments[1].Value!;
-                    var stages = arguments[2].Values.Select(m => (string)m.Value!).ToImmutableArray();
+                    var stages = arguments[2].Values.Select(static m => (string)m.Value!).ToImmutableArray();
 
-                    var contextPropertyAttributeDatas = attributeDatas.Value.Where(m => m.AttributeClass?.Name == "WorkflowContextTypedPropertyAttribute").ToList();
-                    var contextProperties = contextPropertyAttributeDatas.Select(m =>
+                    var contextPropertyAttributeDatas = attributeDatas.Value.Where(static m => m.AttributeClass?.Name == "WorkflowContextTypedPropertyAttribute").ToList();
+                    var contextProperties = contextPropertyAttributeDatas.Select(static m =>
                                                                          {
                                                                              var propertyType = m.AttributeClass!.TypeArguments[0];
                                                                              var propertyName = (string)m.ConstructorArguments[0].Value!;
@@ -296,12 +296,12 @@ public class WorkflowGenerator : IIncrementalGenerator
 
     private static void InitializePreCodes(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(context =>
+        context.RegisterPostInitializationOutput(static context =>
         {
             var assembly = typeof(WorkflowGenerator).Assembly;
             var resourceNames = assembly.GetManifestResourceNames();
-            AddPreCodes(context, assembly, resourceNames.Single(m => m.EndsWith("IWorkflowDeclaration.cs")));
-            AddPreCodes(context, assembly, resourceNames.Single(m => m.EndsWith("WorkflowDeclarations.cs")));
+            AddPreCodes(context, assembly, resourceNames.Single(static m => m.EndsWith("IWorkflowDeclaration.cs")));
+            AddPreCodes(context, assembly, resourceNames.Single(static m => m.EndsWith("WorkflowDeclarations.cs")));
         });
 
         static void AddPreCodes(IncrementalGeneratorPostInitializationContext context, Assembly assembly, string resourceName)

@@ -32,7 +32,7 @@ public abstract class WorkflowAwaitProcessor : IWorkflowAwaitProcessor
             throw new WorkflowInvalidOperationException("Child workflow at least one is required.");
         }
 
-        if (childWorkflows.Any(m => m.Value.IsStarted()))
+        if (childWorkflows.Any(static m => m.Value.IsStarted()))
         {
             throw new WorkflowInvalidOperationException("There has some child workflow already started.");
         }

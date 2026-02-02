@@ -80,9 +80,9 @@ public static class FluentWorkflowDebugUtil
     {
         var activityListener = new ActivityListener
         {
-            ShouldListenTo = source => source.Name.StartsWith(DiagnosticConstants.ActivityNames.RootActivitySourceName, StringComparison.Ordinal),
-            SampleUsingParentId = (ref activityOptions) => ActivitySamplingResult.AllData,
-            Sample = (ref activityOptions) => ActivitySamplingResult.AllData
+            ShouldListenTo = static source => source.Name.StartsWith(DiagnosticConstants.ActivityNames.RootActivitySourceName, StringComparison.Ordinal),
+            SampleUsingParentId = static (ref activityOptions) => ActivitySamplingResult.AllData,
+            Sample = static (ref activityOptions) => ActivitySamplingResult.AllData
         };
 
         return activityListener;

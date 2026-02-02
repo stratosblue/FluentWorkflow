@@ -21,7 +21,7 @@ internal class ConsumptionControlEndpoint : IStandardExportEndpoint<bool>
     /// <inheritdoc/>
     public static RouteHandlerBuilder MapEndpoint(WebApplication app, RouteGroupBuilder builder)
     {
-        return builder.MapPost("/consumption-control", async (ConsumptionControlDto input,
+        return builder.MapPost("/consumption-control", static async (ConsumptionControlDto input,
                                                               ManagementManagerHub managerHub,
                                                               CancellationToken cancellationToken = default) =>
         {

@@ -14,7 +14,7 @@ internal sealed partial class HoarwellTypeIdentifierAnalyzer : ITypeIdentifierAn
     #region Private 字段
 
     //增加消息只能在末尾追加，移除消息需要保留占位
-    private static readonly FrozenDictionary<ushort, Type> s_allMessageTypes = new MessageTypeMapBuilder<ushort>(1000, m => (ushort)(m + 1))
+    private static readonly FrozenDictionary<ushort, Type> s_allMessageTypes = new MessageTypeMapBuilder<ushort>(1000, static m => (ushort)(m + 1))
         .Reserve()
         .Message<Hello>()
         .AckMessage<Welcome>()
@@ -38,11 +38,11 @@ internal sealed partial class HoarwellTypeIdentifierAnalyzer : ITypeIdentifierAn
 
     public HoarwellTypeIdentifierAnalyzer()
     {
-        var identifierToTypeMap = s_allMessageTypes.ToFrozenDictionary(keySelector: m => BitConverter.GetBytes(m.Key),
-                                                                       elementSelector: m => m.Value,
+        var identifierToTypeMap = s_allMessageTypes.ToFrozenDictionary(keySelector: static m => BitConverter.GetBytes(m.Key),
+                                                                       elementSelector: static m => m.Value,
                                                                        comparer: ReadOnlyMemoryByteEqualityComparer.Shared);
         _identifierToTypeMap = identifierToTypeMap;
-        _typeToIdentifierMap = identifierToTypeMap.ToFrozenDictionary(m => m.Value, m => m.Key);
+        _typeToIdentifierMap = identifierToTypeMap.ToFrozenDictionary(static m => m.Value, static m => m.Key);
     }
 
     #endregion Private 字段

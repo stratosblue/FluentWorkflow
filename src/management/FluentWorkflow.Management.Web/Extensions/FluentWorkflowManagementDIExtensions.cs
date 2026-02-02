@@ -17,7 +17,7 @@ public static class FluentWorkflowManagementDIExtensions
     /// <returns></returns>
     public static IServiceCollection AddFluentWorkflowManagementApi(this IServiceCollection services)
     {
-        services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+        services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(static options =>
         {
             options.SerializerOptions.TypeInfoResolverChain.Add(AppJsonSerializerContext.Default);
         });

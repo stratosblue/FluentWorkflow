@@ -29,7 +29,7 @@ public sealed class KeyValuesConvertableJsonConverter<T>
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
         var keyValues = T.ConvertToKeyValues(value);
-        var dictionary = keyValues.ToDictionary(static m => m.Key, m => new LiteralJsonElement(m.Value));
+        var dictionary = keyValues.ToDictionary(static m => m.Key, static m => new LiteralJsonElement(m.Value));
         JsonSerializer.Serialize(writer, dictionary, options);
     }
 

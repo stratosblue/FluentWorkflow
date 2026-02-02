@@ -20,7 +20,7 @@ internal class GetMessageDetailEndpoint : IStandardExportEndpoint<PagedResponseD
     /// <inheritdoc/>
     public static RouteHandlerBuilder MapEndpoint(WebApplication app, RouteGroupBuilder builder)
     {
-        return builder.MapGet("/message-detail", async (string appName,
+        return builder.MapGet("/message-detail", static async (string appName,
                                                         Guid workerId,
                                                         ManagementManagerHub managerHub,
                                                         int page = 1,
@@ -48,7 +48,7 @@ internal class GetMessageDetailEndpoint : IStandardExportEndpoint<PagedResponseD
             var result = new PagedResponseDto<MessageDto>
             {
                 TotalCount = messageQueryResponse?.TotalCount,
-                Items = messageQueryResponse?.Items.Select(m =>
+                Items = messageQueryResponse?.Items.Select(static m =>
                 {
                     return new MessageDto(m.Id, m.EventName, m.StartTime, m.Metadata);
                 }).ToList() ?? [],

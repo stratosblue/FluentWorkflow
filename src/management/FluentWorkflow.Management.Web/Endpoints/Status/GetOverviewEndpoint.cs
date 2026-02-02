@@ -20,7 +20,7 @@ internal class GetOverviewEndpoint : IStandardExportEndpoint<OverviewDto>
     /// <inheritdoc/>
     public static RouteHandlerBuilder MapEndpoint(WebApplication app, RouteGroupBuilder builder)
     {
-        return builder.MapGet("/overview", (ManagementManagerHub managerHub) =>
+        return builder.MapGet("/overview", static (ManagementManagerHub managerHub) =>
         {
             var result = new OverviewDto(managerHub.AppNames);
             return result;

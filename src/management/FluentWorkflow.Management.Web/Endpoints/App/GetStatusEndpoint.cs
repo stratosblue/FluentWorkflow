@@ -21,12 +21,12 @@ internal class GetStatusEndpoint : IStandardExportEndpoint<PagedResponseDto<Work
     /// <inheritdoc/>
     public static RouteHandlerBuilder MapEndpoint(WebApplication app, RouteGroupBuilder builder)
     {
-        return builder.MapGet("/status", (ManagementManagerHub managerHub, int page = 1, int pageSize = 10, [Required] string? appName = "default") =>
+        return builder.MapGet("/status", static (ManagementManagerHub managerHub, int page = 1, int pageSize = 10, [Required] string? appName = "default") =>
         {
             var manager = managerHub.GetManager(appName!);
-            return manager.WorkerContexts.OrderBy(m => m.Value.Name)
-                                         .Select(m => m.Value)
-                                         .GetPagedResponse(page, pageSize, context =>
+            return manager.WorkerContexts.OrderBy(static m => m.Value.Name)
+                                         .Select(static m => m.Value)
+                                         .GetPagedResponse(page, pageSize, static context =>
                                          {
                                              var descriptor = context.Descriptor;
                                              return new WorkerStatusDto(descriptor.Id, descriptor.Name, descriptor.ProcessingCount, context.IsActive);

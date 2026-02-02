@@ -15,9 +15,9 @@ services.AddOpenApi();
 services.AddFluentWorkflowManagementManager(IPEndPoint.Parse(sampleAddress), sampleCookie);
 services.AddFluentWorkflowManagementApi();
 
-services.AddCors(options =>
+services.AddCors(static options =>
 {
-    options.AddDefaultPolicy(builder =>
+    options.AddDefaultPolicy(static builder =>
     {
         builder.AllowAnyOrigin()
                .AllowAnyHeader()

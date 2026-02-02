@@ -71,11 +71,11 @@ public static class {WorkflowName}Stages
     /// <inheritdoc cref=""{WorkflowName}Stages""/>
     static {WorkflowName}Stages()
     {{");
-        builder.AppendLine($"OrderedStageIds = ImmutableArray.Create({string.Join(", ", Context.Stages.Select(m => m.Name))});");
-        builder.AppendLine($"OrderedStages = ImmutableArray.Create({string.Join(", ", Context.Stages.Select(m => $"nameof({m.Name})"))});");
+        builder.AppendLine($"OrderedStageIds = ImmutableArray.Create({string.Join(", ", Context.Stages.Select(static m => m.Name))});");
+        builder.AppendLine($"OrderedStages = ImmutableArray.Create({string.Join(", ", Context.Stages.Select(static m => $"nameof({m.Name})"))});");
 
-        builder.AppendLine($"StageIds = ImmutableHashSet.Create({string.Join(", ", Context.Stages.Select(m => m.Name))}, {Names.WorkflowCompletionStageConstantName}, {Names.WorkflowFailureStageConstantName});");
-        builder.AppendLine($"Stages = ImmutableHashSet.Create({string.Join(", ", Context.Stages.Select(m => $"nameof({m.Name})"))}, nameof({Names.WorkflowCompletionStageConstantName}), nameof({Names.WorkflowFailureStageConstantName}));");
+        builder.AppendLine($"StageIds = ImmutableHashSet.Create({string.Join(", ", Context.Stages.Select(static m => m.Name))}, {Names.WorkflowCompletionStageConstantName}, {Names.WorkflowFailureStageConstantName});");
+        builder.AppendLine($"Stages = ImmutableHashSet.Create({string.Join(", ", Context.Stages.Select(static m => $"nameof({m.Name})"))}, nameof({Names.WorkflowCompletionStageConstantName}), nameof({Names.WorkflowFailureStageConstantName}));");
 
         builder.AppendLine($@"}}
 }}

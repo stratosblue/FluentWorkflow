@@ -33,7 +33,7 @@ public class WorkflowContinuatorHub : IWorkflowContinuatorHub
         _serviceProviderIsService = serviceProviderIsService ?? throw new ArgumentNullException(nameof(serviceProviderIsService));
 
         var options = optionsAccessor.Value;
-        _continuatorTypes = options.Continuators.ToImmutableDictionary(m => m.Key, m => m.Value.ToImmutableDictionary(StringComparer.Ordinal), StringComparer.Ordinal);
+        _continuatorTypes = options.Continuators.ToImmutableDictionary(static m => m.Key, static m => m.Value.ToImmutableDictionary(StringComparer.Ordinal), StringComparer.Ordinal);
     }
 
     #endregion Public 构造函数

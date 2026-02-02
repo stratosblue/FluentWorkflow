@@ -20,7 +20,7 @@ internal class FluentWorkflowBuilder : IFluentWorkflowBuilder
     public FluentWorkflowBuilder(IServiceCollection services)
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
-        if (Services.FirstOrDefault(m => m.ServiceType == typeof(WorkflowBuildStateCollection)) is not { } existedDescriptor
+        if (Services.FirstOrDefault(static m => m.ServiceType == typeof(WorkflowBuildStateCollection)) is not { } existedDescriptor
             || existedDescriptor.ImplementationInstance is not WorkflowBuildStateCollection stateCollection)
         {
             stateCollection = new WorkflowBuildStateCollection();

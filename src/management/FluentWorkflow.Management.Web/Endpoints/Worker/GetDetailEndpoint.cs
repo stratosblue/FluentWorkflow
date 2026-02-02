@@ -22,7 +22,7 @@ internal class GetDetailEndpoint : IStandardExportEndpoint<WorkerDetailDto>
     /// <inheritdoc/>
     public static RouteHandlerBuilder MapEndpoint(WebApplication app, RouteGroupBuilder builder)
     {
-        return builder.MapGet("/", async (string appName,
+        return builder.MapGet("/", static async (string appName,
                                           Guid workerId,
                                           ManagementManagerHub managerHub,
                                           ILogger<GetDetailEndpoint> logger,
@@ -62,7 +62,7 @@ internal class GetDetailEndpoint : IStandardExportEndpoint<WorkerDetailDto>
                                        descriptor.RemoteEndPoint?.ToString(),
                                        context.IsActive,
                                        workerStatistics?.ProcessingCount ?? 0,
-                                       workerStatistics?.MessageStatistics.Select(m => new WorkerMessageTimeSequenceStatisticsDto(m.TimeSpan, m.IncomingCount, m.CompletedCount, m.AverageProcessingTimeSpan)).ToList() ?? [],
+                                       workerStatistics?.MessageStatistics.Select(static m => new WorkerMessageTimeSequenceStatisticsDto(m.TimeSpan, m.IncomingCount, m.CompletedCount, m.AverageProcessingTimeSpan)).ToList() ?? [],
                                        lastActive);
         });
     }
