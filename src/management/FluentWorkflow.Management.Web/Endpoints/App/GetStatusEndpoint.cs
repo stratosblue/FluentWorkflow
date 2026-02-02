@@ -24,7 +24,7 @@ internal class GetStatusEndpoint : IStandardExportEndpoint<PagedResponseDto<Work
         return builder.MapGet("/status", (ManagementManagerHub managerHub, int page = 1, int pageSize = 10, [Required] string? appName = "default") =>
         {
             var manager = managerHub.GetManager(appName!);
-            return manager.WorkerContexts.OrderBy(m => m.Key)
+            return manager.WorkerContexts.OrderBy(m => m.Value.Name)
                                          .Select(m => m.Value)
                                          .GetPagedResponse(page, pageSize, context =>
                                          {
