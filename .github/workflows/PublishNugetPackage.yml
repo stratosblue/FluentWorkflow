@@ -1,9 +1,9 @@
 ﻿name: Publish Nuget Package
 
 on:
-  release:
-    types: [released,prereleased]
-    branches: [ master,main ]
+  push:
+    tags:        
+      - v*.*.**
 
 jobs:
   publish-with-build:
@@ -14,14 +14,24 @@ jobs:
       id-token: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
+
     - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: |
           8.x
           9.x
           10.x
+
+    - name: Setup node
+      uses: actions/setup-node@v6
+      with:
+        node-version: 24
+
+    - name: build ui
+      run: npm install -g pnpm && cd src/management/fluent-workflow-management-ui && pnpm install && pnpm build
+
     - name: restore dependencies
       run: dotnet restore
     - name: build
