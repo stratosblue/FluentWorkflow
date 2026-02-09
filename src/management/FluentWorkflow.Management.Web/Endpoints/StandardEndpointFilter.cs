@@ -15,7 +15,11 @@ internal class StandardEndpointFilter<TResponse>(ILogger<StandardEndpointFilter<
         try
         {
             var result = await next(context);
-            return StandardApiResponse.Success<TResponse>((TResponse?)result);
+            if (result is TResponse response)
+            {
+                return StandardApiResponse.Success<TResponse>(response);
+            }
+            return StandardApiResponse.Success<TResponse>(default);
         }
         catch (Exception ex)
         {
